@@ -1,23 +1,24 @@
 {
-  "name": "@workpulse/vscode",
+  "name": "@devora-code",
   "version": "0.0.0",
   "description": "",
   "license": "MIT",
   "author": "Ralf Hannuschka",
+  "private": "true",
   "scripts": {
     "install:all": "npm i",
-    "build:sdk": "npm run build -w workpulse-sdk",
-    "build:api": "npm run build -w workpulse-api",
-    "build:webview": "npm run build -w webview",
-    "build:extensions": "npm run build -w workpulse-core && npm run build -w workpulse-jira",
+    "build:sdk": "npm run build -w devora-code-sdk",
+    "build:api": "npm run build -w devora-code-api",
+    "build:webview": "npm run build -w devora-code-webview",
+    "build:extensions": "npm run build -w devora-code-core && npm run build -w devora-code-jira",
     "build:all": "npm run build:sdk && npm run build:api && npm run build:webview && npm run build:extensions",
-    "watch:all": "concurrently --kill-others -n \"core,jira,webview\" -c \"blue,green,magenta\" \"npm run watch -w workpulse-core\" \"npm run watch -w workpulse-jira\" \"npm run watch --prefix workpulse-webview\""
+    "watch:all": "concurrently --kill-others -n \"core,jira,webview\" -c \"blue,green,magenta\" \"npm run watch -w devora-code-core\" \"npm run watch -w devora-code-jira\" \"npm run watch --prefix devora-code-webview\""
   },
   "workspaces": [
-    "workpulse-api",
-    "workpulse-core",
-    "workpulse-jira",
-    "workpulse-sdk"
+    "devora-code-api",
+    "devora-code-core",
+    "devora-code-jira",
+    "devora-code-sdk"
   ],
   "dependencies": {
     "reflect-metadata": "0.2.2",
@@ -27,7 +28,6 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "26.6.3",
     "@types/vscode": "1.138.0",
-    "@workpulse/api": "file:../api",
     "concurrently": "^10.0.6",
     "dotenv": "^18.0.5",
     "esbuild": "^0.28.2",

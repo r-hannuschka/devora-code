@@ -1,0 +1,11 @@
+<div class="devora-code-teaser" [class.is-open]="isOpen()">
+  <!-- Der devora-code-scroll-container fängt das Scrollen im offenen Zustand ab -->
+  <div class="devora-code-teaser-content">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Der Button toggelt einfach nur den Zustand -->
+  <span class="devora-code-teaser-toggle" (click)="isOpen.set(!isOpen())" role="button">
+    {{ isOpen() ? 'weniger' : 'mehr...' }}
+  </span>
+</div>

@@ -1,0 +1,23 @@
+@if (focusedTask(); as issue) {
+  <dl>
+    <dt>Key:</dt>
+    <dd>{{ issue.key }}</dd>
+    <dt>Typ:</dt>
+    <dd>{{ issue.issueType }}</dd>
+    <dt>Titel:</dt>
+    <dd>{{ issue.summary }}</dd>
+
+    @if (issue.description) {
+      <dt>Beschreibung:</dt>
+      <dd>
+        <devora-code-teaser>
+          <div [innerHTML]="issue.description | safeHtml"></div>
+        </devora-code-teaser>
+      </dd>
+    }
+    <dt>Web:</dt>
+    <dd>
+      <a href="{{ issue.url }}" target="_blank">{{ issue.key }}</a>
+    </dd>
+  </dl>
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@devora-code/sdk",
+  "publisher": "trueffelmafia",
+  "displayName": "Devora Code SDK",
+  "version": "0.0.0",
+  "description": "Devora Code software development kit",
+  "license": "MIT",
+  "author": "",
+  
+  "type": "commonjs", 
+  
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./command": {
+      "types": "./dist/command/index.d.ts",
+      "default": "./dist/command/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    }
+  },
+  "dependencies": {
+    "@devora-code/api": "*"
+  }
+}
