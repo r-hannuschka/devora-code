@@ -1,0 +1,49 @@
+{
+  "name": "devora-code",
+  "publisher": "trueffelmafia",
+  "displayName": "Devora Code",
+  "engines": {
+    "vscode": "^1.105.0"
+  },
+  "version": "0.0.0",
+  "description": "Seamless time tracking and issue management directly inside VS Code.",
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "./dist/devora-code.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "devora-code.openWebview",
+        "title": "DevoraCode: open webview"
+      },
+      {
+        "command": "devora-code.activated",
+        "title": "Devora Code Core Activated Trigger"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "devora-code.activated",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "properties": {}
+    }
+  },
+  "enabledApiProposals": [
+    "extensionRuntime"
+  ],
+  "dependencies": {
+    "@devora-code/sdk": "*",
+    "@devora-code/api": "*"
+  },
+  "scripts": {
+    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",
+    "watch": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

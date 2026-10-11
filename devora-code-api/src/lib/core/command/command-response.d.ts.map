@@ -1,0 +1,1 @@
+{"version":3,"file":"command-response.d.ts","sourceRoot":"","sources":["command-response.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,eAAe,CAAC,KAAK,GAAG,OAAO;IAC9C,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,CAAC,EAAE,KAAK,CAAC;CACd;AAED,MAAM,WAAW,oBAAoB;IACnC,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,KAAK,CAAC;CACd"}

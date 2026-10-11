@@ -1,0 +1,6 @@
+<header class="workpule-header">
+  <devora-code-header-toolbar></devora-code-header-toolbar>
+</header>
+<main class="devora-code-body">
+  <ng-container [cdkPortalOutlet]="portalRouterService.activeView.value()" (attached)="onPortalAttached($event)"></ng-container>
+</main>

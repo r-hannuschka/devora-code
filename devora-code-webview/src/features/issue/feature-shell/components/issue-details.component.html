@@ -1,0 +1,72 @@
+<div class="devora-code-issue-details">
+  <workpulse-issue-selector (selected)="onIssueSelected($event)" [issueKey]="selectedKey()" />
+
+  <!-- Loading -->
+  @if (issueResource.isLoading()) {
+    <p class="devora-code-loading">Laden…</p>
+  }
+
+  <!-- Error -->
+  @if (issueResource.error(); as error) {
+    <p class="devora-code-error">Fehler: {{ error }}</p>
+  }
+
+  <!-- Session-Hinweis -->
+  @if (isFromSession() && issueResource.value()) {
+    <div>
+      Dieses Issue wird in der Session verfolgt
+      <span>{{ elapsed.value() }}</span>
+    </div>
+  }
+
+  <!-- Details -->
+  @if (issueResource.value(); as issue) {
+    <!-- Header: Issue-Key + Summary -->
+    <div class="d-flex gap-3 mb-3">
+      <span class="devora-code-issue-key">{{ issue.key }}</span>
+      <span class="devora-code-issue-type">{{ issue.issueType }}</span>
+    </div>
+    <h2 class="devora-code-issue-summary">{{ issue.summary }}</h2>
+
+    <!-- Status & Priority -->
+    <dl class="devora-code-issue-row">
+      <dt><span class="devora-code-label">Status</span></dt>
+      <dd>{{ issue.status }}</dd>
+      <dt><span class="devora-code-label">Kategorie</span></dt>
+      <dd>{{ issue.statusCategory }}</dd>
+      @if (issue.priority) {
+        <dt><span class="devora-code-label">Priorität</span></dt>
+        <dd>{{ issue.priority }}</dd>
+      }
+      @if (issue.assignee) {
+        <dt><span class="devora-code-label">Zugewiesen</span></dt>
+        <dd>{{ issue.assignee }}</dd>
+      }
+      @if (issue.dueDate) {
+        <dt><span class="devora-code-label">Fällig</span></dt>
+        <dd>{{ issue.dueDate }}</dd>
+      }
+      <dt><span class="devora-code-label">Zeit belegt</span></dt>
+      <dd>{{ issue.timeSpentSeconds }}s</dd>
+      <dt><span class="devora-code-label">Restzeit</span></dt>
+      <dd>{{ issue.remainingTimeSeconds }}s</dd>
+    </dl>
+
+    <!-- Description -->
+    @if (issue.description) {
+      <div class="devora-code-issue-description">
+        <h3>Beschreibung</h3>
+        <p>{{ issue.description }}</p>
+      </div>
+    }
+
+    <!-- Jira Link -->
+    @if (issue.url) {
+      <div>
+        <a [href]="issue.url" target="_blank" rel="noopener noreferrer"> In Jira öffnen </a>
+      </div>
+    }
+  } @else {
+    <p>Es konnte kein Issue gefunden werden.</p>
+  }
+</div>

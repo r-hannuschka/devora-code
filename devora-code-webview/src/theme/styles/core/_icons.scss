@@ -1,0 +1,127 @@
+@use '../variables/icons' as *;
+@use '../functions/rem-calc' as *;
+
+@font-face {
+  font-family: '#{$icomoon-font-family}';
+  src:
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf') format('truetype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff') format('woff'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^='devora-code-icon-'],
+[class*=' devora-code-icon-'] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: '#{$icomoon-font-family}' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: rem-calc(20px) !important;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.devora-code-icon-query_stats {
+  &:before {
+    content: $devora-code-icon-query_stats;     
+    color: #e8eaed;
+  }
+}
+
+.devora-code-icon-task-list {
+  &:before {
+    content: $devora-code-icon-task-list;
+  }
+}
+
+.devora-code-icon-start {
+  &:before {
+    content: $devora-code-icon-start;
+  }
+}
+
+.devora-code-icon-stop {
+  &:before {
+    content: $devora-code-icon-stop;
+  }
+}
+
+.devora-code-icon-preview {
+  &:before {
+    content: $devora-code-icon-preview;     
+  }
+}
+
+.devora-code-icon-toolkit {
+  &:before {
+    content: $devora-code-icon-toolkit;     
+  }
+}
+
+.devora-code-icon-feature {
+  &:before {
+    content: $devora-code-icon-extension;     
+  }
+}
+
+.devora-code-icon-bug {
+  &:before {
+    content: $devora-code-icon-bug;     
+  }
+}
+
+.devora-code-icon-open {
+  &:before {
+    content: $devora-code-icon-open;     
+  }
+}
+
+.devora-code-icon-test {
+  &:before {
+    content: $devora-code-icon-test;     
+  }
+}
+
+.devora-code-icon-speed {
+  &:before {
+    content: $devora-code-icon-speed;     
+  }
+}
+
+.devora-code-icon-refresh {
+  &:before {
+    content: $devora-code-icon-refresh;     
+  }
+}
+
+.devora-code-icon-bookings {
+  &:before {
+    content: $devora-code-icon-bookings;     
+  }
+}
+
+.devora-code-icon-chevron_left {
+  &:before {
+    content: $devora-code-icon-chevron_left;     
+  }
+}
+
+.devora-code-icon-chevron_right {
+  &:before {
+    content: $devora-code-icon-chevron_right;     
+  }
+}
+
+.devora-code-icon-today {
+  &:before {
+    content: $devora-code-icon-today;     
+  }
+}
