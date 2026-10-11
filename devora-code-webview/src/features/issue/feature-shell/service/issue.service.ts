@@ -2,7 +2,7 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
 import type { IssueDetail, IssueListItem } from '@devora-code/api';
-import { IssueFlowFacade, LoggerFacade } from '@/core/api';
+import { IssueApi, LoggerFacade } from '@/core/api';
 import { SessionStateSelectors, StartSession, StopSession } from '@/core/state';
 import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { map } from 'rxjs';
@@ -16,7 +16,7 @@ import { map } from 'rxjs';
 @Service()
 export class IssueService {
   private readonly store = inject(Store);
-  private readonly jiraApi = inject(IssueFlowFacade);
+  private readonly jiraApi = inject(IssueApi);
   private readonly logger = inject(LoggerFacade);
 
   private readonly issueList = this.store.select(IssueStateSelectors.issues);

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { TimeTrackerFlowFacade } from '@/core/api';
+import { TimeTrackerApi } from '@/core/api';
 import { Action, State, type StateContext } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
 import { tap } from 'rxjs';
@@ -14,7 +14,7 @@ import type { TimetrackerStateModel } from './timetracker-state.model';
 })
 @Injectable()
 export class TimetrackerState {
-  private readonly tracker = inject(TimeTrackerFlowFacade);
+  private readonly tracker = inject(TimeTrackerApi);
 
   @Action(FetchMonth)
   protected fetchMonth(ctx: StateContext<TimetrackerStateModel>, { payload }: FetchMonth) {

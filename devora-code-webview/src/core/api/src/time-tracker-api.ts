@@ -2,7 +2,7 @@ import { InjectionToken } from '@angular/core';
 import type { TimeEntry, TimeEntryList } from '@devora-code/api';
 import type { Observable } from 'rxjs';
 
-export interface ITimeTrackerFlowFacade {
+export interface TimeTrackerApi {
   startTracking(issueKey: string): Observable<TimeEntry>;
   stopTracking(): Observable<{ duration: number; date: string; id: string }>;
   getPeriod(startDate: string, endDate?: string): Observable<TimeEntryList | undefined>;
@@ -10,4 +10,4 @@ export interface ITimeTrackerFlowFacade {
   getMonth(month: string): Observable<Record<string, TimeEntry[]>>;
 }
 
-export const TimeTrackerFlowFacade = new InjectionToken<ITimeTrackerFlowFacade>('Time Tracker Flow Facade');
+export const TimeTrackerApi = new InjectionToken<TimeTrackerApi>('Time Tracker Flow Facade');

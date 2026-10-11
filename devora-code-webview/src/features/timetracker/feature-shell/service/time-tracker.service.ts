@@ -1,7 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import type { TimeEntryList } from '@devora-code/api';
-import { TimeTrackerFlowFacade } from '@/core/api';
+import { TimeTrackerApi } from '@/core/api';
 import { differenceInSeconds } from 'date-fns';
 import { of } from 'rxjs';
 
@@ -12,7 +12,7 @@ import { of } from 'rxjs';
  */
 @Service()
 export class TimeTrackerService {
-  private readonly tracker = inject(TimeTrackerFlowFacade);
+  private readonly tracker = inject(TimeTrackerApi);
 
   readonly periode = signal<{ startDate: string; endDate: string } | null>(null);
   readonly suche = signal<string>('');

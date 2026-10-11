@@ -7,11 +7,11 @@ import type {
   IssueDetail,
   IssueList,
 } from '@devora-code/api';
-import type { IIssueFlowFacade } from '@/core/api';
+import type { IssueApi } from '@/core/api';
 import type { Observable } from 'rxjs';
 import { VsCodeBridge } from './vscode-bridge';
 
-export class IssueVsCode implements IIssueFlowFacade {
+export class IssueVsCode implements IssueApi {
   private readonly vscodeBridge = inject(VsCodeBridge);
 
   list(): Observable<IssueList> {
