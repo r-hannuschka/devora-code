@@ -6,4 +6,9 @@ export const routes: PortalRoute[] = [
     component: () =>
       import('../components/week-bookings.component').then((m) => m.WeekBookingsComponent),
   },
+  {
+    path: 'timetracker:meetings',
+    component: () =>
+      import('../components/meeting-form.component').then((m) => m.MeetingFormComponent),
+  },
 ];

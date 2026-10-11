@@ -29,6 +29,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.workpulse-icon-add_call {
+  &:before {
+    content: $workpulse-icon-add_call;     
+    color: #e8eaed;
+  }
+}
+
 .workpulse-icon-query_stats {
   &:before {
     content: $workpulse-icon-query_stats;     

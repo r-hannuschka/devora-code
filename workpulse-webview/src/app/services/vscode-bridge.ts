@@ -8,10 +8,21 @@ import { filter, first, fromEvent, map, type Observable } from 'rxjs';
 
 type Response<T = unknown> = CommandResponse<T> | CommandErrorResponse;
 
+/** Mock-API für Browser-Development (kein VS Code Host) */
+function getMockVsCodeApi(): { postMessage: (msg: unknown) => void } {
+  console.warn('[VsCodeBridge] Browser-Modus – Befehle werden geloggt aber nicht gesendet');
+  return {
+    postMessage: (msg: unknown) => {
+      console.log('[VsCodeBridge Mock]', msg);
+    },
+  };
+}
+
 @Service()
 export class VsCodeBridge {
   private readonly messageEvent$ = fromEvent<MessageEvent<Response>>(window, 'message');
-  private readonly vscodeApi = acquireVsCodeApi();
+  private readonly vscodeApi =
+    typeof acquireVsCodeApi === 'function' ? acquireVsCodeApi() : getMockVsCodeApi();
 
   request<T = unknown>(command: Command): Observable<T> {
     const event$ = this.messageEvent$.pipe(
