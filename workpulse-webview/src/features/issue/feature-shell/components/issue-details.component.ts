@@ -1,16 +1,18 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
-import type { IssueDetail } from '@workpulse/api';
+import type { IssueDetail, IssueListItem } from '@workpulse/api';
 import { createElapsedTimer } from '@workpulse/common/utils';
 import { RouteParams } from '@workpulse/core/portal-router';
 import { SessionStateSelectors } from '@workpulse/core/state';
 import { of } from 'rxjs';
 import { IssueService } from '../service/issue.service';
+import { IssueSelectorComponent } from './issue-selector.component';
 
 @Component({
   selector: 'jira-issue-details',
   templateUrl: './issue-details.component.html',
+  imports: [IssueSelectorComponent],
 })
 export class IssueDetailsComponent {
   private readonly routeParams = inject<{ key?: IssueDetail['key'] }>(RouteParams);
@@ -21,14 +23,23 @@ export class IssueDetailsComponent {
     SessionStateSelectors.activeSessionKey,
   );
 
+  /** Aktuell gewählter Issue-Key (aus Selector oder Route) */
+  protected selectedKey = signal<string | null>(
+    this.routeParams.key ?? this.activeSessionKey(),
+  );
+
+  /** Ausgabe eines Issues aus dem Selector – lädt Details */
+  protected onIssueSelected(issue: IssueListItem) {
+    this.selectedKey.set(issue.key);
+  }
+
   protected readonly issueResource = rxResource({
-    params: () => ({ activeSessionKey: this.activeSessionKey() }),
+    params: () => ({ key: this.selectedKey() }),
     stream: ({ params }) => {
-      const issueKey = this.routeParams.key ?? params.activeSessionKey;
-      if (!issueKey) {
+      if (!params.key) {
         return of(null);
       }
-      return this.issueService.getDetails(issueKey);
+      return this.issueService.getDetails(params.key);
     },
   });
 

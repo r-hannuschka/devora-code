@@ -1,0 +1,22 @@
+<mat-form-field>
+  <mat-label>Issue</mat-label>
+  <input
+    matInput
+    type="text"
+    #search
+    [matAutocomplete]="auto"
+    class="form-ctrl"
+    [value]="issueKey()"
+    (input)="selectorService.setFilter(search.value)"
+  />
+</mat-form-field>
+
+<mat-autocomplete
+  #auto="matAutocomplete"
+  (optionSelected)="onOptionSelected($event)"
+  [displayWith]="displayWithIssueKey"
+>
+  @for (issue of selectorService.filteredIssues(); track issue.id) {
+    <mat-option [value]="issue"> {{ issue.key }} – {{ issue.summary }} </mat-option>
+  }
+</mat-autocomplete>

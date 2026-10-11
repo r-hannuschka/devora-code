@@ -1,4 +1,7 @@
 <div class="workpulse-issue-details">
+  <!-- Issue Selector -->
+  <workpulse-issue-selector (selected)="onIssueSelected($event)" [issueKey]="selectedKey()" />
+
   <!-- Loading -->
   @if (issueResource.isLoading()) {
     <p class="workpulse-loading">Laden…</p>

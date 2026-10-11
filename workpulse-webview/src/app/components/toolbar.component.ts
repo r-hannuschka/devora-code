@@ -25,6 +25,7 @@ export class ToolbarComponent {
   readonly navItems = [
     { path: 'dashboard', label: 'Workpulse', icon: "workpulse-icon-query_stats" },
     { path: 'timetracker:bookings', label: 'erfasste Zeiten', icon: "workpulse-icon-bookings" },
+    { path: 'timetracker:meetings', label: 'Meetings', icon: "workpulse-icon-add_call" },
     { path: 'jira:issue-list', label: 'Aufgabenliste', icon: "workpulse-icon-task-list" },
     { path: 'jira:issue-detail', label: 'Issue Details', icon: "workpulse-icon-preview" },
   ];
