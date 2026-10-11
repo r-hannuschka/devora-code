@@ -1,4 +1,4 @@
-export interface WorkpulseWidgetAction {
+export interface DevoraCodeWidgetAction {
   readonly key: string;
 
   readonly icon: string;
@@ -7,7 +7,7 @@ export interface WorkpulseWidgetAction {
 export interface DevoraCodeWidget {
   readonly title: string;
 
-  readonly actions?: WorkpulseWidgetAction[];
+  readonly actions?: DevoraCodeWidgetAction[];
 
-  actionDispatched?(action: WorkpulseWidgetAction): void;
+  actionDispatched?(action: DevoraCodeWidgetAction): void;
 }

@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 import * as vscode from "vscode";
 
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
-import { WorkpulseWebviewModule } from "@/modules/webview";
+import { WebviewModule } from "@/modules/webview";
 
 // module importieren, muessen wir tun damit sie im bundle sind
 import "@/core/logger";
@@ -14,7 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
   container.registerInstance(EXTENSION_CONTEXT_TOKEN, context);
 
   const webviewDisposable = vscode.commands.registerCommand("devora-code.openWebview", () => {
-    container.resolve(WorkpulseWebviewModule).openDashboard();
+    container.resolve(WebviewModule).openDashboard();
   });
 
   context.subscriptions.push(webviewDisposable);

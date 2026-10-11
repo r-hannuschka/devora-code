@@ -5,7 +5,7 @@ import {
   MatAutocompleteTrigger,
   MatOption,
 } from '@angular/material/autocomplete';
-import type { IssueListItem } from '@workpulse/api';
+import type { IssueListItem } from '@devora-code/api';
 import { IssueSelectorService } from '../service/issue-selector.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
  *         (Widget = navigate, Details = reload)
  */
 @Component({
-  selector: 'workpulse-issue-selector',
+  selector: 'devora-code-issue-selector',
   templateUrl: './issue-selector.component.html',
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatFormFieldModule, MatInputModule],
   providers: [IssueSelectorService],

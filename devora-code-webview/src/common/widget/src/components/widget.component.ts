@@ -1,8 +1,8 @@
 import { Component, computed, contentChild, ViewEncapsulation } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import type { WorkpulseWidgetAction } from '../interfaces/widget';
-import { WORKPULSE_WIDGET } from '../static/tokens';
+import type { DevoraCodeWidgetAction } from '../interfaces/widget';
+import { DEVORA_CODE_WIDGET } from '../static/tokens';
 
 @Component({
   selector: 'devora-code-widget',
@@ -14,7 +14,7 @@ import { WORKPULSE_WIDGET } from '../static/tokens';
   },
 })
 export class WidgetComponent {
-  private readonly widget = contentChild(WORKPULSE_WIDGET);
+  private readonly widget = contentChild(DEVORA_CODE_WIDGET);
 
   protected readonly title = computed(() => {
     const loadedWidget = this.widget();
@@ -32,7 +32,7 @@ export class WidgetComponent {
     return [];
   });
 
-  protected dispatchAction(action: WorkpulseWidgetAction) {
+  protected dispatchAction(action: DevoraCodeWidgetAction) {
     const widget = this.widget();
     if (widget && widget.actionDispatched) {
       widget.actionDispatched(action);

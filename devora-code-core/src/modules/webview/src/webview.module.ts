@@ -4,10 +4,10 @@ import { isErrorResponse } from "@devora-code/sdk/command";
 import type { Command } from "@devora-code/api";
 import { container, singleton } from "tsyringe";
 import type { WebviewPanel } from "vscode";
-import { WorkpulseWebview } from "./provider/webview";
+import { DevoraCodeWebview } from "./provider/webview";
 
 @singleton()
-export class WorkpulseWebviewModule {
+export class WebviewModule {
   private activePanel: WebviewPanel | undefined;
 
   constructor(
@@ -21,7 +21,7 @@ export class WorkpulseWebviewModule {
       return;
     }
 
-    const webview = container.resolve(WorkpulseWebview);
+    const webview = container.resolve(DevoraCodeWebview);
     this.activePanel = webview.show();
 
     this.registerListener(this.activePanel);

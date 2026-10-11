@@ -29,6 +29,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.devora-code-icon-add_call {
+  &:before {
+    content: $devora-code-icon-add_call;     
+    color: #e8eaed;
+  }
+}
+
 .devora-code-icon-query_stats {
   &:before {
     content: $devora-code-icon-query_stats;     

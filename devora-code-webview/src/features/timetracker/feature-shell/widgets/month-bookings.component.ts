@@ -10,9 +10,9 @@ import {
 } from '@angular/core';
 import { Store } from '@ngxs/store';
 import {
-  WORKPULSE_WIDGET,
+  DEVORA_CODE_WIDGET,
   type DevoraCodeWidget,
-  type WorkpulseWidgetAction,
+  type DevoraCodeWidgetAction,
 } from '@/common';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { differenceInSeconds, format, getDaysInMonth } from 'date-fns';
@@ -26,7 +26,7 @@ import { FetchMonth, TimetrackerStateSelectors } from '../../data-access';
   providers: [
     provideCharts(withDefaultRegisterables()),
     {
-      provide: WORKPULSE_WIDGET,
+      provide: DEVORA_CODE_WIDGET,
       useExisting: MonthBookingsComponent,
     },
   ],
@@ -39,7 +39,7 @@ export class MonthBookingsComponent implements DevoraCodeWidget {
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-  readonly actions: WorkpulseWidgetAction[] = [
+  readonly actions: DevoraCodeWidgetAction[] = [
     {
       key: '[Bookings]: reload',
       icon: 'devora-code-icon-refresh',
@@ -48,7 +48,7 @@ export class MonthBookingsComponent implements DevoraCodeWidget {
 
   readonly title = 'Erfasste Zeiten';
 
-  actionDispatched({ key }: WorkpulseWidgetAction): void {
+  actionDispatched({ key }: DevoraCodeWidgetAction): void {
     if (key === '[Bookings]: reload') {
       this.fetchMonthData();
     }

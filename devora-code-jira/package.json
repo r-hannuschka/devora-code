@@ -21,27 +21,27 @@
     "commands": [],
     "configuration": {
       "properties": {
-        "workpulse-jira.JIRA_API_URL": {
+        "devora-code-jira.JIRA_API_URL": {
           "type": "string",
           "default": "",
           "description": "Jira Restapi URL"
         },
-        "workpulse-jira.JIRA_API_TOKEN": {
+        "devora-code-jira.JIRA_API_TOKEN": {
           "type": "string",
           "default": "",
           "description": "Jira API Token"
         },
-        "workpulse-jira.JIRA_USER_NAME": {
+        "devora-code-jira.JIRA_USER_NAME": {
           "type": "string",
           "default": "",
           "description": "Jira Benutzername/Email"
         },
-        "workpulse-jira.JIRA_PROJECT_KEY": {
+        "devora-code-jira.JIRA_PROJECT_KEY": {
           "type": "string",
           "default": "",
           "description": "Jira Project Key"
         },
-        "workpulse-jira.ISSUE_TYPE_MAPPING": {
+        "devora-code-jira.ISSUE_TYPE_MAPPING": {
           "type": "object",
           "title": "Ticket-Typen Mapping",
           "description": "Füge den Namen aus deinem Jira hinzu (Links) und wähle den internen Typ (Rechts).",
@@ -54,7 +54,7 @@
           },
           "default": {}
         },
-        "workpulse-jira.STATUS_MAPPING": {
+        "devora-code-jira.STATUS_MAPPING": {
           "type": "object",
           "title": "Status Mapping",
           "description": "Füge den Status-Namen aus deinem Jira hinzu (Links) und wähle den internen Zustand (Rechts).",

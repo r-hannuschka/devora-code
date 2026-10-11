@@ -25,7 +25,7 @@ export class ToolbarComponent {
   readonly navItems = [
     { path: 'dashboard', label: 'DevoraCode', icon: "devora-code-icon-query_stats" },
     { path: 'timetracker:bookings', label: 'erfasste Zeiten', icon: "devora-code-icon-bookings" },
-    { path: 'timetracker:meetings', label: 'Meetings', icon: "devora-icon-add_call" },
+    { path: 'timetracker:meetings', label: 'Meetings', icon: "devora-code-icon-add_call" },
     { path: 'jira:issue-list', label: 'Aufgabenliste', icon: "devora-code-icon-task-list" },
     { path: 'jira:issue-detail', label: 'Issue Details', icon: "devora-code-icon-preview" },
   ];

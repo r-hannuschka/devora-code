@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'workpulse-meeting-form',
+  selector: 'devora-code-meeting-form',
   standalone: true,
   imports: [
     FormsModule,

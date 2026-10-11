@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import {
   SafeHtmlPipe,
-  WORKPULSE_WIDGET,
-  workpulseTeaserComponent,
+  DEVORA_CODE_WIDGET,
+  DevoraCodeTeaserComponent,
   type DevoraCodeWidget,
 } from '@/common';
 import { Store } from '@ngxs/store';
@@ -11,10 +11,10 @@ import { IssueStateSelectors } from '../../data-access';
 @Component({
   selector: 'devora-code-current-focus-task',
   templateUrl: './current-focus-task-widget.component.html',
-  imports: [SafeHtmlPipe, workpulseTeaserComponent],
+  imports: [SafeHtmlPipe, DevoraCodeTeaserComponent],
   providers: [
     {
-      provide: WORKPULSE_WIDGET,
+      provide: DEVORA_CODE_WIDGET,
       useExisting: CurrentFocusTaskWidgetComponent,
     },
   ],

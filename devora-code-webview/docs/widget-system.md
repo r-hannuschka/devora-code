@@ -19,11 +19,11 @@ flowchart TD
 
     subgraph Contract["WorkpulseWidget-Interface"]
         C1["title: string"]
-        C2["actions?: WorkpulseWidgetAction[]"]
+        C2["actions?: DevoraCodeWidgetAction[]"]
         C3["actionDispatched?\n(action): void"]
     end
 
-    subgraph Token["WORKPULSE_WIDGET\nInjectionToken"]
+    subgraph Token["DEVORA_CODE_WIDGET\nInjectionToken"]
     end
 
     Widget["Feature-Widget\n(z.B. ActiveSession)"] -->|implements| Contract
@@ -34,7 +34,7 @@ flowchart TD
 ```
 
 **Prinzip:** Der Host kennt kein konkretes Feature-Widget. Er liest über den
-`WORKPULSE_WIDGET`-Token die Metadaten (Titel, Actions) und rendert generisches
+`DEVORA_CODE_WIDGET`-Token die Metadaten (Titel, Actions) und rendert generisches
 Layout. Der Content landet über `<ng-content>` im Body.
 
 ---
@@ -46,8 +46,8 @@ Jedes Widget-Feature muss diese Schnittstelle implementieren:
 ```typescript
 export interface WorkpulseWidget {
   readonly title: string;
-  readonly actions?: WorkpulseWidgetAction[];
-  actionDispatched?(action: WorkpulseWidgetAction): void;
+  readonly actions?: DevoraCodeWidgetAction[];
+  actionDispatched?(action: DevoraCodeWidgetAction): void;
 }
 ```
 
@@ -58,7 +58,7 @@ export interface WorkpulseWidget {
 Eine Action ist typisiert über:
 
 ```typescript
-export interface WorkpulseWidgetAction<TAction = string> {
+export interface DevoraCodeWidgetAction<TAction = string> {
   readonly key: string;
   readonly icon: string;
   readonly action: TAction;
@@ -78,7 +78,7 @@ export interface WorkpulseWidgetAction<TAction = string> {
   host: { class: 'devora-code-widget' },
 })
 export class WidgetComponent {
-  private readonly widget = contentChild(WORKPULSE_WIDGET);
+  private readonly widget = contentChild(DEVORA_CODE_WIDGET);
 
   protected readonly title = computed(() => {
     const w = this.widget();
@@ -90,7 +90,7 @@ export class WidgetComponent {
     return Array.isArray(actions) && actions.length > 0 ? actions : [];
   });
 
-  protected dispatchAction(action: WorkpulseWidgetAction<string>) {
+  protected dispatchAction(action: DevoraCodeWidgetAction<string>) {
     const w = this.widget();
     if (w && w.actionDispatched) {
       w.actionDispatched(action);
@@ -101,7 +101,7 @@ export class WidgetComponent {
 
 Der Host tut drei Dinge:
 
-1. **Widget lesen** — `contentChild(WORKPULSE_WIDGET)` holt das eingebettete
+1. **Widget lesen** — `contentChild(DEVORA_CODE_WIDGET)` holt das eingebettete
    Feature-Widget
 2. **Metadaten extrahieren** — `title` und `actions` als Signal-Properties
 3. **Actions delegieren** — Klicks auf Icon-Buttons gehen zurück an das
@@ -116,17 +116,17 @@ Der Host tut drei Dinge:
   selector: 'jiraflow-active-session',
   encapsulation: ViewEncapsulation.None,
   providers: [
-    { provide: WORKPULSE_WIDGET, useExisting: ActiveSessionComponent },
+    { provide: DEVORA_CODE_WIDGET, useExisting: ActiveSessionComponent },
   ],
 })
 export class ActiveSessionComponent implements WorkpulseWidget {
   readonly title = 'Aktive Session';
 
-  readonly actions: WorkpulseWidgetAction[] = [
+  readonly actions: DevoraCodeWidgetAction[] = [
     { key: 'stop', icon: 'stop_circle', action: 'stop-session' },
   ];
 
-  actionDispatched(action: WorkpulseWidgetAction): void {
+  actionDispatched(action: DevoraCodeWidgetAction): void {
     if (action.action === 'stop-session') {
       this.stopSession();
     }
@@ -134,7 +134,7 @@ export class ActiveSessionComponent implements WorkpulseWidget {
 }
 ```
 
-**Warum self-provide?** `contentChild(WORKPULSE_WIDGET)` sucht nach einem
+**Warum self-provide?** `contentChild(DEVORA_CODE_WIDGET)` sucht nach einem
 Provider mit diesem Token im Child-Baum. Das Widget stellt sich selbst als
 Implementierung seiner eigenen Schnittstelle bereit — Typsicherheit ohne
 zusätzliche Abhängigkeit des Hosts auf das Feature-Widget.
@@ -153,7 +153,7 @@ Ein Widget besteht aus zwei Schritten:
   templateUrl: './issue-selector.component.html',
   encapsulation: ViewEncapsulation.None,
   providers: [
-    { provide: WORKPULSE_WIDGET, useExisting: IssueSelectorComponent },
+    { provide: DEVORA_CODE_WIDGET, useExisting: IssueSelectorComponent },
   ],
 })
 export class IssueSelectorComponent implements WorkpulseWidget {

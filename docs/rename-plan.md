@@ -168,17 +168,17 @@ Namen von Klassen, Interfaces und Konstanten umbenennen.
 | `WorkpulseWebview` | `DevoraCodeWebview` |
 | `WorkpulseWebviewModule` | `DevoraCodeWebviewModule` |
 | `WorkpulseWidget` | `DevoraCodeWidget` |
-| `WorkpulseWidgetAction` | `DevoraCodeWidgetAction` |
+| `DevoraCodeWidgetAction` | `DevoraCodeWidgetAction` |
 | `workpulseTeaserComponent` | `devoraCodeTeaserComponent` |
 
 ### Konstanten (UPPER_CASE)
 | Alt | Neu |
 |-----|-----|
-| `WORKPULSE_WIDGET` | `DEVORA_CODE_WIDGET` |
+| `DEVORA_CODE_WIDGET` | `DEVORA_CODE_WIDGET` |
 
 ### Vorkommen
 - Class declarations: `export class WorkpulseWidget implements WorkpulseWidget`
-- Token: `provide: WORKPULSE_WIDGET`
+- Token: `provide: DEVORA_CODE_WIDGET`
 - Interface: `interface WorkpulseWidget`
 
 ---

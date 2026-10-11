@@ -1,6 +1,6 @@
 import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
 import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
-import { WORKPULSE_WIDGET, type DevoraCodeWidget} from '@/common';
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget} from '@/common';
 import { IssueSelectorService } from '../service/issue-selector.service';
 import type { IssueListItem } from '@devora-code/api';
 import { PortalRouterService } from '@/core/portal-router';
@@ -13,7 +13,7 @@ import { PortalRouterService } from '@/core/portal-router';
   styleUrl: './issue-selector-widget.component.scss',
   providers: [
     {
-      provide: WORKPULSE_WIDGET,
+      provide: DEVORA_CODE_WIDGET,
       useExisting: IssueSelectorWidget,
     },
   ],

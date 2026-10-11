@@ -6,6 +6,6 @@ import { Component, input, signal } from '@angular/core';
   templateUrl: './teaser.component.html',
   styleUrls: ['./teaser.component.scss'],
 })
-export class workpulseTeaserComponent {
+export class DevoraCodeTeaserComponent {
   readonly isOpen = signal(false);
 }

@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { SessionStateSelectors, StopSession } from '@/core/state';
-import { WORKPULSE_WIDGET, type DevoraCodeWidget, type WorkpulseWidgetAction } from '@/common';
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget, type DevoraCodeWidgetAction } from '@/common';
 import { createElapsedTimer } from '../utils/create-elapsed-timer';
 
 @Component({
@@ -10,7 +10,7 @@ import { createElapsedTimer } from '../utils/create-elapsed-timer';
   templateUrl: './active-session-widget.component.html',
   imports: [DatePipe],
   encapsulation: ViewEncapsulation.None,
-  providers: [{ provide: WORKPULSE_WIDGET, useExisting: ActiveSessionWidgetComponent }],
+  providers: [{ provide: DEVORA_CODE_WIDGET, useExisting: ActiveSessionWidgetComponent }],
 })
 export class ActiveSessionWidgetComponent implements DevoraCodeWidget {
   private readonly store = inject(Store);
@@ -19,7 +19,7 @@ export class ActiveSessionWidgetComponent implements DevoraCodeWidget {
 
   readonly title = 'Aktive Session';
 
-  readonly actions: WorkpulseWidgetAction[] = [
+  readonly actions: DevoraCodeWidgetAction[] = [
     { icon: 'devora-code-icon-stop', key: '[Session]: stop session' },
   ];
 
@@ -32,7 +32,7 @@ export class ActiveSessionWidgetComponent implements DevoraCodeWidget {
 
   // --- Widget actions ---
 
-  actionDispatched(action: WorkpulseWidgetAction): void {
+  actionDispatched(action: DevoraCodeWidgetAction): void {
     if (action.key === '[Session]: stop session') {
       this.stop();
     }
