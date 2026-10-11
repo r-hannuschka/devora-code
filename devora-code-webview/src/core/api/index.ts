@@ -1,3 +1,3 @@
-export * from './src/jira-flow-facade';
-export * from './src/time-tracker-flow-facade';
+export * from './src/jira-api';
+export * from './src/time-tracker-api';
 export * from './src/logger-facade';

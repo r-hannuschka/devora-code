@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, State, type NgxsOnInit, type StateContext } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
-import { IssueFlowFacade } from '@/core/api';
+import { IssueApi } from '@/core/api';
 import { tap } from 'rxjs';
 import { FetchCurrentFocusedTask, FetchTasks, SelectIssue } from './issue-state.actions';
 import type { IssueStateModel } from './issue-state.model';
@@ -15,7 +15,7 @@ import type { IssueStateModel } from './issue-state.model';
 })
 @Injectable()
 export class IssueState implements NgxsOnInit {
-  private readonly jiraApi = inject(IssueFlowFacade);
+  private readonly jiraApi = inject(IssueApi);
 
   ngxsOnInit(ctx: StateContext<any>): void {
     ctx.dispatch(new FetchTasks());

@@ -9,11 +9,11 @@ import type {
   TimeEntryList,
   TimesData,
 } from '@devora-code/api';
-import type { ITimeTrackerFlowFacade } from '@/core/api';
+import type { TimeTrackerApi } from '@/core/api';
 import type { Observable } from 'rxjs';
 import { VsCodeBridge } from './vscode-bridge';
 
-export class TimeTrackerVsCode implements ITimeTrackerFlowFacade {
+export class TimeTrackerVsCode implements TimeTrackerApi {
   private readonly vscodeBridge = inject(VsCodeBridge);
 
   startTracking(issueKey: string): Observable<TimeEntry> {

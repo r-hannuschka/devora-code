@@ -1,6 +1,6 @@
 import { computed, inject, linkedSignal, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TimeTrackerFlowFacade } from '@/core/api';
+import { TimeTrackerApi } from '@/core/api';
 import { differenceInSeconds, format, getWeek, getYear } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { addDays, startOfWeek, subDays } from 'date-fns';
@@ -12,7 +12,7 @@ export enum ViewMode {
 
 @Service({ autoProvided: false })
 export class BookingsDatasource {
-  private readonly tracker = inject(TimeTrackerFlowFacade);
+  private readonly tracker = inject(TimeTrackerApi);
 
   private readonly currentViewMode = signal<ViewMode>(ViewMode.Week);
   private readonly selectedDate = signal(new Date());

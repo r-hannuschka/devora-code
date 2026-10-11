@@ -3,7 +3,7 @@ import { MAT_RIPPLE_GLOBAL_OPTIONS, type RippleGlobalOptions } from '@angular/ma
 import { IssueState } from '@/feature/issue/data-access';
 import { TimetrackerState } from '@/feature/timetracker/data-access';
 import { provideStore } from '@ngxs/store';
-import { IssueFlowFacade, LoggerFacade, TimeTrackerFlowFacade } from '@/core/api';
+import { IssueApi, LoggerFacade, TimeTrackerApi } from '@/core/api';
 import { providePortalRouter } from '@/core/portal-router';
 import { SessionState } from '@/core/state';
 import { routerConfig } from './router.config';
@@ -33,11 +33,11 @@ export const appConfig: ApplicationConfig = {
       } satisfies MatFormFieldDefaultOptions,
     },
     {
-      provide: IssueFlowFacade,
+      provide: IssueApi,
       useClass: IssueVsCode,
     },
     {
-      provide: TimeTrackerFlowFacade,
+      provide: TimeTrackerApi,
       useClass: TimeTrackerVsCode,
     },
     {
