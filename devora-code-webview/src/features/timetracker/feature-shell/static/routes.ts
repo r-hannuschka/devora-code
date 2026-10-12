@@ -8,7 +8,6 @@ export const routes: PortalRoute[] = [
   },
   {
     path: 'timetracker:meetings',
-    component: () =>
-      import('../components/meeting-form.component').then((m) => m.MeetingFormComponent),
+    component: () => import('../components/meeting-form.component').then((m) => m.MeetingFormComponent), // prettier-ignore
   },
 ];

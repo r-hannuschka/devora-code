@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Action, State, type NgxsOnInit, type StateContext } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
 import { tap } from 'rxjs';
-import { TimeTrackerApi } from '../../api';
+import { TimeTrackerApi } from '../../../../api';
 import {
   FetchActiveSession,
   SessionStarted,

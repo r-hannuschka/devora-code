@@ -13,10 +13,12 @@
     "module": "preserve",
     "paths": {
       "@/core/*": ["./src/core/*/index.ts"],
+      "@/common/components/*": ["./src/common/components/*/index.ts"],
       "@/common/*": ["./src/common/*/index.ts"],
       "@/common": ["./src/common/index.ts"],
       "@/feature/*/data-access": ["./src/features/*/data-access/index.ts"],
       "@/feature/*/feature-shell": ["./src/features/*/feature-shell/index.ts"],
+      "@/feature/*/feature-shell/widgets": ["./src/features/*/feature-shell/widgets/index.ts"],
     }
   },
   "angularCompilerOptions": {

@@ -38,8 +38,9 @@
     "extensionRuntime"
   ],
   "dependencies": {
+    "@devora-code/api": "*",
     "@devora-code/sdk": "*",
-    "@devora-code/api": "*"
+    "date-fns": "^4.4.0"
   },
   "scripts": {
     "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",

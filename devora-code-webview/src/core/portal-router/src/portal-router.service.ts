@@ -7,6 +7,7 @@ import {
   resource,
   Service,
   signal,
+  type Provider,
 } from '@angular/core';
 import { RouteParams, Routes } from './route';
 
@@ -67,7 +68,7 @@ export class PortalRouterService {
         {
           provide: RouteParams,
           useValue: params ?? {},
-        },
+        }
       ],
       envInjector,
     );

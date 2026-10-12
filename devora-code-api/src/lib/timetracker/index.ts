@@ -1,4 +1,5 @@
 // Commands (Types für Webview ↔ Core Kommunikation)
+export * from "./commands/add-entry.command";
 export * from "./commands/start-tracking.command";
 export * from "./commands/stop-tracking.command";
 export * from "./commands/get-active-timer.command";

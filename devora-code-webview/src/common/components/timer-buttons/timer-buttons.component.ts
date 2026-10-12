@@ -1,5 +1,5 @@
 import { Component, inject, input } from '@angular/core';
-import { StartSession, StopSession } from '@/core/state';
+import { StartSession, StopSession } from '@/core/session/src/state';
 import { Store } from '@ngxs/store';
 
 @Component({

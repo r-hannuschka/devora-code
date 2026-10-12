@@ -3,29 +3,35 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- Datum -->
 
-  <mat-form-field>
-    <mat-label>Datum</mat-label>
-    <input matInput [matDatepicker]="dp" formControlName="date" />
-    <mat-datepicker-toggle matSuffix [for]="dp" />
-    <mat-datepicker #dp />
-  </mat-form-field>
+  <div class="row">
+    <div class="lg:col-4">
+      <mat-form-field>
+        <mat-label>Datum</mat-label>
+        <input matInput [matDatepicker]="dp" formControlName="date" />
+        <mat-datepicker-toggle matSuffix [for]="dp" />
+        <mat-datepicker #dp />
+      </mat-form-field>
+    </div>
 
-  <div class="d-flex gap-3">
-    <div class="flex-grow">
+    <div class="sm:col-6 lg:col-4">
       <mat-form-field>
         <mat-label>Von</mat-label>
-        <input matInput type="time" formControlName="from" />
+        <input matInput [matTimepicker]="fromPicker" formControlName="from" />
+        <mat-timepicker-toggle matIconSuffix [for]="fromPicker" />
+        <mat-timepicker #fromPicker />
       </mat-form-field>
     </div>
 
-    <div class="flex-grow">
+    <div class="sm:col-6 lg:col-4">
       <mat-form-field>
         <mat-label>Bis</mat-label>
-        <input matInput type="time" formControlName="to" />
+        <input matInput [matTimepicker]="toPicker" formControlName="to" />
+        <mat-timepicker-toggle matIconSuffix [for]="toPicker" />
+        <mat-timepicker #toPicker />
       </mat-form-field>
     </div>
+    <!-- Von / Bis -->
   </div>
-  <!-- Von / Bis -->
 
   <!-- Meeting-Nummer -->
   <mat-form-field>

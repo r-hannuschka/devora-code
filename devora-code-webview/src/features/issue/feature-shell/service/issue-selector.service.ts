@@ -1,4 +1,4 @@
-import { SessionStateSelectors, StartSession } from '@/core/state';
+import { SessionStateSelectors, StartSession } from '@/core/session/src/state';
 import { IssueStateSelectors, SelectIssue } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
 import { IssueListItem } from '@devora-code/api';

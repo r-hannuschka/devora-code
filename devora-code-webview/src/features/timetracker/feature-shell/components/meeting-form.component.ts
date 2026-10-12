@@ -1,8 +1,10 @@
-import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
+import { provideAppDateAdapter } from '@/core/provider';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -16,8 +18,10 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule,
     MatButton,
     MatDatepickerModule,
+    MatTimepickerModule,
     MatNativeDateModule,
   ],
+  providers: provideAppDateAdapter(),
   templateUrl: './meeting-form.component.html',
 })
 export class MeetingFormComponent {
