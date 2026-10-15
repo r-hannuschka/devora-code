@@ -1,14 +1,14 @@
-import { Component, output, input, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
   MatOption,
 } from '@angular/material/autocomplete';
-import type { IssueListItem } from '@devora-code/api';
-import { IssueSelectorService } from '../service/issue-selector.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import type { IssueListItem } from '@devora-code/api/issue';
+import { IssueSelectorService } from '../service/issue-selector.service';
 
 /**
  * Wiederverwendbare Issue-Auswahl per Autocomplete.

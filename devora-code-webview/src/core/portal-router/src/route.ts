@@ -2,9 +2,9 @@ import type { ComponentType } from '@angular/cdk/portal';
 import { InjectionToken, makeEnvironmentProviders, type EnvironmentProviders } from '@angular/core';
 
 export interface PortalRoute {
-    path: string;
-    default?: boolean;
-    component: () => Promise<ComponentType<unknown>>
+  path: string;
+  default?: boolean;
+  component: () => Promise<ComponentType<unknown>>;
 }
 
 export const Routes = new InjectionToken<PortalRoute[]>('Routes for the portal router');

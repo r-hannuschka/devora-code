@@ -1,4 +1,4 @@
-import type { IssueListItem } from "@devora-code/api";
+import type { IssueListItem } from "@devora-code/api/issue";
 
 export class FetchTasks {
   static readonly type = '[Issue] fetch current tasks';

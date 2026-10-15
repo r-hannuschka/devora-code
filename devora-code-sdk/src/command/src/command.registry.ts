@@ -7,7 +7,6 @@ export class CommandRegistry {
 
   public register(type: string, ctor: CommandHandlerConstructor): void {
     this.handlerMap.set(type, ctor);
-    console.debug(`Handler registriert: "${type}"`);
   }
 
   public get(type: string): CommandHandlerConstructor {

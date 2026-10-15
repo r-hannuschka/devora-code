@@ -1,10 +1,10 @@
+import { IssueApi, LoggerFacade } from '@/core/api';
+import { SessionService } from '@/core/session';
+import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import type { IssueDetail, IssueListItem } from '@devora-code/api/issue';
 import { Store } from '@ngxs/store';
-import type { IssueDetail, IssueListItem } from '@devora-code/api';
-import { IssueApi, LoggerFacade } from '@/core/api';
-import { SessionStateSelectors, StartSession, StopSession } from '@/core/state';
-import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { map } from 'rxjs';
 
 /**
@@ -18,15 +18,15 @@ export class IssueService {
   private readonly store = inject(Store);
   private readonly jiraApi = inject(IssueApi);
   private readonly logger = inject(LoggerFacade);
+  private readonly sessionService = inject(SessionService);
 
   private readonly issueList = this.store.select(IssueStateSelectors.issues);
-  private readonly activeSession = this.store.selectSignal(SessionStateSelectors.activeSession);
 
   readonly suche = signal<string>('');
 
   /** Issue-Liste mit Tracking-Highlight – der Issue mit aktivem Timer ist über isTracking erkennbar */
   readonly list = rxResource({
-    params: () => ({ activeSession: this.activeSession() }),
+    params: () => ({ activeSession: this.sessionService.activeSession() }),
     stream: ({ params }) => {
       return this.issueList.pipe(
         map((list) => {
@@ -67,7 +67,6 @@ export class IssueService {
     const suche = this.suche().trim().toLocaleLowerCase();
     const data = resource.value()?.data ?? [];
 
-    console.log(data);
     if (!suche) {
       return data;
     }
@@ -87,10 +86,10 @@ export class IssueService {
   }
 
   startSession(issue: IssueListItem) {
-    this.store.dispatch(new StartSession({ issueKey: issue.key }));
+    this.sessionService.startSession(issue.key);
   }
 
   stopSession() {
-    this.store.dispatch(new StopSession());
+    this.sessionService.stopSession();
   }
 }

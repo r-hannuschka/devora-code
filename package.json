@@ -33,6 +33,8 @@
     "esbuild": "^0.28.2",
     "typescript": "7.0.2",
     "vite": "^8.3.3",
-    "vite-plugin-commonjs": "^0.10.4"
+    "vite-plugin-commonjs": "^0.10.4",
+    "vitest": "^5.0.4",
+    "vitest-mock-extended": "^5.1.1"
   }
 }

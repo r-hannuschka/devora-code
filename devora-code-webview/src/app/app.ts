@@ -2,17 +2,17 @@ import { CdkPortalOutlet, CdkPortalOutletAttachedRef } from '@angular/cdk/portal
 import { Component, inject } from '@angular/core';
 import { PortalRouterService } from '@/core/portal-router';
 import { ToolbarComponent } from './components/toolbar.component';
+import { RunningSessionBannerComponent } from '@/common/running-session';
 
 @Component({
-  imports: [CdkPortalOutlet, ToolbarComponent],
+  imports: [CdkPortalOutlet, ToolbarComponent, RunningSessionBannerComponent],
   selector: 'app-root',
   templateUrl: './app.html',
   host: {
-    class: 'devora-code'
-  }
+    class: 'devora-code d-flex flex-column h-100',
+  },
 })
 export class App {
-
   private attachedPortal: CdkPortalOutletAttachedRef | null = null;
 
   protected readonly portalRouterService = inject(PortalRouterService);
@@ -20,7 +20,7 @@ export class App {
   protected onPortalAttached(portalRef: CdkPortalOutletAttachedRef) {
     if (this.attachedPortal) {
       this.attachedPortal.destroy();
-      this.attachedPortal = null
+      this.attachedPortal = null;
     }
     this.attachedPortal = portalRef;
   }

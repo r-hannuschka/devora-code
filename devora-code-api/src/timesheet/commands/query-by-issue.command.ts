@@ -1,0 +1,9 @@
+import type { Command } from "../../core";
+
+/** Time-Entries nach Issue suchen */
+export interface QueryByIssuePayload {
+  query: string;
+  limit?: number;
+}
+
+export type QueryByIssueCommand = Command<"timesheet:query-by-issue", QueryByIssuePayload>;

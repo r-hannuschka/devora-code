@@ -1,18 +1,18 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import type { TimeEntryList } from '@devora-code/api';
-import { TimeTrackerApi } from '@/core/api';
+import { TimesheetApi } from '@/core/timesheet';
 import { differenceInSeconds } from 'date-fns';
 import { of } from 'rxjs';
+import type { TimeEntryList } from '@devora-code/api/timesheet';
 
 /**
- * Service für TimeTracker-Abfragen.
+ * Service für Timesheet-Abfragen.
  *
  * Liefert Zeiteinträge für Perioden (Woche/Monat) über rxResource.
  */
 @Service()
 export class TimeTrackerService {
-  private readonly tracker = inject(TimeTrackerApi);
+  private readonly timesheet = inject(TimesheetApi);
 
   readonly periode = signal<{ startDate: string; endDate: string } | null>(null);
   readonly suche = signal<string>('');
@@ -29,7 +29,7 @@ export class TimeTrackerService {
         };
         return of(emptyList);
       }
-      return this.tracker.getPeriod(params.startDate, params.endDate);
+      return this.timesheet.getPeriod(params.startDate, params.endDate);
     },
   });
 

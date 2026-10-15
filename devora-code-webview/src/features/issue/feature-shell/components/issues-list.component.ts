@@ -1,3 +1,4 @@
+import { PortalRouterService } from '@/core/portal-router';
 import { CdkTableModule } from '@angular/cdk/table';
 import { Component, effect, inject, model, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -5,8 +6,7 @@ import { MatIconButton, MatMiniFabButton } from '@angular/material/button';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import type { IssueListItem } from '@devora-code/api';
-import { PortalRouterService } from '@/core/portal-router';
+import type { IssueListItem } from '@devora-code/api/issue';
 import { IssueService } from '../service/issue.service';
 
 @Component({
@@ -34,7 +34,6 @@ export class IssueIssuesListComponent {
 
   constructor() {
     effect(() => {
-      console.log(this.suche());
       this.issueService.suche.set(this.suche());
     });
   }

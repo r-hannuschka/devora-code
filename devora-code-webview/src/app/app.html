@@ -1,6 +1,12 @@
-<header class="workpule-header">
-  <devora-code-header-toolbar></devora-code-header-toolbar>
+<header class="devora-code-header flex-shrink-1">
+  @defer (on idle) {
+    <devora-code-header-toolbar></devora-code-header-toolbar>
+    <devora-code-running-session class="m-3 d-block"></devora-code-running-session>
+  }
 </header>
-<main class="devora-code-body">
-  <ng-container [cdkPortalOutlet]="portalRouterService.activeView.value()" (attached)="onPortalAttached($event)"></ng-container>
+<main class="container-fluid overflow-auto flex-grow-1">
+  <ng-container
+    [cdkPortalOutlet]="portalRouterService.activeView.value()"
+    (attached)="onPortalAttached($event)"
+  ></ng-container>
 </main>

@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import type { FocusedIssue, IssueList, IssueDetail } from '@devora-code/api';
+import type { FocusedIssue, IssueList, IssueDetail } from '@devora-code/api/issue';
 import type { Observable } from 'rxjs';
 
 export interface IssueApi {

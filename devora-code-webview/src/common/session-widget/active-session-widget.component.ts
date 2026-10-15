@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngxs/store';
-import { SessionStateSelectors, StopSession } from '@/core/state';
+import { SessionStateSelectors, StopSession } from '@/core/session/src/state';
 import { DEVORA_CODE_WIDGET, type DevoraCodeWidget, type DevoraCodeWidgetAction } from '@/common';
 import { createElapsedTimer } from '../utils/create-elapsed-timer';
 

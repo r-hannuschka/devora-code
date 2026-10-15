@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import { VsCodeBridge } from './vscode-bridge';
-import type { SendLogCommand } from '@devora-code/api';
 import type { ILoggerFacade } from '@/core/api';
+import { inject, Injectable } from '@angular/core';
+import type { SendLogCommand } from '@devora-code/api/logger';
+import { VsCodeBridge } from './vscode-bridge';
 
 /**
  * Logger-Implementation im Webview.
