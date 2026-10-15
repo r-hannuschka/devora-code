@@ -1,4 +1,4 @@
-import type { TimeEntry } from "@devora-code/api";
+import type { TimeEntry } from "@devora-code/api/core";
 
 export class FetchActiveSession {
   static readonly type = '[Session] fetch active session';

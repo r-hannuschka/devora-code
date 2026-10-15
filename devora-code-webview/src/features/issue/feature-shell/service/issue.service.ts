@@ -3,7 +3,7 @@ import { SessionService } from '@/core/session';
 import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import type { IssueDetail, IssueListItem } from '@devora-code/api';
+import type { IssueDetail, IssueListItem } from '@devora-code/api/issue';
 import { Store } from '@ngxs/store';
 import { map } from 'rxjs';
 
@@ -67,7 +67,6 @@ export class IssueService {
     const suche = this.suche().trim().toLocaleLowerCase();
     const data = resource.value()?.data ?? [];
 
-    console.log(data);
     if (!suche) {
       return data;
     }

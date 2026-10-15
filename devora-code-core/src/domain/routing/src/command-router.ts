@@ -1,4 +1,4 @@
-import type { Command, CommandErrorResponse, CommandResponse } from "@devora-code/api";
+import type { Command, CommandErrorResponse, CommandResponse } from "@devora-code/api/core";
 import { container, singleton } from "tsyringe";
 
 import { CommandController } from "@devora-code/sdk/command";
@@ -21,11 +21,13 @@ export class CommandRouter {
    * Alle anderen Commands gehen an registrierte Satelliten.
    */
   private static readonly CORE_COMMANDS = new Set<string>([
-    "timetracker:start-tracking",
-    "timetracker:stop-tracking",
-    "timetracker:get-active-timer",
-    "timetracker:get-month",
-    "timetracker:get-period",
+    "session:start",
+    "session:stop",
+    "session:get-active",
+    "session:reset-session",
+    "timesheet:get-month",
+    "timesheet:get-period",
+    "timesheet:add-entry",
   ]);
 
   constructor(private readonly satelliteService: SatelliteService) {}

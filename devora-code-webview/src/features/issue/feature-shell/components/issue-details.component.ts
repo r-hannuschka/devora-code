@@ -1,13 +1,11 @@
 import { RouteParams } from '@/core/portal-router';
-import { SessionStateSelectors } from '@/core/session/src/state';
-import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { SessionService } from '@/core/session';
+import { Component, inject, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import type { IssueDetail, IssueListItem } from '@devora-code/api';
-import { Store } from '@ngxs/store';
+import type { IssueDetail, IssueListItem } from '@devora-code/api/issue';
 import { of } from 'rxjs';
 import { IssueService } from '../service/issue.service';
 import { IssueSelectorComponent } from './issue-selector.component';
-import { SessionService } from '@/core/session';
 
 @Component({
   selector: 'jira-issue-details',
@@ -17,7 +15,7 @@ import { SessionService } from '@/core/session';
 export class IssueDetailsComponent {
   private readonly routeParams = inject<{ key?: IssueDetail['key'] }>(RouteParams);
   private readonly issueService = inject(IssueService);
-  private readonly sessionService = inject(SessionService)
+  private readonly sessionService = inject(SessionService);
 
   /** Aktuell gewählter Issue-Key (aus Selector oder Route) */
   protected selectedKey = linkedSignal<string | null>(() => {

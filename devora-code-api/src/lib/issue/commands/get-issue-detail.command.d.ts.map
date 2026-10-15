@@ -1,1 +1,0 @@
-{"version":3,"file":"get-issue-detail.command.d.ts","sourceRoot":"","sources":["get-issue-detail.command.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,YAAY,CAAC;AAE1C,iCAAiC;AACjC,MAAM,WAAW,mBAAmB;IAClC,GAAG,EAAE,MAAM,CAAC;CACb;AAED,MAAM,MAAM,qBAAqB,GAAG,OAAO,CAAC,mBAAmB,EAAE,mBAAmB,CAAC,CAAC"}

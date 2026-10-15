@@ -1,3 +1,4 @@
+import type { IssueApi } from '@/core/api';
 import { inject } from '@angular/core';
 import type {
   FocusedIssue,
@@ -6,8 +7,7 @@ import type {
   GetIssuesCommand,
   IssueDetail,
   IssueList,
-} from '@devora-code/api';
-import type { IssueApi } from '@/core/api';
+} from '@devora-code/api/issue';
 import type { Observable } from 'rxjs';
 import { VsCodeBridge } from './vscode-bridge';
 

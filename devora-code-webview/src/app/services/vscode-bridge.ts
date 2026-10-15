@@ -3,7 +3,7 @@ import type {
   Command,
   CommandErrorResponse,
   CommandResponse,
-} from '@devora-code/api';
+} from '@devora-code/api/core';
 import { filter, first, fromEvent, map, type Observable } from 'rxjs';
 
 type Response<T = unknown> = CommandResponse<T> | CommandErrorResponse;

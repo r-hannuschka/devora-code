@@ -6,8 +6,7 @@ import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { WebviewModule } from "@/modules/webview";
 
 // module importieren, muessen wir tun damit sie im bundle sind
-import "@/core/logger";
-import "@/modules/timetracker";
+import "./app.module";
 import { SatelliteService } from "@/domain/satellite";
 
 export async function activate(context: vscode.ExtensionContext) {

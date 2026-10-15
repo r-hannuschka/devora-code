@@ -27,6 +27,8 @@ export default defineConfig({
       '@/core': resolve(import.meta.dirname, 'src/core'),
       '@/domain': resolve(import.meta.dirname, 'src/domain'),
       '@/modules': resolve(import.meta.dirname, 'src/modules'),
+      '@/util': resolve(import.meta.dirname, 'src/util'),
+      "@/test/core": resolve(import.meta.dirname, 'tests/core')
     },
     extensions: ['.ts', '.js'],
   },

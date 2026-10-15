@@ -36,3 +36,5 @@ npm-debug.log*
 # Misc
 *.local
 response.json
+issues
+coverage

@@ -1,13 +1,13 @@
 <h2>Meeting eintragen</h2>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form (ngSubmit)="onSubmit()">
   <!-- Datum -->
 
   <div class="row">
     <div class="lg:col-4">
       <mat-form-field>
         <mat-label>Datum</mat-label>
-        <input matInput [matDatepicker]="dp" formControlName="date" />
+        <input matInput [matDatepicker]="dp" [formField]="form.date" />
         <mat-datepicker-toggle matSuffix [for]="dp" />
         <mat-datepicker #dp />
       </mat-form-field>
@@ -16,7 +16,7 @@
     <div class="sm:col-6 lg:col-4">
       <mat-form-field>
         <mat-label>Von</mat-label>
-        <input matInput [matTimepicker]="fromPicker" formControlName="from" />
+        <input matInput [matTimepicker]="fromPicker" [formField]="form.startAt" />
         <mat-timepicker-toggle matIconSuffix [for]="fromPicker" />
         <mat-timepicker #fromPicker />
       </mat-form-field>
@@ -25,7 +25,7 @@
     <div class="sm:col-6 lg:col-4">
       <mat-form-field>
         <mat-label>Bis</mat-label>
-        <input matInput [matTimepicker]="toPicker" formControlName="to" />
+        <input matInput [matTimepicker]="toPicker" [formField]="form.endAt" />
         <mat-timepicker-toggle matIconSuffix [for]="toPicker" />
         <mat-timepicker #toPicker />
       </mat-form-field>
@@ -36,11 +36,13 @@
   <!-- Meeting-Nummer -->
   <mat-form-field>
     <mat-label>Meeting-Nummer</mat-label>
-    <input matInput formControlName="number" placeholder="z.B. MTG-42" />
+    <input matInput [formField]="form.issueKey" placeholder="z.B. MTG-42" />
   </mat-form-field>
 
   <!-- Submit -->
-  <button mat-flat-button type="submit" color="primary" [disabled]="form.invalid">Speichern</button>
+  <button mat-flat-button type="submit" color="primary" [disabled]="form().invalid()">
+    Speichern
+  </button>
 </form>
 
 @if (submitted()) {

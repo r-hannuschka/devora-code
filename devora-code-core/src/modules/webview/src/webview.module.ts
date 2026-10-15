@@ -31,7 +31,6 @@ export class WebviewModule {
   private registerCleanup(panel: WebviewPanel): void {
     panel.onDidDispose(
       () => {
-        console.log("Dashboard geschlossen");
         this.activePanel = undefined;
       },
       null,

@@ -1,7 +1,34 @@
 {
   "name": "@devora-code/api",
+  "publisher": "trueffelmafia",
+  "displayName": "Devora Code API",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts"
+  "type": "commonjs", 
+  
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.ts"
+    },
+    "./issue": {
+      "types": "./dist/issue/index.d.ts",
+      "default": "./dist/issue/index.ts"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "default": "./dist/logger/index.ts"
+    },
+    "./session": {
+      "types": "./dist/session/index.d.ts",
+      "default": "./dist/session/index.ts"
+    },
+    "./timesheet": {
+      "types": "./dist/timesheet/index.d.ts",
+      "default": "./dist/timesheet/index.ts"
+    }
+  }
 }

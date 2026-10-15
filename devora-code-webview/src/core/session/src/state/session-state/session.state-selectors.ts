@@ -1,7 +1,7 @@
 import { Selector } from '@ngxs/store';
 import type { SessionStateModel } from './session.state-model';
 import { SessionState } from './session.state';
-import type { TimeEntry } from '@devora-code/api';
+import type { TimeEntry } from '@devora-code/api/core';
 
 export class SessionStateSelectors {
   @Selector([SessionState])

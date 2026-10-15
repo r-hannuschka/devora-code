@@ -1,9 +1,14 @@
-import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
-import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
-import { DEVORA_CODE_WIDGET, type DevoraCodeWidget} from '@/common';
-import { IssueSelectorService } from '../service/issue-selector.service';
-import type { IssueListItem } from '@devora-code/api';
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget } from '@/common';
 import { PortalRouterService } from '@/core/portal-router';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
+import {
+  MatAutocomplete,
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteTrigger,
+  MatOption,
+} from '@angular/material/autocomplete';
+import type { IssueListItem } from '@devora-code/api/issue';
+import { IssueSelectorService } from '../service/issue-selector.service';
 
 @Component({
   selector: 'devora-code-issue-selector-widget',
@@ -18,9 +23,8 @@ import { PortalRouterService } from '@/core/portal-router';
     },
   ],
 })
-export class IssueSelectorWidget implements DevoraCodeWidget{
-
-  private readonly routerService = inject(PortalRouterService)
+export class IssueSelectorWidget implements DevoraCodeWidget {
+  private readonly routerService = inject(PortalRouterService);
 
   protected readonly issueSelectorService = inject(IssueSelectorService);
 

@@ -1,7 +1,7 @@
-import { inject, Injectable, computed, Signal, Service } from "@angular/core";
-import { Store } from "@ngxs/store";
-import { SessionStateSelectors, StartSession, StopSession } from "./state";
-import type { TimeEntry } from "@devora-code/api";
+import { computed, inject, Service, Signal } from '@angular/core';
+import type { TimeEntry } from '@devora-code/api/core';
+import { Store } from '@ngxs/store';
+import { SessionStateSelectors, StartSession, StopSession } from './state';
 
 @Service()
 export class SessionService {

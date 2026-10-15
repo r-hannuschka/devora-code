@@ -1,10 +1,11 @@
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
-import type { TimeEntry } from "@devora-code/api";
-import { addMonths, format } from "date-fns";
+import type { TimeEntry } from "@devora-code/api/core";
+import { addMonths, differenceInCalendarMonths, format } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { FileType, Uri, workspace, type ExtensionContext } from "vscode";
 import { StorageWriteException } from "./exceptions/storage-write.exception";
 import type { TimeEntryDTO, TimesDataDTO } from "./model/time-entry.dto";
+import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesheet.operations";
 
 @singleton()
 export class TimesheetRepository {
@@ -13,6 +14,11 @@ export class TimesheetRepository {
 
   constructor(@inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext) {
     this.storageDir = Uri.joinPath(context.globalStorageUri, "booking-data");
+  }
+
+  /** Liefert den Pfad zur Monatsdatei (ohne zu prüfen ob sie existiert) */
+  getMonthFileUri(month: string): Uri {
+    return Uri.joinPath(this.storageDir, `${month}.json`);
   }
 
   private async readMonth(month: string): Promise<TimesDataDTO | undefined> {
@@ -72,12 +78,15 @@ export class TimesheetRepository {
     const fileNames = this.getFilenamesFromRange(startDate, endDate);
     const results: { date: string; entries: TimeEntry[] }[] = [];
 
+    const sanitizedStartDate = format(startDate, "yyyy-MM-dd");
+    const sanitizedEndDate = format(endDate, "yyyy-MM-dd");
+
     for (const month of fileNames) {
       const monthData = await this.readMonth(month);
       if (!monthData) continue;
 
       for (const [date, entries] of Object.entries(monthData)) {
-        if (date >= startDate && date <= endDate) {
+        if (date >= sanitizedStartDate && date <= sanitizedEndDate) {
           results.push({ date, entries });
         }
       }
@@ -111,60 +120,48 @@ export class TimesheetRepository {
     return { id: crypto.randomUUID(), issueKey, startAt, endAt };
   }
 
+  /**
+   * Pro betroffenem Monat: Datei einlesen, Einträge mergen (Update per ID, sonst neu),
+   * Datei komplett neu schreiben. Gibt die Einträge mit ihren IDs in Eingabereihenfolge zurück.
+   */
   async write(entries: TimeEntry[]): Promise<TimeEntryDTO[]> {
-    const buffer = new Map<string, TimesDataDTO>();
-    const written: TimeEntryDTO[] = [];
+    const dtos = entries.map(toDto);
 
-    // 1. Schütze historische Daten: Bestehende Dateien vorab einlesen
-    for (const entry of entries) {
-      const yearMonth = format(entry.startAt, "yyyy-MM");
-      if (!buffer.has(yearMonth)) {
-        const existingData = await this.readMonth(yearMonth);
-        buffer.set(yearMonth, existingData ?? {});
-      }
-    }
-
-    // 2. Neue Einträge in den Buffer mergen
-    for (const entry of entries) {
-      const dto = { ...entry, id: entry.id ?? crypto.randomUUID() };
-      const yearMonth = format(entry.startAt, "yyyy-MM");
-      const day = format(entry.startAt, "yyyy-MM-dd");
-
-      const currentMonthData = buffer.get(yearMonth)!;
-      const currentDayEntries = currentMonthData[day] ?? [];
-
-      // Falls ID schon existiert (Update), alten Eintrag ersetzen, sonst anhängen
-      const existingIndex = currentDayEntries.findIndex((e) => e.id === dto.id);
-      if (existingIndex !== -1) {
-        currentDayEntries[existingIndex] = dto;
-      } else {
-        currentDayEntries.push(dto);
-      }
-
-      currentMonthData[day] = currentDayEntries;
-      written.push(dto);
-    }
-
-    // 3. Parallel auf die Platte feuern – blockiert deine Webview UI nicht!
-    const writePromises = Array.from(buffer.entries()).map(([fileName, data]) =>
-      this.writeMonth(fileName, data).catch((error) => {
-        console.error(`Fehler beim Speichern von ${fileName}:`, error);
+    await Promise.all(
+      [...groupByMonth(dtos)].map(async ([month, group]) => {
+        debugger;
+        const current = (await this.readMonthForWrite(month)) ?? {};
+        await this.writeMonth(month, groupByDay(mergeEntries(flatten(current), group)));
       }),
     );
-    await Promise.all(writePromises);
 
-    return written;
+    return dtos;
+  }
+
+  /** Nur "Datei fehlt" ist ein leerer Monat. Kaputtes JSON oder andere Fehler werfen. */
+  private async readMonthForWrite(month: string): Promise<TimesDataDTO | undefined> {
+    let raw: Uint8Array;
+    try {
+      const stat = await workspace.fs.stat(Uri.joinPath(this.storageDir, `${month}.json`));
+      if (!stat || stat.type !== FileType.File) {
+        return;
+      }
+      raw = await workspace.fs.readFile(Uri.joinPath(this.storageDir, `${month}.json`));
+    } catch (error) {
+      if ((error as { code?: string } | undefined)?.code === "FileNotFound") return undefined;
+      throw error;
+    }
+    return JSON.parse(new TextDecoder().decode(raw));
   }
 
   // FIX: Kalender-Rundungsfehler bei date-fns eliminiert
   private getFilenamesFromRange(startDate: string, endDate: string): string[] {
     const months = new Set<string>();
-    let current = new Date(startDate);
-    const end = new Date(endDate);
+    const monthDiff = differenceInCalendarMonths(endDate, startDate);
 
-    while (current <= end) {
-      months.add(format(current, "yyyy-MM"));
-      current = addMonths(current, 1);
+    for (let i = 0; i <= monthDiff; i++) {
+      const toAdd = addMonths(startDate, i);
+      months.add(format(toAdd, "yyyy-MM"));
     }
     return Array.from(months);
   }
