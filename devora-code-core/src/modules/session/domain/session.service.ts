@@ -69,33 +69,6 @@ export class SessionService {
     return entry;
   }
 
-  async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<TimeEntryDTO[]> {
-    const { endAt: activeEndAt } = source;
-    const { endAt: insertEndAt, startAt: insertStartAt } = toInsert;
-
-    if (activeEndAt !== null) {
-      throw new Error("[Timetracker]: Aktiver Timer wurde schon beendet.");
-    }
-
-    if (!insertEndAt) {
-      throw new Error("[Timetracker]: Eintrag konnte nicht dazwischen geschoben werden da das Ende Datum fehlt.");
-    }
-
-    const normalizedTimeSpan = normalizeTimeSpan(toInsert);
-
-    const newEntries: TimeEntry[] = [
-      { ...source, endAt: insertStartAt },
-      ...normalizedTimeSpan,
-      { issueKey: source.issueKey, startAt: insertEndAt, endAt: null },
-    ];
-
-    const written = await this.repository.write(newEntries);
-    const newActive = written.slice(-1)[0]!;
-
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, newActive);
-    return written;
-  }
-
   // ========================================================================
   // Session Reset
   // ========================================================================
