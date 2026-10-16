@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "paths": {
+      "@/core/*": ["../src/core/*/index.ts"],
+      "@/domain/*/commands": ["../src/domain/*/commands/index.ts"],
+      "@/domain/*": ["../src/domain/*/index.ts"],
+      "@/infrastructure/*": ["../src/infrastructure/*/index.ts"],
+      "@/util/*": ["../src/util/*/index.ts"],
+      "@src/*": ["../src/*"],
+      "@/support": ["./support/index.ts"]
+    }
+  },
+  "include": ["./**/*", "../src/**/*", "../vitest.config.ts"]
+}
