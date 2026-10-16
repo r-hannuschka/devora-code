@@ -1,4 +1,4 @@
-import { TimesheetOpenHandler } from "@/modules/timesheet";
+import { TimesheetOpenHandler } from "@/domain/timesheet";
 import { test } from "@/tests/core/fixture";
 import type { TimesheetOpenCommand } from "@devora-code/api/timesheet";
 import * as vscode from "vscode";

@@ -1,8 +1,8 @@
 // tests/helpers/fixtures.ts
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
-import { LoggerService } from "@/core/logger";
-import { NotificationService } from "@/core/notification";
-import { TimesheetService } from "@src/modules/timesheet/domain/timesheet.service";
+import { LoggerService } from "@/infrastructure/logger";
+import { NotificationService } from "@/infrastructure/notification";
+import { TimesheetService } from "@/domain/timesheet/domain/timesheet.service";
 import { container } from "tsyringe";
 import { test as base } from "vitest";
 import type { ExtensionContext } from "vscode";

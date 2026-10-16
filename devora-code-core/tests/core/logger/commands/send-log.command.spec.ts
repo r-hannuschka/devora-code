@@ -1,4 +1,4 @@
-import { SendLogHandler } from "@/core/logger";
+import { SendLogHandler } from "@/infrastructure/logger";
 import type { SendLogCommand } from "@devora-code/api/logger";
 import { afterEach, describe, expect, vi } from "vitest";
 import { test } from "../../fixture";

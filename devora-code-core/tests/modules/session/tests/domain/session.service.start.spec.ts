@@ -1,4 +1,4 @@
-import type { TimeEntryDTO } from "@/core/infrastructure";
+import type { TimeEntryDTO } from "@/infrastructure/timesheet";
 import { describe, expect, vi } from "vitest";
 import { test } from "../../fixtures/test.fixture";
 

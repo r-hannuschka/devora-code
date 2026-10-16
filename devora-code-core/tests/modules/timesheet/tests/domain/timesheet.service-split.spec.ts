@@ -1,7 +1,7 @@
-import { AddEntryHandler } from "@/modules/timesheet";
+import { AddEntryHandler } from "@/domain/timesheet";
 import type { TimesheetAddEntryCommand } from "@devora-code/api/timesheet";
 import { describe, expect } from "vitest";
-import type { TimeEntryDTO } from "@/core/infrastructure";
+import type { TimeEntryDTO } from "@/infrastructure/timesheet";
 import { test } from "@/tests/core/fixture";
 
 describe("add-entry — Session Split", () => {

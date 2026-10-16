@@ -1,4 +1,4 @@
-import type { TimeEntryDTO } from "@/core/infrastructure";
+import type { TimeEntryDTO } from "@/infrastructure/timesheet";
 import type { TimeEntry } from "@devora-code/api/core";
 
 let counter = 0;

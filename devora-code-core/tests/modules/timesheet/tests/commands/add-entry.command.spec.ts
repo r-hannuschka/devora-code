@@ -1,4 +1,4 @@
-import { AddEntryHandler } from "@/modules/timesheet";
+import { AddEntryHandler } from "@/domain/timesheet";
 import { test } from "@/tests/core/fixture";
 import type { TimesheetAddEntryCommand } from "@devora-code/api/timesheet";
 import { describe, expect } from "vitest";

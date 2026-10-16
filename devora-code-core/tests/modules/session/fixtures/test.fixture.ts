@@ -1,7 +1,7 @@
 // tests/helpers/fixtures.ts
-import { TimesheetRepository } from "@/core/infrastructure";
+import { TimesheetRepository } from "@/infrastructure/timesheet";
 import { test as base } from "@/tests/core/fixture";
-import { SessionService } from "@src/modules/session/domain/session.service";
+import { SessionService } from "@/domain/session/domain/session.service";
 
 // Definition der im Test verfügbaren Fixtures
 interface MyFixtures {

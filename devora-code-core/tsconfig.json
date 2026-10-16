@@ -20,9 +20,11 @@
     "types": ["node"],
     "paths": {
       "@/core/*": ["./src/core/*/index.ts"],
+      "@/domain/*/commands": ["./src/domain/*/commands.ts"],
       "@/domain/*": ["./src/domain/*/index.ts"],
-      "@/modules/*": ["./src/modules/*/index.ts"],
-      "@/util/*": ["./src/util/*/index.ts"],
+      "@/infrastructure/*/commands": ["./src/infrastructure/*/commands.ts"],
+      "@/infrastructure/*": ["./src/infrastructure/*/index.ts"],
+      "@/util/*": ["./src/util/*/index.ts"]
     }
   },
   "include": ["src/**/*"],

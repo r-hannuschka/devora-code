@@ -1,4 +1,4 @@
-import { StopSessionHandler } from "@/modules/session";
+import { StopSessionHandler } from "@/domain/session";
 import { describe, expect, vi } from "vitest";
 import { test } from "@/tests/core/fixture";
 import { buildTimeEntry } from "@/tests/core/util";

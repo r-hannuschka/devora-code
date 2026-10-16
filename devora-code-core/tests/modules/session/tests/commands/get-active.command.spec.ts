@@ -1,4 +1,4 @@
-import { GetActiveTimerHandler } from "@/modules/session";
+import { GetActiveTimerHandler } from "@/domain/session";
 import { describe, expect } from "vitest";
 import { test } from "@/tests/core/fixture";
 import { buildTimeEntry } from "@/tests/core/util";

@@ -3,16 +3,13 @@
   "compilerOptions": {
     "rootDir": "..",
     "noEmit": true,
-    // "paths" wird beim extends nicht gemerged sondern ersetzt:
-    // darum hier die Pfade aus ../tsconfig.json nochmal komplett (relativ zu tests/)
     "paths": {
       "@/core/*": ["../src/core/*/index.ts"],
       "@/domain/*": ["../src/domain/*/index.ts"],
-      "@/modules/*": ["../src/modules/*/index.ts"],
+      "@/infrastructure/*": ["../src/infrastructure/*/index.ts"],
       "@/util/*": ["../src/util/*/index.ts"],
-      // nur für Tests: Zugriff auf Interna ohne Barrel
       "@src/*": ["../src/*"],
-      "@/tests/core/*": ["./core/*/index.ts"],
+      "@/tests/core/*": ["./core/*/index.ts"]
     }
   },
   "include": ["./**/*", "../src/**/*", "../vitest.config.ts"]

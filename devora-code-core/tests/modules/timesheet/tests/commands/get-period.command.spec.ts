@@ -1,4 +1,4 @@
-import { GetPeriodHandler } from "@/modules/timesheet";
+import { GetPeriodHandler } from "@/domain/timesheet";
 import { test } from "@/tests/core/fixture";
 import type { GetPeriodCommand } from "@devora-code/api/timesheet";
 import { describe, expect } from "vitest";

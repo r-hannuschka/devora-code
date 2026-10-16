@@ -1,5 +1,5 @@
-import type { TimeEntryDTO } from "@/core/infrastructure";
-import { StartSessionHandler } from "@/modules/session";
+import type { TimeEntryDTO } from "@/infrastructure/timesheet";
+import { StartSessionHandler } from "@/domain/session";
 import { test } from "@/tests/core/fixture";
 import type { StartSessionCommand } from "@devora-code/api/session";
 import { describe, expect, vi } from "vitest";

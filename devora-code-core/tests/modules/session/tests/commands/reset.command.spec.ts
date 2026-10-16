@@ -1,4 +1,4 @@
-import { ResetSessionHandler } from "@/modules/session";
+import { ResetSessionHandler } from "@/domain/session";
 import { describe, expect } from "vitest";
 import { test } from "@/tests/core/fixture";
 import { buildTimeEntry } from "@/tests/core/util";
