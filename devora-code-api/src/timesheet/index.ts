@@ -6,6 +6,7 @@ export * from "./commands/query-by-issue.command";
 export * from "./commands/get-period.command";
 export * from "./commands/history.command";
 export * from "./commands/get-month.command";
+export * from "./commands/open-timesheet.command";
 
 // Data Types
 export * from './types/time-entry-list';

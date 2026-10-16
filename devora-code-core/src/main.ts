@@ -8,13 +8,24 @@ import { WebviewModule } from "@/modules/webview";
 // module importieren, muessen wir tun damit sie im bundle sind
 import "./app.module";
 import { SatelliteService } from "@/domain/satellite";
+import { CommandRouter } from "./domain/routing";
+import type { TimesheetSyncFromRawCommand } from "./modules/timesheet/commands/timesheet-sync-from-raw.command";
 
 export async function activate(context: vscode.ExtensionContext) {
   container.registerInstance(EXTENSION_CONTEXT_TOKEN, context);
+  const commandRouter = container.resolve(CommandRouter);
 
   const webviewDisposable = vscode.commands.registerCommand("devora-code.openWebview", () => {
     container.resolve(WebviewModule).openDashboard();
   });
+
+  vscode.commands.registerCommand("devora-code.timesheet-sync-raw", () => {
+    const command: TimesheetSyncFromRawCommand = {
+      id: crypto.randomUUID(),
+      type: 'timesheet:sync-from-raw'
+    }
+    commandRouter.execute(command);
+  }),
 
   context.subscriptions.push(webviewDisposable);
   vscode.commands.executeCommand('devora-code.activated');
@@ -27,8 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
   };
 }
 
-export function deactivate(): void {
+export function deactivate(context: vscode.ExtensionContext): void {
   // @TODO shutdown time tracker
-
   container.clearInstances();
 }

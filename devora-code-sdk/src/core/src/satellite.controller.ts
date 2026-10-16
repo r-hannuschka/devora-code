@@ -1,4 +1,4 @@
-import type { Command } from "@devora-code/api";
+import type { Command } from "@devora-code/api/core";
 
 /**
  * Der Vertrag für alle DevoraCode-Satelliten.

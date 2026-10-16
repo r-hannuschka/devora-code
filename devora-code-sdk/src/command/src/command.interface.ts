@@ -1,4 +1,4 @@
-import type { Command } from "@devora-code/api";
+import type { Command } from "@devora-code/api/core";
 
 export interface CommandHandler<TResult = unknown> {
   execute(): Promise<TResult> | TResult;

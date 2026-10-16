@@ -1,8 +1,8 @@
 import type { Command, CommandErrorResponse, CommandResponse } from "@devora-code/api/core";
 import { container, singleton } from "tsyringe";
 
-import { CommandController } from "@devora-code/sdk/command";
 import { SatelliteService } from "@/domain/satellite";
+import { CommandController } from "@devora-code/sdk/command";
 
 /**
  * Der Command-Router.
@@ -28,6 +28,8 @@ export class CommandRouter {
     "timesheet:get-month",
     "timesheet:get-period",
     "timesheet:add-entry",
+    "timesheet:open",
+    "timesheet:sync-from-raw",
   ]);
 
   constructor(private readonly satelliteService: SatelliteService) {}
@@ -56,7 +58,7 @@ export class CommandRouter {
     const type = command.type as string;
     const satellite = this.satelliteService.getSatelliteForCommand(type);
 
-    console.log(`Satellite ${satellite}`)
+    console.log(`Satellite ${satellite}`);
     if (!satellite) {
       return this.notFoundResponse(command.id, type);
     }

@@ -33,9 +33,11 @@ export function mergeEntries(existing: TimeEntryDTO[], incoming: TimeEntryDTO[])
   return [...updated, ...incoming.filter((entry) => !known.has(entry.id))];
 }
 
-/** Flache Liste -> { Tag: Einträge }, der Tag kommt aus der startAt */
+/** Flache Liste -> { Tag: Einträge }, der Tag kommt aus der startAt — sortiert nach startAt */
 export const groupByDay = (entries: TimeEntryDTO[]): TimesDataDTO =>
-  entries.reduce<TimesDataDTO>((days, entry) => {
-    const day = dayOf(entry);
-    return { ...days, [day]: [...(days[day] ?? []), entry] };
-  }, {});
+  entries
+    .sort((a, b) => a.startAt.localeCompare(b.startAt))
+    .reduce<TimesDataDTO>((days, entry) => {
+      const day = dayOf(entry);
+      return { ...days, [day]: [...(days[day] ?? []), entry] };
+    }, {});

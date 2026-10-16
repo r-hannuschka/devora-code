@@ -1,10 +1,15 @@
 import { InjectionToken } from '@angular/core';
 import type { TimeEntry } from '@devora-code/api/core';
-import type { TimeEntryList, TimesheetAddEntryPayload } from '@devora-code/api/timesheet';
+import type {
+  TimeEntryList,
+  TimesheetAddEntryPayload,
+  TimesheetOpenPayload,
+} from '@devora-code/api/timesheet';
 import type { Observable } from 'rxjs';
 
 /** Data CRUD API — Einträge erstellen, lesen, Perioden/Monate */
 export interface TimesheetApi {
+  openTimesheet(payload: TimesheetOpenPayload): unknown;
   addEntry(payload: TimesheetAddEntryPayload): Observable<TimeEntry[]>;
   getPeriod(startDate: string, endDate?: string): Observable<TimeEntryList>;
   getMonth(month: string): Observable<Record<string, TimeEntry[]>>;

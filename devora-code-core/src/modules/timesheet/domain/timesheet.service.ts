@@ -1,8 +1,11 @@
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
-import { TimeEntryDTO, TimesheetRepository } from "@/core/infrastructure";
+import { TimeEntryDTO, TimesheetRepository, type TimesDataDTO } from "@/core/infrastructure";
+import { LoggerService } from "@/core/logger";
+import { NotificationService } from "@/core/notification";
 import { dateLocal, normalizeTimeSpan } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
 import type { TimeEntryList } from "@devora-code/api/timesheet";
+import { format, startOfMonth, subMonths } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { ExtensionContext } from "vscode";
 
@@ -12,6 +15,8 @@ export class TimesheetService {
 
   constructor(
     private readonly repository: TimesheetRepository,
+    private readonly logger: LoggerService,
+    private readonly notificationService: NotificationService,
     @inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext,
   ) {}
 
@@ -45,10 +50,38 @@ export class TimesheetService {
     };
   }
 
+  async getRaw(startDate: string, endDate: string): Promise<TimesDataDTO> {
+    // Immer auf den vorigen Monat wechseln da es sein kann das der Vormat
+    // noch einen offenen Task hat
+    const prevMonth = format(subMonths(startOfMonth(startDate), 1), "yyyy-MM-dd");
+
+    const months = await this.repository.getRange(prevMonth, endDate);
+    const raw = Object.assign({}, ...months) as TimesDataDTO;
+    const matches: TimesDataDTO = {};
+
+    const start = format(startDate, "yyyy-MM-dd");
+    const end = format(endDate, "yyyy-MM-dd");
+
+    for (const [date, entries] of Object.entries(raw)) {
+      if (date < start || date > end) {
+        // Offene Timer vor dem Start-Datum nachschieben
+        const openEntries = entries.filter((e) => e.endAt === null);
+        if (openEntries.length > 0) {
+          matches[date] = openEntries;
+        }
+        continue;
+      }
+      matches[date] = entries;
+    }
+
+    return matches;
+  }
+
   async getPeriod(startDate: string, endDate?: string): Promise<TimeEntryList> {
-    const end = endDate ?? dateLocal();
-    const results = await this.repository.getBetween(startDate, end);
-    const entries = results.flatMap((r) => r.entries);
+    const entries: TimeEntry[] = [];
+    for (const list of Object.values(await this.getRaw(startDate, endDate ?? dateLocal()))) {
+      entries.push(...list);
+    }
 
     return {
       entries,
@@ -107,6 +140,52 @@ export class TimesheetService {
 
     await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, newActive);
     return written;
+  }
+
+  async syncFromRaw(raw: TimesData) {
+    const groupedByMonth = new Map<String, TimesData>();
+    for (const [date, entries] of Object.entries(raw)) {
+      const yearMonth = format(date, "yyyy-MM");
+      if (!groupedByMonth.has(yearMonth)) {
+        groupedByMonth.set(yearMonth, { [date]: [] });
+      }
+
+      const bufferedTimesData = groupedByMonth.get(yearMonth) ?? {};
+      const bufferedEntries = bufferedTimesData[date] ?? [];
+
+      groupedByMonth.set(yearMonth, {
+        ...bufferedTimesData,
+        [date]: [...bufferedEntries, ...entries],
+      });
+    }
+
+    const bufferedRaw: Record<string, TimesData> = Object.fromEntries(groupedByMonth);
+    return this.syncTimesData(bufferedRaw);
+  }
+
+  private async syncTimesData(data: Record<string, TimesData>) {
+    const writePromises = [];
+
+    for (const [fileName, timesData] of Object.entries(data)) {
+      const write$ = this.repository
+        .getMonth(fileName)
+        .catch(() => ({}) as TimesData)
+        // --- replace data and by new entries
+        .then((raw: TimesData = {}) => ({ ...raw, ...timesData }))
+        // --- map data to dto
+        .then((data: TimesData) => this.repository.mapTimesDataToDTO(data)) // map to dto
+        // --- write to repository
+        .then((data: TimesDataDTO) => this.repository.writeMonth(fileName, data))
+        .catch(() => {
+          this.logger.error(`[Timesheet]: could not sync file ${fileName}.json with timesdata`, JSON.stringify(timesData));
+          this.notificationService.showError(`[Timesheet]: could not sync file ${fileName}.json. Open log file for further informations. `);
+          return null;
+        });
+
+      writePromises.push(write$);
+    }
+
+    return Promise.all(writePromises);
   }
 
   private calcDuration(startAt: string, endAt: string | null = null): number {

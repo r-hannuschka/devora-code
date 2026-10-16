@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
-import { test } from "../../fixtures/test.fixture";
 import type { TimeEntryDTO } from "@/core/infrastructure";
+import { test } from "@/tests/core/fixture";
 
 /**
  * TimesheetService testet die Geschäftslogik zwischen Repository und Commands:
@@ -142,6 +142,61 @@ describe("TimesheetService", () => {
     const result = await timesheetService.getMonth("2026-10");
 
     expect(result).toEqual({});
+  });
+
+  // ========================================================================
+  // getRaw
+  // ========================================================================
+
+  test("sollte nur den angefragten Tag zurueckgeben", async ({ timesheetService, fs }) => {
+    fs.seedMonth("2026-10", {
+      "2026-10-10": [{ id: "1", issueKey: "PROJ-10", startAt: "2026-10-10T09:00:00", endAt: "2026-10-10T10:00:00" }],
+      "2026-10-14": [
+        { id: "2", issueKey: "PROJ-20", startAt: "2026-10-14T14:00:00", endAt: "2026-10-14T16:30:00" },
+        { id: "3", issueKey: "PROJ-30", startAt: "2026-10-14T17:00:00", endAt: "2026-10-14T18:00:00" },
+      ],
+      "2026-10-20": [{ id: "4", issueKey: "PROJ-40", startAt: "2026-10-20T09:00:00", endAt: "2026-10-20T12:00:00" }],
+    });
+
+    const result = await timesheetService.getRaw("2026-10-14", "2026-10-14");
+
+    // Nur der angefragte Tag soll enthalten sein
+    expect(Object.keys(result)).toHaveLength(1);
+    expect(result["2026-10-14"]).toHaveLength(2);
+  });
+
+  test("sollte mehrere Tage filtern, nicht ganzen Monat", async ({ timesheetService, fs }) => {
+    fs.seedMonth("2026-10", {
+      "2026-10-10": [{ id: "1", issueKey: "PROJ-10", startAt: "2026-10-10T09:00:00", endAt: "2026-10-10T10:00:00" }],
+      "2026-10-14": [{ id: "2", issueKey: "PROJ-20", startAt: "2026-10-14T14:00:00", endAt: "2026-10-14T16:30:00" }],
+      "2026-10-15": [{ id: "3", issueKey: "PROJ-30", startAt: "2026-10-15T09:00:00", endAt: "2026-10-15T12:00:00" }],
+      "2026-10-20": [{ id: "4", issueKey: "PROJ-40", startAt: "2026-10-20T09:00:00", endAt: "2026-10-20T12:00:00" }],
+    });
+
+    const result = await timesheetService.getRaw("2026-10-14", "2026-10-15");
+
+    expect(Object.keys(result)).toHaveLength(2);
+    expect(result["2026-10-14"]).toHaveLength(1);
+    expect(result["2026-10-15"]).toHaveLength(1);
+    expect(result).not.toHaveProperty("2026-10-10");
+    expect(result).not.toHaveProperty("2026-10-20");
+  });
+
+  test("sollte offenen Timer vom Vormonat mitliefern wenn exakt einen Tag abgefragt", async ({ timesheetService, fs }) => {
+    fs.seedMonth("2026-09", {
+      "2026-09-30": [{ id: "1", issueKey: "OPEN", startAt: "2026-09-30T09:00:00", endAt: null }],
+    });
+    fs.seedMonth("2026-10", {
+      "2026-10-01": [{ id: "2", issueKey: "CLOSED", startAt: "2026-10-01T09:00:00", endAt: "2026-10-01T10:00:00" }],
+    });
+
+    const result = await timesheetService.getRaw("2026-10-01", "2026-10-01");
+
+    // Nur der 1. Okt + den offenen Timer vom Vormonat
+    expect(Object.keys(result)).toHaveLength(2);
+    expect(result["2026-10-01"]).toHaveLength(1);
+    expect(result["2026-09-30"]).toHaveLength(1);
+    expect(result["2026-09-30"]?.[0]?.endAt).toBeNull();
   });
 
   // ========================================================================

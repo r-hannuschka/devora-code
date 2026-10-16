@@ -1,6 +1,6 @@
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
-import type { TimeEntry } from "@devora-code/api/core";
-import { addMonths, differenceInCalendarMonths, format } from "date-fns";
+import type { TimeEntry, TimesData } from "@devora-code/api/core";
+import { addMonths, differenceInCalendarMonths, format, subMonths } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { FileType, Uri, workspace, type ExtensionContext } from "vscode";
 import { StorageWriteException } from "./exceptions/storage-write.exception";
@@ -9,6 +9,15 @@ import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesh
 
 @singleton()
 export class TimesheetRepository {
+
+  mapTimesDataToDTO(data: TimesData): TimesDataDTO {
+    const normalizedData: TimesDataDTO = {};
+    for (const [date, entries] of Object.entries(data)) {
+      normalizedData[date] = entries.map((entry) => ({ ...entry, id: entry.id || crypto.randomUUID() }));
+    }
+    return normalizedData;
+  }
+
   private readonly encoder = new TextEncoder();
   private readonly storageDir: Uri;
 
@@ -30,11 +39,12 @@ export class TimesheetRepository {
     }
   }
 
-  private async writeMonth(month: string, data: TimesDataDTO): Promise<void> {
+  async writeMonth(month: string, data: TimesDataDTO): Promise<void> {
     try {
       if (!(await this.storageDirectoryExists())) {
         await workspace.fs.createDirectory(this.storageDir);
       }
+
       const bytes = this.encoder.encode(JSON.stringify(data, null, 2) + "\n");
       await workspace.fs.writeFile(Uri.joinPath(this.storageDir, `${month}.json`), bytes);
     } catch (error) {
@@ -74,32 +84,10 @@ export class TimesheetRepository {
     return await this.readMonth(month);
   }
 
-  async getBetween(startDate: string, endDate: string): Promise<{ date: string; entries: TimeEntry[] }[]> {
+  async getRange(startDate: string, endDate: string): Promise<TimesDataDTO[]> {
     const fileNames = this.getFilenamesFromRange(startDate, endDate);
-    const sanitizedStartDate = format(startDate, "yyyy-MM-dd");
-    const sanitizedEndDate = format(endDate, "yyyy-MM-dd");
-
-    // Schritt 1: Alle Monate parallel/sequentiell laden und zu einem flachen Key-Value-Store mergen
-    const allMonthsData = await Promise.all(fileNames.map((month) => this.readMonth(month)));
-    const mergedDays = Object.assign({}, ...allMonthsData.filter(Boolean));
-
-    const results: { date: string; entries: TimeEntry[] }[] = [];
-
-    // Schritt 2: Nur noch EINE flache Schleife über die Tage
-    for (const [date, entries] of Object.entries(mergedDays) as [string, TimeEntry[]][]) {
-      // Mit Array.filter die innerste Schleife komplett eliminieren!
-      const validEntries = entries.filter((entry) => {
-        const isOpenAndBefore = entry.endAt === null && date < sanitizedStartDate;
-        const isInRange = date >= sanitizedStartDate && date <= sanitizedEndDate;
-        return isOpenAndBefore || isInRange;
-      });
-
-      if (validEntries.length > 0) {
-        results.push({ date, entries: validEntries });
-      }
-    }
-
-    return results.sort((a, b) => a.date.localeCompare(b.date));
+    const fileContents = await Promise.all(fileNames.map((month) => this.getMonth(month)));
+    return fileContents.filter((data): data is TimesDataDTO => data !== undefined);
   }
 
   async getByIssueKey(issueKey: string): Promise<TimeEntry[]> {

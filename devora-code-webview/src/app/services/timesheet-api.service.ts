@@ -7,12 +7,15 @@ import type {
   TimeEntryList,
   TimesheetAddEntryCommand,
   TimesheetAddEntryPayload,
+  TimesheetOpenCommand,
+  TimesheetOpenPayload,
 } from '@devora-code/api/timesheet';
 import type { Observable } from 'rxjs';
 import { VsCodeBridge } from './vscode-bridge';
 
 /** TimesheetApi Implementierung — ruft VS Code Core Commands auf */
 export class TimesheetApiService implements TimesheetApi {
+
   private readonly vscode = inject(VsCodeBridge);
 
   addEntry(payload: TimesheetAddEntryPayload): Observable<TimeEntry[]> {
@@ -37,5 +40,13 @@ export class TimesheetApiService implements TimesheetApi {
       type: 'timesheet:get-month',
       payload: { month },
     } as GetMonthCommand);
+  }
+
+  openTimesheet(payload: TimesheetOpenPayload): void {
+    this.vscode.request<Record<string, TimeEntry[]>>({
+      id: crypto.randomUUID(),
+      type: 'timesheet:open',
+      payload,
+    } as TimesheetOpenCommand);
   }
 }

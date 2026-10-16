@@ -145,6 +145,15 @@ export class BookingsDatasource {
     this.selectedDate.set(nextDate);
   }
 
+  open() {
+    const {startAt, endAt:endAt} = this.dateRange() ?? {};
+    if (!startAt || !endAt ) {
+      return;
+    }
+    
+    this.timesheet.openTimesheet({ startAt, endAt });
+  }
+
   prev() {
     const prevDate =
       this.currentViewMode() === ViewMode.Week

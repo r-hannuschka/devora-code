@@ -1,4 +1,4 @@
-import type { Command } from "@devora-code/api";
+import type { Command } from "@devora-code/api/core";
 import { singleton } from "tsyringe";
 import { LoggerService } from "@/core/logger";
 
