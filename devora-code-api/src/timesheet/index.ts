@@ -11,3 +11,4 @@ export * from "./commands/update.command";
 
 // Data Types
 export * from "./types/time-entry-list";
+export * from "./types/timesheet-range";

@@ -47,15 +47,15 @@ export const test = base.extend<MyFixtures>({
     await use(timesheetRepository);
   },
 
-  loggerService: async ({ diContainer }, use) => {
+  loggerService: [async ({ diContainer }, use) => {
     const loggerService = diContainer.resolve(LoggerService);
     await use(loggerService);
-  },
+  }, { auto: true }],
 
-  notificationService: async ({ diContainer }, use) => {
+  notificationService: [async ({ diContainer }, use) => {
     const notificationService = diContainer.resolve(NotificationService);
     await use(notificationService);
-  },
+  }, { auto: true }]
 });
 
 export { expect } from "vitest";

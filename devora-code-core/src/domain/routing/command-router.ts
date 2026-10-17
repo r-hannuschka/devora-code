@@ -2,7 +2,8 @@ import type { Command, CommandErrorResponse, CommandResponse } from "@devora-cod
 import { container, singleton } from "tsyringe";
 
 import { SatelliteService } from "@/domain/satellite";
-import { CommandController } from "@devora-code/sdk/command";
+import { NotificationService } from "@/infrastructure/notification";
+import { CommandController, isErrorResponse } from "@devora-code/sdk/command";
 
 /**
  * Der Command-Router.
@@ -32,7 +33,10 @@ export class CommandRouter {
     "timesheet:sync-from-raw",
   ]);
 
-  constructor(private readonly satelliteService: SatelliteService) {}
+  constructor(
+    private readonly satelliteService: SatelliteService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   /**
    * Führt ein Command aus – entweder selbst (Core) oder an einen Satelliten delegiert.
@@ -42,11 +46,21 @@ export class CommandRouter {
 
     // Core bedient es selbst
     if (CommandRouter.CORE_COMMANDS.has(type)) {
-      return this.executeCoreCommand(command);
+      return this.executeCoreCommand(command).then((response) => {
+        if (isErrorResponse(response)) {
+          this.notificationService.showError(response.error.message);
+        }
+
+        return response;
+      });
     }
 
     // Delegation an einen Satelliten
-    return this.executeSatelliteCommand(command);
+    return this.executeSatelliteCommand(command).catch((error) => {
+      const satellite = this.satelliteService.getSatelliteForCommand(type);
+      this.notificationService.showError(`[Sattelite:${satellite?.id}]: ${error.message}`);
+      throw error;
+    });
   }
 
   private async executeCoreCommand(command: Command): Promise<CommandResponse | CommandErrorResponse> {
@@ -58,7 +72,6 @@ export class CommandRouter {
     const type = command.type as string;
     const satellite = this.satelliteService.getSatelliteForCommand(type);
 
-    console.log(`Satellite ${satellite}`);
     if (!satellite) {
       return this.notFoundResponse(command.id, type);
     }

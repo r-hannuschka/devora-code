@@ -1,9 +1,12 @@
+import { AsyncQueue } from "@devora-code/sdk/async-queue";
 import { singleton } from "tsyringe";
 import { Uri, workspace } from "vscode";
 
 @singleton()
 export class LoggerService {
   private static readonly LOG_FILE = "devora-code.log";
+  private readonly queue: AsyncQueue = new AsyncQueue();
+  private isProcessing = false;
 
   /**
    * Base-Path für die Log-Datei.
@@ -27,8 +30,8 @@ export class LoggerService {
       message: context ? `[${context}] ${message}` : message,
     };
 
-    // Fire-and-forget — Logger darf den Betrieb nicht stören
-    (async () => {
+    const logLine = JSON.stringify(entry);
+    this.queue.enqueue(async () => {
       try {
         let existing = "";
         try {
@@ -38,12 +41,10 @@ export class LoggerService {
           // Datei existiert noch nicht – OK
         }
 
-        const content = existing + JSON.stringify(entry) + "\n";
+        const content = existing + logLine + "\n";
         await workspace.fs.writeFile(this.logUri, encoder.encode(content));
-      } catch {
-        // Logger darf nicht den Betrieb stören
-      }
-    })();
+      } catch (error) {}
+    });
   }
 
   debug(message: string, context?: string): void {

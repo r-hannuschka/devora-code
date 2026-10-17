@@ -1,13 +1,13 @@
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { LoggerService } from "@/infrastructure/logger";
-import { NotificationService } from "@/infrastructure/notification";
 import { TimeEntryDTO, TimesheetRepository, type TimesDataDTO } from "@/infrastructure/timesheet";
 import { dateLocal, normalizeTimeSpan } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
-import type { TimeEntryList } from "@devora-code/api/timesheet";
-import { format, startOfMonth, subMonths } from "date-fns";
+import type { TimeEntryList, TimesheetRange } from "@devora-code/api/timesheet";
+import { format, isWithinInterval, startOfMonth, subMonths } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { ExtensionContext } from "vscode";
+import { TimesheetRawValidator } from "./timesheet-raw.validator";
 
 @singleton()
 export class TimesheetService {
@@ -16,9 +16,13 @@ export class TimesheetService {
   constructor(
     private readonly repository: TimesheetRepository,
     private readonly logger: LoggerService,
-    private readonly notificationService: NotificationService,
+    private readonly rawValidator: TimesheetRawValidator,
     @inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext,
   ) {}
+
+  // ========================================================================
+  // Write Operations
+  // ========================================================================
 
   /**
    * Erstelle eine manuelle Buchung (z.B. für Meetings).
@@ -33,88 +37,14 @@ export class TimesheetService {
 
     const writeEntries = normalizeTimeSpan(entry);
     const written = await this.repository.write(writeEntries);
-
     return structuredClone(written);
   }
 
-  // ========================================================================
-  // Query Operations
-  // ========================================================================
-
-  async getDay(date: string): Promise<TimeEntryList> {
-    const entries = await this.repository.getDay(date);
-    return {
-      entries,
-      count: entries.length,
-      totalSeconds: entries.reduce((sum, e) => sum + this.calcDuration(e.startAt, e.endAt), 0),
-    };
-  }
-
-  async getRaw(startDate: string, endDate: string): Promise<TimesDataDTO> {
-    // Immer auf den vorigen Monat wechseln da es sein kann das der Vormat
-    // noch einen offenen Task hat
-    const prevMonth = format(subMonths(startOfMonth(startDate), 1), "yyyy-MM-dd");
-
-    const months = await this.repository.getRange(prevMonth, endDate);
-    const raw = Object.assign({}, ...months) as TimesDataDTO;
-    const matches: TimesDataDTO = {};
-
-    const start = format(startDate, "yyyy-MM-dd");
-    const end = format(endDate, "yyyy-MM-dd");
-
-    for (const [date, entries] of Object.entries(raw)) {
-      if (date < start || date > end) {
-        // Offene Timer vor dem Start-Datum nachschieben
-        const openEntries = entries.filter((e) => e.endAt === null);
-        if (openEntries.length > 0) {
-          matches[date] = openEntries;
-        }
-        continue;
-      }
-      matches[date] = entries;
-    }
-
-    return matches;
-  }
-
-  async getPeriod(startDate: string, endDate?: string): Promise<TimeEntryList> {
-    const entries: TimeEntry[] = [];
-    for (const list of Object.values(await this.getRaw(startDate, endDate ?? dateLocal()))) {
-      entries.push(...list);
-    }
-
-    return {
-      entries,
-      count: entries.length,
-      totalSeconds: entries.reduce((sum, e) => sum + this.calcDuration(e.startAt, e.endAt), 0),
-    };
-  }
-
   /**
-   * FIX: Das Repository gibt jetzt ein flaches Array zurück.
-   * Wir gruppieren die Suchergebnisse hier im Service sauber nach Datum für deine UI!
+   * Schiebt einen aktiven Timer ein und spaltet das originale Entry auf.
+   *
+   * Beispiel: [source ────── ∞)  →  [source ─ start) [insert] [end ────── ∞)
    */
-  async getByIssueKey(issueKey: string): Promise<{ date: string; entries: TimeEntry[] }[]> {
-    const allMatches = await this.repository.getByIssueKey(issueKey);
-    const groups = new Map<string, TimeEntry[]>();
-
-    for (const entry of allMatches) {
-      const dayKey = entry.startAt.substring(0, 10);
-      const list = groups.get(dayKey) ?? [];
-      list.push(entry);
-      groups.set(dayKey, list);
-    }
-
-    return Array.from(groups.entries())
-      .map(([date, entries]) => ({ date, entries }))
-      .sort((a, b) => a.date.localeCompare(b.date));
-  }
-
-  async getMonth(month: string): Promise<TimesData> {
-    const monthData = await this.repository.getMonth(month);
-    return monthData ?? {};
-  }
-
   async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<TimeEntryDTO[]> {
     const { endAt: activeEndAt } = source;
     const { endAt: insertEndAt, startAt: insertStartAt } = toInsert;
@@ -142,55 +72,141 @@ export class TimesheetService {
     return written;
   }
 
-  async syncFromRaw(raw: TimesData) {
-    const groupedByMonth = new Map<String, TimesData>();
+  // ========================================================================
+  // Query Operations
+  // ========================================================================
+
+  /** Alle Entries eines einzelnen Tages */
+  async getDay(date: string): Promise<TimeEntryList> {
+    const entries = await this.repository.getDay(date);
+    return this.summarize(entries);
+  }
+
+  /** Entries eines Datumsbereichs (zurückfiltert offene Timer vom Vormonat) */
+  async getRaw(startDate: string, endDate: string): Promise<TimesDataDTO> {
+    // Vormonat einbeziehen, da offene Tasks vom Vormonat noch nicht abgeschlossen sein können
+    const prevMonth = format(subMonths(startOfMonth(startDate), 1), "yyyy-MM-dd");
+
+    const months = await this.repository.getRange(prevMonth, endDate);
+    const raw = Object.assign({}, ...months) as TimesDataDTO;
+    const matches: TimesDataDTO = {};
+
+    const rangeStart = format(startDate, "yyyy-MM-dd");
+    const rangeEnd = format(endDate, "yyyy-MM-dd");
+
     for (const [date, entries] of Object.entries(raw)) {
-      const yearMonth = format(date, "yyyy-MM");
-      if (!groupedByMonth.has(yearMonth)) {
-        groupedByMonth.set(yearMonth, { [date]: [] });
+      if (date < rangeStart || date > rangeEnd) {
+        // Offene Timer vor dem Start-Datum nachschieben
+        const openEntries = entries.filter((e) => e.endAt === null);
+        if (openEntries.length > 0) {
+          matches[date] = openEntries;
+        }
+        continue;
       }
-
-      const bufferedTimesData = groupedByMonth.get(yearMonth) ?? {};
-      const bufferedEntries = bufferedTimesData[date] ?? [];
-
-      groupedByMonth.set(yearMonth, {
-        ...bufferedTimesData,
-        [date]: [...bufferedEntries, ...entries],
-      });
+      matches[date] = entries;
     }
 
-    const bufferedRaw: Record<string, TimesData> = Object.fromEntries(groupedByMonth);
-    return this.syncTimesData(bufferedRaw);
+    return matches;
   }
 
-  private async syncTimesData(data: Record<string, TimesData>) {
-    const writePromises = [];
+  /** Alle Entries eines Monats */
+  async getMonth(month: string): Promise<TimesData> {
+    const monthData = await this.repository.getMonth(month);
+    return monthData ?? {};
+  }
 
-    for (const [fileName, timesData] of Object.entries(data)) {
-      const write$ = this.repository
-        .getMonth(fileName)
-        .catch(() => ({}) as TimesData)
-        // --- replace data and by new entries
-        .then((raw: TimesData = {}) => ({ ...raw, ...timesData }))
-        // --- map data to dto
-        .then((data: TimesData) => this.repository.mapTimesDataToDTO(data)) // map to dto
-        // --- write to repository
-        .then((data: TimesDataDTO) => this.repository.writeMonth(fileName, data))
-        .catch(() => {
-          this.logger.error(`[Timesheet]: could not sync file ${fileName}.json with timesdata`, JSON.stringify(timesData));
-          this.notificationService.showError(`[Timesheet]: could not sync file ${fileName}.json. Open log file for further informations. `);
-          return null;
-        });
-
-      writePromises.push(write$);
+  /** Alle Entries eines Datumsbereichs als flaches Array mit Aggregation */
+  async getPeriod(startDate: string, endDate?: string): Promise<TimeEntryList> {
+    const entries: TimeEntry[] = [];
+    for (const list of Object.values(await this.getRaw(startDate, endDate ?? dateLocal()))) {
+      entries.push(...list);
     }
 
-    return Promise.all(writePromises);
+    return this.summarize(entries);
   }
+
+  /** Suche nach Issue-Key, gruppiert und sortiert nach Datum (für die UI) */
+  async getByIssueKey(issueKey: string): Promise<{ date: string; entries: TimeEntry[] }[]> {
+    const allMatches = await this.repository.getByIssueKey(issueKey);
+    const groups = new Map<string, TimeEntry[]>();
+
+    for (const entry of allMatches) {
+      const dayKey = entry.startAt.substring(0, 10);
+      const list = groups.get(dayKey) ?? [];
+      list.push(entry);
+      groups.set(dayKey, list);
+    }
+
+    return Array.from(groups.entries())
+      .map(([date, entries]) => ({ date, entries }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  // ========================================================================
+  // Sync Operations
+  // ========================================================================
+
+  /**
+   * Synchronisiert rohe Timesheet-Daten in den lokalen Speicher.
+   * Bestehende Daten in der gegebenen Range werden überschrieben,
+   * Daten außerhalb der Range bleiben erhalten.
+   */
+  async syncFromRaw(raw: TimesData, range: TimesheetRange) {
+    const fileName = format(range.minDate, "yyyy-MM");
+
+    const errors = this.rawValidator.validate(raw, range);
+    if (errors !== null) {
+      for (const [_, validationError] of Object.entries(errors)) {
+        this.logger.error(`[Timesheet]: Validierung fehl geschlagen: ${validationError.message}`);
+      }
+      throw new Error(`Synchronisation ist fehl geschlagen`);
+    }
+
+    const existingFileData = (await this.repository.getMonth(fileName)) ?? {};
+
+    // 1. Bestehende Daten außerhalb der Range behalten
+    const filteredExisting: TimesData = {};
+    for (const [dateStr, entries] of Object.entries(existingFileData)) {
+      if (!isWithinInterval(dateStr, { start: range.minDate, end: range.maxDate })) {
+        filteredExisting[dateStr] = entries;
+      }
+    }
+
+    // 2. Neue Daten mit gefilterten Bestandsdaten mergen
+    const mergedData: TimesData = {
+      ...filteredExisting,
+      ...raw,
+    };
+
+    // 3. Ergebnis schreiben (Validator sichert Monatsgrenzen)
+    await this.repository.writeMonth(fileName, mergedData);
+  }
+
+  // ========================================================================
+  // Private Helpers
+  // ========================================================================
 
   private calcDuration(startAt: string, endAt: string | null = null): number {
     const startTime = new Date(startAt).getTime();
     const endTime = new Date(endAt ?? new Date()).getTime();
     return Math.floor((endTime - startTime) / 1000);
+  }
+
+  private summarize(entries: TimeEntry[]): TimeEntryList {
+    return {
+      entries,
+      count: entries.length,
+      totalSeconds: entries.reduce((sum, e) => sum + this.calcDuration(e.startAt, e.endAt), 0),
+    };
+  }
+
+  private validateRaw(raw: TimesData, fileName: string) {
+    for (const dateStr of Object.keys(raw)) {
+      const rawMonth = format(dateStr, "yyyy-MM");
+      if (rawMonth !== fileName) {
+        return { rawMonth };
+      }
+    }
+    return null;
   }
 }

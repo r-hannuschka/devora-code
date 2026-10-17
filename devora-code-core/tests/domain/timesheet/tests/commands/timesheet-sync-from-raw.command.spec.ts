@@ -42,7 +42,7 @@ describe("TimesheetSyncFromRawHandler", () => {
 
     const mockEditor = {
       document: {
-        fileName: "/user/work/2026-10.devora-timesheet",
+        fileName: "/user/work/2026-10-01_2026-10-31.devora-timesheet",
         getText: () => validJson,
       },
     } as any;
@@ -62,7 +62,7 @@ describe("TimesheetSyncFromRawHandler", () => {
   test("sollte Error werfen wenn JSON ungueltig ist", async () => {
     const mockEditor = {
       document: {
-        fileName: "/user/work/2026-10.devora-timesheet",
+        fileName: "/user/work/2026-10-01_2026-10-31.devora-timesheet",
         getText: () => "invalid json {{{",
       },
     } as any;
@@ -78,7 +78,7 @@ describe("TimesheetSyncFromRawHandler", () => {
   test("sollte Error werfen wenn JSON nicht als Objekt parsebar ist", async () => {
     const mockEditor = {
       document: {
-        fileName: "/user/work/2026-10.devora-timesheet",
+        fileName: "/user/work/2026-10-01_2026-10-31.devora-timesheet",
         getText: () => '"nur ein string"',
       },
     } as any;
@@ -93,7 +93,7 @@ describe("TimesheetSyncFromRawHandler", () => {
   // Sync mit verschiedenen .devora-timesheet Dateinamen
   // ========================================================================
 
-  test("sollte auch .devora-timesheet ohne Monatspraefix erkennen", async ({ fs, diContainer }) => {
+  test("sollte auch .devora-timesheet ohne Monatspraefix erkennen", async () => {
     const validJson = JSON.stringify({ "2026-10-14": [] });
 
     const mockEditor = {
@@ -105,15 +105,14 @@ describe("TimesheetSyncFromRawHandler", () => {
     vi.spyOn(vscode.window, "activeTextEditor", "get").mockReturnValue(mockEditor);
 
     const handler = new TimesheetSyncFromRawHandler();
-    await handler.execute();
 
-    expect(vscode.window.showInformationMessage).toHaveBeenCalled();
+    await expect(handler.execute()).rejects.toThrow("Invalid filename");
   });
 
   test("sollte Dateinamen in Success-Notification enthalten", async () => {
     const validJson = JSON.stringify({ "2026-10-14": [{ issueKey: "A", startAt: "2026-10-14T09:00:00", endAt: "2026-10-14T10:00:00" }] });
 
-    const fileName = "/home/user/projects/2026-11.devora-timesheet";
+    const fileName = "/home/user/projects/2026-10-01_2026-10-31.devora-timesheet";
     const mockEditor = {
       document: { fileName, getText: () => validJson },
     } as any;

@@ -9,10 +9,10 @@ interface MyFixtures {
 
 // Wir erweitern das Vitest 'test' Objekt um unsere Fixtures
 export const test = base.extend<MyFixtures>({
-  timesheetService: async ({ diContainer }, use) => {
+  timesheetService: [async ({ diContainer }, use) => {
     const service = diContainer.resolve(TimesheetService);
     await use(service);
-  },
+  }, { auto: true }]
 });
 
 export { expect } from "vitest";

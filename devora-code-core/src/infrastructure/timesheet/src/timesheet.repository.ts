@@ -9,14 +9,6 @@ import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesh
 
 @singleton()
 export class TimesheetRepository {
-  mapTimesDataToDTO(data: TimesData): TimesDataDTO {
-    const normalizedData: TimesDataDTO = {};
-    for (const [date, entries] of Object.entries(data)) {
-      normalizedData[date] = entries.map((entry) => ({ ...entry, id: entry.id || crypto.randomUUID() }));
-    }
-    return normalizedData;
-  }
-
   private readonly encoder = new TextEncoder();
   private readonly storageDir: Uri;
 
@@ -38,13 +30,14 @@ export class TimesheetRepository {
     }
   }
 
-  async writeMonth(month: string, data: TimesDataDTO): Promise<void> {
+  async writeMonth(month: string, data: TimesData): Promise<void> {
+    const sanitized = this.mapTimesDataToDTO(data);
     try {
       if (!(await this.storageDirectoryExists())) {
         await workspace.fs.createDirectory(this.storageDir);
       }
 
-      const bytes = this.encoder.encode(JSON.stringify(data, null, 2) + "\n");
+      const bytes = this.encoder.encode(JSON.stringify(sanitized, null, 2) + "\n");
       await workspace.fs.writeFile(Uri.joinPath(this.storageDir, `${month}.json`), bytes);
     } catch (error) {
       throw new StorageWriteException("Konnte Daten nicht speichern", error instanceof Error ? error : new Error("Unbekannter Fehler"));
@@ -168,4 +161,13 @@ export class TimesheetRepository {
       return false;
     }
   }
+
+  private mapTimesDataToDTO(data: TimesData): TimesDataDTO {
+    const normalizedData: TimesDataDTO = {};
+    for (const [date, entries] of Object.entries(data)) {
+      normalizedData[date] = entries.map((entry) => ({ ...entry, id: entry.id || crypto.randomUUID() }));
+    }
+    return normalizedData;
+  }
+
 }

@@ -34,6 +34,7 @@ export const workspace = {
     readDirectory: vi.fn().mockResolvedValue([]),
     createDirectory: vi.fn().mockResolvedValue(undefined),
     stat: vi.fn().mockResolvedValue({ type: FileType.File }),
+    delete: vi.fn().mockResolvedValue(undefined),
   },
 
   // 2. Akzeptiert jetzt sowohl Konfigurationsobjekte als auch Datei-URIs
@@ -62,6 +63,10 @@ export const workspace = {
       index: 0
     }
   ]
+};
+
+export const commands = {
+  executeCommand: vi.fn().mockResolvedValue(undefined),
 };
 
 export const ViewColumn = { Active: -1, Beside: 2, One: 1 } as const;

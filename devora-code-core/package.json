@@ -11,6 +11,10 @@
   "author": "",
   "type": "commonjs",
   "main": "./dist/devora-code.js",
+  "activationEvents": [
+    "workspaceContains:**/*.devora-timesheet",
+    "onFileSystem:file"
+  ],
   "contributes": {
     "commands": [
       {

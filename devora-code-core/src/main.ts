@@ -10,25 +10,38 @@ import * as vscode from "vscode";
 
 // module importieren, muessen wir tun damit sie im bundle sind
 import "./app.module";
+import { TimesheetDocumentValidatorService } from "./domain/timesheet";
 
 export async function activate(context: vscode.ExtensionContext) {
   container.registerInstance(EXTENSION_CONTEXT_TOKEN, context);
   const commandRouter = container.resolve(CommandRouter);
 
-  const webviewDisposable = vscode.commands.registerCommand("devora-code.openWebview", () => {
-    container.resolve(WebviewModule).openDashboard();
-  });
+  // --- Enable Validation
+  const timesheetDocumentValidationService = container.resolve(TimesheetDocumentValidatorService);
+  timesheetDocumentValidationService.initialize();
 
-  (vscode.commands.registerCommand("devora-code.timesheet-sync-raw", () => {
-    const command: TimesheetSyncFromRawCommand = {
-      id: crypto.randomUUID(),
-      type: "timesheet:sync-from-raw",
-    };
-    commandRouter.execute(command);
-  }),
-    context.subscriptions.push(webviewDisposable));
+  // --- Register Command Listeners
+  const webviewDisposable = [
+    vscode.commands.registerCommand("devora-code.openWebview", () => {
+      container.resolve(WebviewModule).openDashboard();
+    }),
+
+    vscode.commands.registerCommand("devora-code.timesheet-sync-raw", () => {
+      const command: TimesheetSyncFromRawCommand = {
+        id: crypto.randomUUID(),
+        type: "timesheet:sync-from-raw",
+      };
+      commandRouter.execute(command);
+    }),
+
+    vscode.commands.registerCommand("devora-code.activated", () => void 0),
+  ];
+  context.subscriptions.push(...webviewDisposable);
+
+  // --- notify satellits we are up and running
   vscode.commands.executeCommand("devora-code.activated");
 
+  // --- register satellits
   const satelliteService = container.resolve(SatelliteService);
   return {
     registerSubModule: (satellite: any) => {
@@ -37,7 +50,8 @@ export async function activate(context: vscode.ExtensionContext) {
   };
 }
 
-export function deactivate(context: vscode.ExtensionContext): void {
-  // @TODO shutdown time tracker
+export function deactivate(): void {
   container.clearInstances();
+
+  // deactivate satellites
 }
