@@ -30,7 +30,7 @@ export class TimesheetOpenHandler implements CommandHandler<void> {
 
     // 2. Pfad direkt im Root-Verzeichnis des Projekts erstellen
     const projectRootUri = workspaceFolders[0]!.uri;
-    const fileUri = Uri.joinPath(projectRootUri, `.timesheets/${payload.startAt}_${payload.endAt}.devora-timesheet`);
+    const fileUri = Uri.joinPath(projectRootUri, `.devora-code/tmp/${payload.startAt}_${payload.endAt}.devora-timesheet`);
 
     try {
       await workspace.fs.writeFile(fileUri, Buffer.from(rawJSON, "utf8"));

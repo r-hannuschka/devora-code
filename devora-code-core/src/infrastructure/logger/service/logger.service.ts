@@ -17,7 +17,7 @@ export class LoggerService {
     }
 
     const baseFolder = workspace.workspaceFolders?.[0]?.uri ?? Uri.parse("file:///dev/null");
-    return Uri.joinPath(baseFolder, LoggerService.LOG_FILE);
+    return Uri.joinPath(baseFolder, ".devora-code", LoggerService.LOG_FILE);
   }
 
   log(level: string, message: string, context?: string): void {
