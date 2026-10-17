@@ -243,6 +243,6 @@ describe("TimesheetService.syncFromRaw", () => {
       "2026-11-03": [{ issueKey: "NIGHT", startAt: "2026-11-03T09:00:00", endAt: "2026-11-03T10:00:00" }],
     };
 
-    await expect(timesheetService.syncFromRaw(raw, range)).rejects.toThrow("Raw-Daten");
+    await expect(timesheetService.syncFromRaw(raw, range)).rejects.toThrow("Synchronisation ist fehl geschlagen");
   });
 });
