@@ -6,6 +6,7 @@ import type { ExtensionContext } from "vscode";
  */
 export function createExtensionContextMock({ globalStoragePath = "/storage" } = {}): ExtensionContext {
   const state = new Map<string, unknown>();
+  const subscriptions: unknown[] = [];
 
   const context = {
     globalStorageUri: { path: globalStoragePath, fsPath: globalStoragePath },
@@ -19,6 +20,7 @@ export function createExtensionContextMock({ globalStoragePath = "/storage" } = 
         }
       },
     },
+    subscriptions,
   };
 
   return context as unknown as ExtensionContext;

@@ -56,7 +56,7 @@ export class TimesheetDocumentValidatorService {
   }
 
   private validatedDocument(doc?: TextDocument) {
-    const path = doc?.uri.fsPath;
+    const path = doc?.uri?.fsPath;
 
     if (!doc || !path || !path.endsWith(".devora-timesheet")) return;
     this.diagnosticCollection.delete(doc.uri);
