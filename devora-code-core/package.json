@@ -11,6 +11,10 @@
   "author": "",
   "type": "commonjs",
   "main": "./dist/devora-code.js",
+  "activationEvents": [
+    "workspaceContains:**/*.devora-timesheet",
+    "onFileSystem:file"
+  ],
   "contributes": {
     "commands": [
       {
@@ -20,6 +24,12 @@
       {
         "command": "devora-code.activated",
         "title": "Devora Code Core Activated Trigger"
+      },
+      {
+        "command": "devora-code.timesheet-sync-raw",
+        "title": "Timesheet mit DevoraCode Synchronisieren",
+        "category": "Devora",
+        "icon": "$(cloud-upload)"
       }
     ],
     "menus": {
@@ -27,9 +37,31 @@
         {
           "command": "devora-code.activated",
           "when": "false"
+        },
+        {
+          "command": "devora-code.timesheet-sync-raw",
+          "when": "resourceExtname == .devora-timesheet"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "devora-code.timesheet-sync-raw",
+          "group": "navigation@1",
+          "when": "resourceExtname == .devora-timesheet"
         }
       ]
     },
+    "languages": [
+      {
+        "id": "json",
+        "aliases": [
+          "Devora Timesheet"
+        ],
+        "extensions": [
+          ".devora-timesheet"
+        ]
+      }
+    ],
     "configuration": {
       "properties": {}
     }

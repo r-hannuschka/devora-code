@@ -28,10 +28,3 @@ export function endOfDay(date: Date | string = new Date()): string {
 export function startOfDay(date: Date = new Date()): string {
   return format(date, "yyyy-MM-dd'T'00:00:00");
 }
-
-/**
- * Datum aus einem ISO-String (lokales Format) extrahieren: "2024-01-15"
- */
-export function extractDayKey(isoString: string): string {
-  return isoString.substring(0, 10);
-}

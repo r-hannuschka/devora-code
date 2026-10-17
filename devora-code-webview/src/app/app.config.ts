@@ -1,7 +1,7 @@
 import { providePortalRouter } from '@/core/portal-router';
 import { SessionState } from '@/core/session/src/state';
 import { IssueState } from '@/feature/issue/data-access';
-import { TimetrackerState } from '@/feature/timetracker/data-access';
+import { TimetrackerState } from '@/feature/timesheet/data-access';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideStore } from '@ngxs/store';
 import { routerConfig } from './router.config';

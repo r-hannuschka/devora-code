@@ -1,0 +1,110 @@
+<header class="d-flex align-items-center">
+  <!-- Header mit Navigation -->
+
+  <!-- VIEW SWITCH-->
+  <mat-button-toggle-group
+    [value]="datasource.currentView()"
+    (change)="datasource.toggleViewMode($event.value)"
+    class="me-3"
+  >
+    <mat-button-toggle [value]="ViewMode.Day">Tag</mat-button-toggle>
+    <mat-button-toggle [value]="ViewMode.Week">Woche</mat-button-toggle>
+    <mat-button-toggle [value]="ViewMode.Month">Monat</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <!-- LABEL -->
+  <h2 class="text-center ms-auto flex-grow-1">{{ datasource.periodLabel() }}</h2>
+
+  <div class="btn-group">
+    <button mat-icon-button (click)="datasource.prev()">
+      <mat-icon class="devora-code-icon-chevron_left"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.next()">
+      <mat-icon class="devora-code-icon-chevron_right"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.goToToday()">
+      <mat-icon class="devora-code-icon-today"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.reload()">
+      <mat-icon class="devora-code-icon-refresh"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.open()">
+      <mat-icon class="devora-code-icon-timesheet-edit"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.openAsCSV()">
+      <mat-icon class="devora-code-icon-timesheet-csv"></mat-icon>
+    </button>
+  </div>
+</header>
+
+<!-- Tabelle -->
+<div class="flex-grow-1 overflow-auto">
+  @let entries = datasource.entries();
+  @if (entries.length > 0) {
+    <table cdk-table [dataSource]="entries" class="entries-table">
+      <!-- Datum -->
+      <ng-container cdkColumnDef="date">
+        <th cdk-header-cell *cdkHeaderCellDef>Datum</th>
+        <td cdk-cell *cdkCellDef="let entry">{{ entry.startAt.slice(0, 10) }}</td>
+      </ng-container>
+
+      <!-- Issue Key -->
+      <ng-container cdkColumnDef="issueKey">
+        <th cdk-header-cell *cdkHeaderCellDef>Issue</th>
+        <td cdk-cell *cdkCellDef="let entry" class="issue-key">{{ entry.issueKey }}</td>
+      </ng-container>
+
+      <!-- Start -->
+      <ng-container cdkColumnDef="start">
+        <th cdk-header-cell *cdkHeaderCellDef>Von</th>
+        <td cdk-cell *cdkCellDef="let entry">{{ datasource.formatTime(entry.startAt) }}</td>
+      </ng-container>
+
+      <!-- Ende -->
+      <ng-container cdkColumnDef="end">
+        <th cdk-header-cell *cdkHeaderCellDef>Bis</th>
+        <td cdk-cell *cdkCellDef="let entry">
+          @if (entry.endAt) {
+            {{ datasource.formatTime(entry.endAt) }}
+          } @else {
+            —
+          }
+        </td>
+      </ng-container>
+
+      <!-- Dauer -->
+      <ng-container cdkColumnDef="duration">
+        <th cdk-header-cell *cdkHeaderCellDef>Dauer</th>
+        <td cdk-cell *cdkCellDef="let entry" class="duration">
+          {{ datasource.formatDuration(entry.startAt, entry.endAt) }}
+        </td>
+      </ng-container>
+
+      <!-- Header Row -->
+      <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+
+      <!-- Data Rows -->
+      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  }
+</div>
+
+<footer>
+  <!-- Summe -->
+  @if (entries.length > 0) {
+    <div class="period-sum">
+      <span class="label">{{ datasource.sumLabel() }}:</span>
+      <span class="value">{{ datasource.sum().hours }}h {{ datasource.sum().minutes }}min</span>
+    </div>
+  }
+
+  <!-- Keine Einträge -->
+  @if (entries.length === 0) {
+    <p class="empty-state">{{ datasource.emptyLabel() }}</p>
+  }
+</footer>

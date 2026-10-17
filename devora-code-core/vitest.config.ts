@@ -11,13 +11,11 @@ export default defineConfig({
     alias: {
       "@/core": resolve(import.meta.dirname, "src/core"),
       "@/domain": resolve(import.meta.dirname, "src/domain"),
-      "@/modules": resolve(import.meta.dirname, "src/modules"),
+      "@/infrastructure": resolve(import.meta.dirname, "src/infrastructure"),
       "@/util": resolve(import.meta.dirname, "src/util"),
-      // nur für Tests: Zugriff auf Interna ohne Barrel (siehe tests/tsconfig.json)
       "@src": resolve(import.meta.dirname, "src"),
-      "@/tests/core": resolve(import.meta.dirname, "tests/core"),
-      // "vscode" gibt es nur im Extension Host
-      vscode: resolve(import.meta.dirname, "tests/mocks/vscode.ts"),
+      "@/support": resolve(import.meta.dirname, "tests/support"),
+      vscode: resolve(import.meta.dirname, "tests/support/mocks/vscode.ts"),
     },
     extensions: [".ts", ".js"],
   },

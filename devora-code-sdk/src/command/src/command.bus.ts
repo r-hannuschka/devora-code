@@ -1,4 +1,4 @@
-import type { Command, CommandErrorResponse, CommandResponse } from "@devora-code/api";
+import type { Command, CommandErrorResponse, CommandResponse } from "@devora-code/api/core";
 import { createHash } from "crypto";
 import { singleton } from "tsyringe";
 import { CommandRegistry } from "./command.registry";

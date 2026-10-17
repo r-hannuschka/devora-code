@@ -12,7 +12,7 @@
     "build:webview": "npm run build -w devora-code-webview",
     "build:extensions": "npm run build -w devora-code-core && npm run build -w devora-code-jira",
     "build:all": "npm run build:sdk && npm run build:api && npm run build:webview && npm run build:extensions",
-    "watch:all": "concurrently --kill-others -n \"core,jira,webview\" -c \"blue,green,magenta\" \"npm run watch -w devora-code-core\" \"npm run watch -w devora-code-jira\" \"npm run watch --prefix devora-code-webview\""
+    "watch:all": "concurrently --kill-others -n \"core,jira,webview,api,sdk\" -c \"blue,green,magenta,yellow,cyan\" \"npm run watch -w devora-code-core\" \"npm run watch -w devora-code-jira\" \"npm run watch --prefix devora-code-webview\" \"npm run watch --prefix devora-code-api\" \"npm run watch --prefix devora-code-sdk\""
   },
   "workspaces": [
     "devora-code-api",

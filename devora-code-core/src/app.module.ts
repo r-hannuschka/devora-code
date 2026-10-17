@@ -1,4 +1,3 @@
-import "@/core/logger";
-import "@/modules/session";
-import "@/modules/timesheet";
-
+import "@/infrastructure/logger/commands";
+import "@/domain/session/commands";
+import "@/domain/timesheet/commands";

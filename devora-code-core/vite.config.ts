@@ -13,7 +13,7 @@ export default defineConfig({
     outDir: resolve(import.meta.dirname, 'dist'),
     emptyOutDir: false,
     sourcemap: true,
-    // minify: 'esbuild',
+    minify: 'esbuild',
     rollupOptions: {
       external: ['vscode', 'fs', 'path', 'crypto'],
       output: {
@@ -26,9 +26,9 @@ export default defineConfig({
     alias: {
       '@/core': resolve(import.meta.dirname, 'src/core'),
       '@/domain': resolve(import.meta.dirname, 'src/domain'),
-      '@/modules': resolve(import.meta.dirname, 'src/modules'),
+      '@/infrastructure': resolve(import.meta.dirname, 'src/infrastructure'),
       '@/util': resolve(import.meta.dirname, 'src/util'),
-      "@/test/core": resolve(import.meta.dirname, 'tests/core')
+      "@/test/support": resolve(import.meta.dirname, 'tests/support')
     },
     extensions: ['.ts', '.js'],
   },

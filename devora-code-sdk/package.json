@@ -20,10 +20,15 @@
     "./core": {
       "types": "./dist/core/index.d.ts",
       "default": "./dist/core/index.js"
+    },
+    "./async-queue": {
+      "types": "./dist/async-queue/async-queue.d.ts",
+      "default": "./dist/async-queue/async-queue.js"
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "@devora-code/api": "*"

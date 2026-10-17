@@ -1,4 +1,4 @@
-import type { TimeEntry } from "@devora-code/api";
+import type { TimeEntry } from "@devora-code/api/core";
 import { addDays, differenceInCalendarDays } from "date-fns";
 import { createTimeEntry } from "./create-time-entry";
 import { dateLocal, endOfDay, nowLocal, startOfDay } from "./time";

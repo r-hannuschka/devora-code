@@ -1,2 +1,2 @@
-export type { ISatelliteController } from "./src/satellite.service";
-export { SatelliteService } from "./src/satellite.service";
+export type { ISatelliteController } from "./satellite.service";
+export { SatelliteService } from "./satellite.service";

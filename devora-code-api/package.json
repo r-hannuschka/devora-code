@@ -9,6 +9,12 @@
   "files": [
     "dist"
   ],
+
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+
   "exports": {
     "./core": {
       "types": "./dist/core/index.d.ts",

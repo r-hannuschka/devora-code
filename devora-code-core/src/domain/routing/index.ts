@@ -1,1 +1,1 @@
-export * from './src/command-router';
+export * from './command-router';

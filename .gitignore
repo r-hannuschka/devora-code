@@ -22,8 +22,8 @@ out/
 .env
 .env.*
 
-# Claude Code (all local, never share)
-.claude/
+# Claude Code (local-only, except skills)
+.claude
 
 # OS
 .DS_Store
