@@ -1,10 +1,8 @@
-import { TimesheetApi } from '@/core/timesheet';
 import { provideAppDateAdapter } from '@/core/provider';
 import { FetchActiveSession } from '@/core/session';
+import { TimesheetApi } from '@/core/timesheet';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
-import { MatButton } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,23 +13,20 @@ import { format, set } from 'date-fns';
 import { take } from 'rxjs';
 
 @Component({
-  selector: 'devora-code-meeting-form',
+  selector: 'devora-code-timesheet-add',
   standalone: true,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButton,
     MatDatepickerModule,
     MatTimepickerModule,
     MatNativeDateModule,
-    FormField,
+    FormField
   ],
   providers: provideAppDateAdapter(),
-  templateUrl: './meeting-form.component.html',
+  templateUrl: './timesheet-add.component.html'
 })
-export class MeetingFormComponent {
+export class TimesheetAddComponent {
   private readonly timesheet = inject(TimesheetApi);
   private readonly store = inject(Store);
 

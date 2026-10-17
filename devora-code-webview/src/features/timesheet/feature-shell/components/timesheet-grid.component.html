@@ -1,33 +1,49 @@
-<div class="devora-code-bookings">
-  <!-- View-Switch -->
-  <div class="view-switch">
-    <mat-button-toggle-group [value]="datasource.currentView()" (change)="datasource.toggleViewMode($event.value)">
-      <mat-button-toggle [value]="ViewMode.Week">Woche</mat-button-toggle>
-      <mat-button-toggle [value]="ViewMode.Day">Tag</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
-
+<header class="d-flex align-items-center">
   <!-- Header mit Navigation -->
-  <div class="period-header">
-    <button mat-mini-fab (click)="datasource.prev()">
+
+  <!-- VIEW SWITCH-->
+  <mat-button-toggle-group
+    [value]="datasource.currentView()"
+    (change)="datasource.toggleViewMode($event.value)"
+    class="me-3"
+  >
+    <mat-button-toggle [value]="ViewMode.Day">Tag</mat-button-toggle>
+    <mat-button-toggle [value]="ViewMode.Week">Woche</mat-button-toggle>
+    <mat-button-toggle [value]="ViewMode.Month">Monat</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <!-- LABEL -->
+  <h2 class="text-center ms-auto flex-grow-1">{{ datasource.periodLabel() }}</h2>
+
+  <div class="btn-group">
+    <button mat-icon-button (click)="datasource.prev()">
       <mat-icon class="devora-code-icon-chevron_left"></mat-icon>
     </button>
-    <h2 class="period-label">{{ datasource.periodLabel() }}</h2>
-    <button mat-mini-fab (click)="datasource.next()">
+
+    <button mat-icon-button (click)="datasource.next()">
       <mat-icon class="devora-code-icon-chevron_right"></mat-icon>
     </button>
-    <button mat-mini-fab (click)="datasource.goToToday()">
+
+    <button mat-icon-button (click)="datasource.goToToday()">
       <mat-icon class="devora-code-icon-today"></mat-icon>
     </button>
-    <button mat-mini-fab (click)="datasource.reload()">
+
+    <button mat-icon-button (click)="datasource.reload()">
       <mat-icon class="devora-code-icon-refresh"></mat-icon>
     </button>
-    <button mat-mini-fab (click)="datasource.open()">
-      <mat-icon class="devora-code-icon-preview"></mat-icon>
+
+    <button mat-icon-button (click)="datasource.open()">
+      <mat-icon class="devora-code-icon-timesheet-edit"></mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="datasource.openAsCSV()">
+      <mat-icon class="devora-code-icon-timesheet-csv"></mat-icon>
     </button>
   </div>
+</header>
 
-  <!-- Tabelle -->
+<!-- Tabelle -->
+<div class="flex-grow-1 overflow-auto">
   @let entries = datasource.entries();
   @if (entries.length > 0) {
     <table cdk-table [dataSource]="entries" class="entries-table">
@@ -76,7 +92,9 @@
       <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
     </table>
   }
+</div>
 
+<footer>
   <!-- Summe -->
   @if (entries.length > 0) {
     <div class="period-sum">
@@ -89,4 +107,4 @@
   @if (entries.length === 0) {
     <p class="empty-state">{{ datasource.emptyLabel() }}</p>
   }
-</div>
+</footer>

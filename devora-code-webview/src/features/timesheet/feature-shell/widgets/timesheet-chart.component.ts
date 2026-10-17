@@ -20,19 +20,19 @@ import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2
 import { FetchMonth, TimetrackerStateSelectors } from '../../data-access';
 
 @Component({
-  selector: 'devora-code-month-bookings',
+  selector: 'devora-code-timesheet-chart-widget',
   standalone: true,
   imports: [CommonModule, BaseChartDirective],
   providers: [
     provideCharts(withDefaultRegisterables()),
     {
       provide: DEVORA_CODE_WIDGET,
-      useExisting: MonthBookingsComponent,
+      useExisting: TimesheetChartComponent,
     },
   ],
-  templateUrl: './month-bookings.component.html',
+  templateUrl: './timesheet-chart.component.html',
 })
-export class MonthBookingsComponent implements DevoraCodeWidget {
+export class TimesheetChartComponent implements DevoraCodeWidget {
   private readonly store = inject(Store);
   private readonly monthlyData = this.store.selectSignal(TimetrackerStateSelectors.monthData);
   private readonly currentDate = signal(new Date());

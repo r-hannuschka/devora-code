@@ -1,17 +1,29 @@
 import { computed, inject, linkedSignal, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TimesheetApi } from '@/core/timesheet';
-import { differenceInSeconds, format, getWeek, getYear } from 'date-fns';
+import {
+  addMonths,
+  addWeeks,
+  differenceInSeconds,
+  endOfMonth,
+  format,
+  getWeek,
+  getYear,
+  startOfMonth,
+  subMonths,
+  subWeeks,
+} from 'date-fns';
 import { de } from 'date-fns/locale';
 import { addDays, startOfWeek, subDays } from 'date-fns';
 
 export enum ViewMode {
   Day,
   Week,
+  Month,
 }
 
 @Service({ autoProvided: false })
-export class BookingsDatasource {
+export class TimesheetService {
   private readonly timesheet = inject(TimesheetApi);
 
   private readonly currentViewMode = signal<ViewMode>(ViewMode.Week);
@@ -23,9 +35,18 @@ export class BookingsDatasource {
     let startDate = this.selectedDate();
     let endDate = startDate;
 
-    if (viewMode === ViewMode.Week) {
-      startDate = startOfWeek(startDate, { weekStartsOn: 1 });
-      endDate = addDays(startDate, 6);
+    switch (viewMode) {
+      case ViewMode.Week: {
+        startDate = startOfWeek(startDate, { weekStartsOn: 1 });
+        endDate = addDays(startDate, 6);
+        break;
+      }
+
+      case ViewMode.Month: {
+        startDate = startOfMonth(startDate);
+        endDate = endOfMonth(startDate);
+        break;
+      }
     }
 
     return {
@@ -137,33 +158,57 @@ export class BookingsDatasource {
   }
 
   next() {
-    const nextDate =
-      this.currentViewMode() === ViewMode.Week
-        ? addDays(this.selectedDate(), 7)
-        : addDays(this.selectedDate(), 1);
+    let nextDate;
+    switch (this.currentViewMode()) {
+      case ViewMode.Week:
+        const nextWeek = addWeeks(this.selectedDate(), 1);
+        nextDate = startOfWeek(nextWeek, { weekStartsOn: 1 });
+        break;
 
+      case ViewMode.Month:
+        const nextMonth = addMonths(this.selectedDate(), 1);
+        nextDate = startOfMonth(nextMonth);
+        break;
+
+      default:
+        nextDate = addDays(this.selectedDate(), 1);
+    }
     this.selectedDate.set(nextDate);
   }
 
-  open() {
-    const {startAt, endAt:endAt} = this.dateRange() ?? {};
-    if (!startAt || !endAt ) {
-      return;
-    }
-    
-    this.timesheet.openTimesheet({ startAt, endAt });
-  }
-
   prev() {
-    const prevDate =
-      this.currentViewMode() === ViewMode.Week
-        ? subDays(this.selectedDate(), 7)
-        : subDays(this.selectedDate(), 1);
+    let prevDate;
+    switch (this.currentViewMode()) {
+      case ViewMode.Week:
+        const prevWeek = subWeeks(this.selectedDate(), 1);
+        prevDate = startOfWeek(prevWeek, { weekStartsOn: 1 });
+        break;
 
+      case ViewMode.Month:
+        const prevMonth = subMonths(this.selectedDate(), 1);
+        prevDate = startOfMonth(prevMonth);
+        break;
+
+      default:
+        prevDate = subDays(this.selectedDate(), 1);
+    }
     this.selectedDate.set(prevDate);
   }
 
   reload() {
     this.bookingResource.reload();
+  }
+
+  open() {
+    const { startAt, endAt: endAt } = this.dateRange() ?? {};
+    if (!startAt || !endAt) {
+      return;
+    }
+
+    this.timesheet.openTimesheet({ startAt, endAt });
+  }
+
+  openAsCSV() {
+    throw new Error('Method not implemented.');
   }
 }

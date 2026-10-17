@@ -1,5 +1,5 @@
 import { WidgetComponent } from '@/common/widget';
-import { MonthBookingsComponent } from '@/feature/timetracker/feature-shell/widgets';
+import { TimesheetChartComponent  } from '@/feature/timesheet/feature-shell/widgets';
 import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
   imports: [
     WidgetComponent,
-    MonthBookingsComponent
+    TimesheetChartComponent
   ],
 })
 export class DashboardComponent {}

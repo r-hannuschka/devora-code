@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BookingsDatasource, ViewMode } from './bookings.service';
+import { TimesheetService, ViewMode } from './timesheet.service';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -14,7 +14,7 @@ import { BookingsDatasource, ViewMode } from './bookings.service';
  * SessionApi: Timer Lifecycle (resetSession)
  */
 @Component({
-  selector: 'devora-code-bookings',
+  selector: 'devora-code-timesheet-grid',
   standalone: true,
   imports: [
     CdkTableModule,
@@ -23,13 +23,16 @@ import { BookingsDatasource, ViewMode } from './bookings.service';
     MatButtonModule,
     MatTooltipModule,
   ],
-  templateUrl: './week-bookings.component.html',
-  styleUrl: './week-bookings.component.scss',
+  templateUrl: './timesheet-grid.component.html',
+  styleUrl: 'timesheet-grid.component.scss',
   encapsulation: ViewEncapsulation.None,
-  providers: [BookingsDatasource],
+  providers: [TimesheetService],
+  host: {
+    class: 'd-flex flex-column overflow-hidden'
+  }
 })
-export class WeekBookingsComponent {
-  protected readonly datasource = inject(BookingsDatasource);
+export class TimesheetGridComponent {
+  protected readonly datasource = inject(TimesheetService);
   private readonly session = inject(SessionApi);
   protected readonly displayedColumns = ['date', 'issueKey', 'start', 'end', 'duration'];
   protected readonly ViewMode = ViewMode;
@@ -38,3 +41,4 @@ export class WeekBookingsComponent {
     this.session.resetSession().subscribe(() => this.datasource.reload());
   }
 }
+
