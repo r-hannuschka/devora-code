@@ -50,6 +50,10 @@ export function installInMemoryFs(storageDir: string) {
       .map((path) => [path.slice(path.lastIndexOf("/") + 1), FileType.File] as [string, FileType]);
   });
 
+  vi.spyOn(workspace.fs, "delete").mockImplementation(async (uri: Uri) => {
+    files.delete(uri.path);
+  });
+
   return {
     /** Rohzugriff: Pfad -> Dateiinhalt als String */
     files,

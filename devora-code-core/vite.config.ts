@@ -15,7 +15,7 @@ export default defineConfig({
     sourcemap: true,
     minify: 'esbuild',
     rollupOptions: {
-      external: ['vscode', 'fs', 'path', 'crypto'],
+      external: ['vscode', 'fs', 'path', 'crypto', 'adm-zip'],
       output: {
         preserveModules: false,
       },
@@ -36,6 +36,6 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   optimizeDeps: {
-    exclude: ['vscode'],
+    exclude: ['vscode', 'adm-zip'],
   },
 });
