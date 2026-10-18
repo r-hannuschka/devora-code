@@ -1,8 +1,7 @@
 import { test } from "@/support";
-import type { TimesheetOpenCommand } from "@devora-code/api/timesheet";
-import * as vscode from "vscode";
-import { afterEach, describe, expect, vi } from "vitest";
 import { TimesheetOpenHandler } from "@src/domain/timesheet/commands";
+import { afterEach, describe, expect, vi } from "vitest";
+import * as vscode from "vscode";
 
 /**
  * TimesheetOpenHandler testet den Kommando-Flow:
@@ -27,9 +26,9 @@ describe("TimesheetOpenHandler", () => {
     fs.dirs.add("/dev/null/.timesheets");
 
     let capturedBuffer = Buffer.from([]);
-    const writeSpy = vi
-      .spyOn(vscode.workspace.fs, "writeFile")
-      .mockImplementation(async (_, buf) => { capturedBuffer = Buffer.from(buf); });
+    const writeSpy = vi.spyOn(vscode.workspace.fs, "writeFile").mockImplementation(async (_, buf) => {
+      capturedBuffer = Buffer.from(buf);
+    });
 
     await new TimesheetOpenHandler({
       id: "open-1",
@@ -53,9 +52,9 @@ describe("TimesheetOpenHandler", () => {
     fs.dirs.add("/dev/null/.timesheets");
 
     let capturedBuffer = Buffer.from([]);
-    const writeSpy = vi
-      .spyOn(vscode.workspace.fs, "writeFile")
-      .mockImplementation(async (_, buf) => { capturedBuffer = Buffer.from(buf); });
+    const writeSpy = vi.spyOn(vscode.workspace.fs, "writeFile").mockImplementation(async (_, buf) => {
+      capturedBuffer = Buffer.from(buf);
+    });
 
     await new TimesheetOpenHandler({
       id: "open-2",
@@ -77,9 +76,9 @@ describe("TimesheetOpenHandler", () => {
     fs.dirs.add("/dev/null/.timesheets");
 
     let capturedBuffer = Buffer.from([]);
-    const writeSpy = vi
-      .spyOn(vscode.workspace.fs, "writeFile")
-      .mockImplementation(async (_, buf) => { capturedBuffer = Buffer.from(buf); });
+    const writeSpy = vi.spyOn(vscode.workspace.fs, "writeFile").mockImplementation(async (_, buf) => {
+      capturedBuffer = Buffer.from(buf);
+    });
 
     await new TimesheetOpenHandler({
       id: "open-3",
@@ -104,9 +103,9 @@ describe("TimesheetOpenHandler", () => {
     fs.dirs.add("/dev/null/.timesheets");
 
     let capturedBuffer = Buffer.from([]);
-    const writeSpy = vi
-      .spyOn(vscode.workspace.fs, "writeFile")
-      .mockImplementation(async (_, buf) => { capturedBuffer = Buffer.from(buf); });
+    const writeSpy = vi.spyOn(vscode.workspace.fs, "writeFile").mockImplementation(async (_, buf) => {
+      capturedBuffer = Buffer.from(buf);
+    });
 
     await new TimesheetOpenHandler({
       id: "open-4",

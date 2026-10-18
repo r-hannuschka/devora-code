@@ -179,7 +179,7 @@ export class TimesheetService {
     };
 
     // 3. Ergebnis schreiben (Validator sichert Monatsgrenzen)
-    await this.repository.writeMonth(fileName, mergedData);
+    await this.repository.writeFile(fileName, mergedData);
   }
 
   // ========================================================================
@@ -198,15 +198,5 @@ export class TimesheetService {
       count: entries.length,
       totalSeconds: entries.reduce((sum, e) => sum + this.calcDuration(e.startAt, e.endAt), 0),
     };
-  }
-
-  private validateRaw(raw: TimesData, fileName: string) {
-    for (const dateStr of Object.keys(raw)) {
-      const rawMonth = format(dateStr, "yyyy-MM");
-      if (rawMonth !== fileName) {
-        return { rawMonth };
-      }
-    }
-    return null;
   }
 }

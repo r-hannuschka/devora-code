@@ -8,6 +8,8 @@ export * from "./commands/open-timesheet.command";
 export * from "./commands/query-by-issue.command";
 export * from "./commands/timesheet-csv.command";
 export * from "./commands/update.command";
+export * from "./commands/create-backup.command";
+export * from "./commands/restore-backup.command";
 
 // Data Types
 export * from "./types/time-entry-list";

@@ -31,6 +31,8 @@ export class CommandRouter {
     "timesheet:add-entry",
     "timesheet:open",
     "timesheet:sync-from-raw",
+    "timesheet:create-backup",
+    "timesheet:restore-backup",
   ]);
 
   constructor(

@@ -19,7 +19,8 @@
     "commands": [
       {
         "command": "devora-code.openWebview",
-        "title": "DevoraCode: open webview"
+        "title": "open devora code dashboard",
+        "category": "Devora Code"
       },
       {
         "command": "devora-code.activated",
@@ -28,8 +29,18 @@
       {
         "command": "devora-code.timesheet-sync-raw",
         "title": "Timesheet mit DevoraCode Synchronisieren",
-        "category": "Devora",
+        "category": "Devora Code",
         "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "devora-code.create-backup",
+        "title": "Create backup for all timesheets",
+        "category": "Devora Code"
+      },
+      {
+        "command": "devora-code.restore-backup",
+        "title": "restore backup from file",
+        "category": "Devora Code"
       }
     ],
     "menus": {
@@ -72,7 +83,8 @@
   "dependencies": {
     "@devora-code/api": "*",
     "@devora-code/sdk": "*",
-    "date-fns": "^4.4.0"
+    "adm-zip": "0.6.1",
+    "date-fns": "4.4.0"
   },
   "scripts": {
     "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",
