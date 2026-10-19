@@ -1,19 +1,36 @@
 {
   "name": "devora-code",
   "publisher": "trueffelmafia",
-  "displayName": "Devora Code",
+  "displayName": "Devora Code Core",
   "engines": {
     "vscode": "^1.105.0"
   },
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Seamless time tracking and issue management directly inside VS Code.",
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "private": "true",
+  "tags": [
+    "jira",
+    "github",
+    "issues"
+  ],
   "license": "MIT",
-  "author": "",
+  "author": "Ralf Hannuschka",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r-hannuschka/devora-code"
+  },
+  "bugs": {
+    "url": "https://github.com/r-hannuschka/devora-code/issues"
+  },
+  "homepage": "https://github.com/r-hannuschka/devora-code",
   "type": "commonjs",
   "main": "./dist/devora-code.js",
   "activationEvents": [
-    "workspaceContains:**/*.devora-timesheet",
-    "onFileSystem:file"
+    "workspaceContains:**/*.devora-timesheet"
   ],
   "contributes": {
     "commands": [
@@ -29,8 +46,7 @@
       {
         "command": "devora-code.timesheet-sync-raw",
         "title": "Timesheet mit DevoraCode Synchronisieren",
-        "category": "Devora Code",
-        "icon": "$(cloud-upload)"
+        "category": "Devora Code"
       },
       {
         "command": "devora-code.create-backup",
@@ -72,19 +88,10 @@
           ".devora-timesheet"
         ]
       }
-    ],
-    "configuration": {
-      "properties": {}
-    }
+    ]
   },
-  "enabledApiProposals": [
-    "extensionRuntime"
-  ],
   "dependencies": {
-    "@devora-code/api": "*",
-    "@devora-code/sdk": "*",
-    "adm-zip": "0.6.1",
-    "date-fns": "4.4.0"
+    "adm-zip": "0.6.1"
   },
   "scripts": {
     "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",

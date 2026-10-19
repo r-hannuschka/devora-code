@@ -70,7 +70,7 @@ export class TimesheetBackupRepository {
   }
 
   private async backupExists(filename: string): Promise<boolean> {
-    if (!this.directoryExists) {
+    if (!await this.directoryExists()) {
       return false;
     }
 

@@ -1,4 +1,4 @@
-import type { FocusedIssue, IssueList, IssueListItem, IssueTypeMapping, StatusMapping } from "@devora-code/api";
+import type { FocusedIssue, IssueList, IssueListItem, IssueTypeMapping, StatusMapping } from "@devora-code/api/issue";
 import { singleton } from "tsyringe";
 import { JiraApiClient } from "../infrastructure/jira-api-client";
 import type { FocusedIssueDTO } from "../infrastructure/model/jira-focused-issue.dto";

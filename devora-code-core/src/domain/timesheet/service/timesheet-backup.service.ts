@@ -45,7 +45,7 @@ export class TimesheetBackupService {
   }
 
   async restore(file: string) {
-    const buffer = await this.timesheetBackupRepository.read("2026-10-18T15-01-41.timesheet-backup.zip");
+    const buffer = await this.timesheetBackupRepository.read(file);
     const baseStorageUri = this.timesheetRepository.getStorageUri();
     const zip = new AdmZip(Buffer.from(buffer));
     const zipEntries = zip.getEntries();

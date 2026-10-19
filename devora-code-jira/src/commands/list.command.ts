@@ -1,5 +1,5 @@
 import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
-import type { IssueList } from "@devora-code/api";
+import type { IssueList } from "@devora-code/api/issue";
 import { container } from "tsyringe";
 import { JiraSearchRepository } from "../repository/jira-search.repository";
 

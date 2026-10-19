@@ -54,8 +54,8 @@ export class TimesheetRestoreBackupUiHandler {
         return; // Nutzer hat ESC gedrückt
       }
 
-      const cleanName = selectedItem.label.replace("\$(file-zip) ", "");
-      const fullZipFileName = `${cleanName}.zip`;
+      const cleanName = selectedItem.label.replace("\$(file-zip) ", "").trim();
+      const fullZipFileName = cleanName;
 
       // 4. Command in den Router jagen
       const command: TimesheetRestoreBackupCommand = {
