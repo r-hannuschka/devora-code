@@ -1,0 +1,27 @@
+# Erstmal ALLES blockieren, was nicht im dist-Ordner liegt
+src/
+src/**
+coverage/
+coverage/**
+docs/
+docs/**
+resources/
+resources/**
+tests/
+
+# Alle Konfigurations- und Testdateien kicken
+tsconfig.json
+vite.config.ts
+vitest.config.ts
+.claude/
+.claude/**
+.vscode/
+.git/
+.devora-code/
+
+# Workspace-Reste blockieren
+../**
+../../**
+node_modules/
+node_modules/**
+

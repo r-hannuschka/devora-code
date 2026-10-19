@@ -1,0 +1,10 @@
+.claude/
+.claude/**
+.vscode/
+.git/
+src/
+tsconfig.json
+webpack.config.js
+esbuild.js
+node_modules/
+node_modules/**

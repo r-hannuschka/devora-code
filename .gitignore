@@ -6,6 +6,7 @@ dist/
 build/
 out/
 *.tgz
+*.vsix
 
 # Webview
 .svelte-kit/
@@ -17,6 +18,7 @@ out/
 .vscode-test/
 *.code-workspace
 .idea/
+.devora-code
 
 # Environment / secrets
 .env

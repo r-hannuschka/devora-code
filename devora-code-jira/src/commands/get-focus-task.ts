@@ -1,5 +1,5 @@
 import { RegisterCommand, CommandHandler } from "@devora-code/sdk/command";
-import type { FocusedIssue } from "@devora-code/api";
+import type { FocusedIssue } from "@devora-code/api/issue";
 
 @RegisterCommand("focus:get-task")
 export class FetchFocusTaskHandler implements CommandHandler<FocusedIssue | null> {

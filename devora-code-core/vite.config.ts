@@ -14,8 +14,11 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: true,
     minify: 'esbuild',
+    commonjsOptions: {
+      ignore: ['zlib', 'node:zlib'],
+    },
     rollupOptions: {
-      external: ['vscode', 'fs', 'path', 'crypto', 'adm-zip'],
+      external: ['vscode', 'fs', 'path', 'crypto', 'zlib', 'node:zlib'],
       output: {
         preserveModules: false,
       },
