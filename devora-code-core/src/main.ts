@@ -10,7 +10,7 @@ import * as vscode from "vscode";
 
 // module importieren, muessen wir tun damit sie im bundle sind
 import "./app.module";
-import { TimesheetDocumentValidatorService } from "./domain/timesheet";
+import { TimesheetDocumentValidatorService, TimesheetSanitizerService } from "./domain/timesheet";
 import type { TimesheetCreateBackupCommand, TimesheetRestoreBackupCommand } from "@devora-code/api/timesheet";
 import { TimesheetRestoreBackupUiHandler } from "./presentation/timesheet-restore-backup.handler";
 
@@ -52,6 +52,11 @@ export async function activate(context: vscode.ExtensionContext) {
       container.resolve(TimesheetRestoreBackupUiHandler).selectBackup();
     }),
 
+    // --- close open timers
+    vscode.commands.registerCommand("devora-code.close-open-timers", () => {
+      container.resolve(TimesheetSanitizerService).closeOpenTimers();
+    }),
+
     // --- we have to otherwise we get an error
     vscode.commands.registerCommand("devora-code.activated", () => void 0),
   ];
@@ -70,6 +75,8 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate(): void {
+  // --- Close Open Timers on Shutdown
+  container.resolve(TimesheetSanitizerService).closeOpenTimers();
   container.clearInstances();
 
   // deactivate satellites

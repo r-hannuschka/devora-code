@@ -5,7 +5,7 @@
   "engines": {
     "vscode": "^1.105.0"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Seamless time tracking and issue management directly inside VS Code.",
   "categories": [
     "Visualization",
@@ -57,6 +57,11 @@
         "command": "devora-code.restore-backup",
         "title": "restore backup from file",
         "category": "Devora Code"
+      },
+      {
+        "command": "devora-code.close-open-timers",
+        "title": "Closes open timers and sanitzes timesheets",
+        "category": "Devora Code"
       }
     ],
     "menus": {
@@ -91,7 +96,8 @@
     ]
   },
   "dependencies": {
-    "adm-zip": "0.6.1"
+    "adm-zip": "0.6.1",
+    "date-fns": "4.4.0"
   },
   "scripts": {
     "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",
