@@ -60,10 +60,10 @@ export class RaceWidgetComponent implements DevoraCodeWidget {
 
   // --- runner position in SVG viewBox coordinates (0–800) ---
   protected readonly runnerX = computed(() => {
-    const trackedResource = this.raceWidgetService.trackedToday;
+    const workedMinutesResource = this.raceWidgetService.trackedToday;
 
-    if (trackedResource.hasValue()) {
-      const progress = Math.min(trackedResource.value() / this.targetMinutes, 1);
+    if (workedMinutesResource.hasValue()) {
+      const progress = Math.min(workedMinutesResource.value() / this.targetMinutes, 1);
       return this.svgStartX + progress * (this.svgFinishX - this.svgStartX);
     }
 

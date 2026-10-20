@@ -71,7 +71,7 @@ export class RaceWidgetService {
       }
 
       return timer(0, 60 * 1_000).pipe(
-        map(() => differenceInMinutes(new Date(), activeSession.startAt))
+        map(() => tracked + differenceInMinutes(new Date(), activeSession.startAt))
       );
     }
   })

@@ -4,7 +4,7 @@ import { TimeEntryDTO, TimesheetRepository, type TimesDataDTO } from "@/infrastr
 import { dateLocal, normalizeTimeSpan } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
 import type { TimeEntryList, TimesheetRange } from "@devora-code/api/timesheet";
-import { format, isWithinInterval, startOfMonth, subMonths } from "date-fns";
+import { format, isWithinInterval } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { ExtensionContext } from "vscode";
 import { TimesheetRawValidator } from "./timesheet-raw.validator";
@@ -85,9 +85,8 @@ export class TimesheetService {
   /** Entries eines Datumsbereichs (zurückfiltert offene Timer vom Vormonat) */
   async getRaw(startDate: string, endDate: string): Promise<TimesDataDTO> {
     // Vormonat einbeziehen, da offene Tasks vom Vormonat noch nicht abgeschlossen sein können
-    const prevMonth = format(subMonths(startOfMonth(startDate), 1), "yyyy-MM-dd");
 
-    const months = await this.repository.getRange(prevMonth, endDate);
+    const months = await this.repository.getRange(startDate, endDate);
     const raw = Object.assign({}, ...months) as TimesDataDTO;
     const matches: TimesDataDTO = {};
 
@@ -96,11 +95,6 @@ export class TimesheetService {
 
     for (const [date, entries] of Object.entries(raw)) {
       if (date < rangeStart || date > rangeEnd) {
-        // Offene Timer vor dem Start-Datum nachschieben
-        const openEntries = entries.filter((e) => e.endAt === null);
-        if (openEntries.length > 0) {
-          matches[date] = openEntries;
-        }
         continue;
       }
       matches[date] = entries;
