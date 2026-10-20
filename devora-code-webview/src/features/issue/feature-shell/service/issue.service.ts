@@ -1,4 +1,4 @@
-import { IssueApi, LoggerFacade } from '@/core/api';
+import { IssueApi, LoggerApi } from '@/core/api';
 import { SessionService } from '@/core/session';
 import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
@@ -17,7 +17,7 @@ import { map } from 'rxjs';
 export class IssueService {
   private readonly store = inject(Store);
   private readonly jiraApi = inject(IssueApi);
-  private readonly logger = inject(LoggerFacade);
+  private readonly logger = inject(LoggerApi);
   private readonly sessionService = inject(SessionService);
 
   private readonly issueList = this.store.select(IssueStateSelectors.issues);

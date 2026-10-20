@@ -1,4 +1,4 @@
-import type { ILoggerFacade } from '@/core/api';
+import type { LoggerApi } from '@/core/api';
 import { inject, Injectable } from '@angular/core';
 import type { SendLogCommand } from '@devora-code/api/logger';
 import { VsCodeBridge } from './vscode-bridge';
@@ -9,7 +9,7 @@ import { VsCodeBridge } from './vscode-bridge';
  * der sie in ~/devora-code-logs/devora-code.log schreibt.
  */
 @Injectable()
-export class LoggerVsCode implements ILoggerFacade {
+export class LoggerVsCode implements LoggerApi {
   private readonly vscodeBridge = inject(VsCodeBridge);
 
   private send(level: SendLogCommand['payload']['level'], message: string, context?: string): void {

@@ -17,6 +17,9 @@ export class ActiveSessionWidgetComponent implements DevoraCodeWidget {
 
   // --- Widget contract ---
 
+  attached(): void {
+  }
+
   readonly title = 'Aktive Session';
 
   readonly actions: DevoraCodeWidgetAction[] = [

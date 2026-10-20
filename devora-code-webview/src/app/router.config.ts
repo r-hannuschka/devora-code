@@ -1,6 +1,6 @@
 import type { PortalRoute } from '@/core/portal-router';
 import { routes as jiraRoutes } from '@/feature/issue/feature-shell';
-import { routes as timesheetRoutes } from '@/feature/timesheet/feature-shell';
+import { routes as timesheetRoutes } from '@/domains/tracking';
 
 export const routerConfig: PortalRoute[] = [
   {

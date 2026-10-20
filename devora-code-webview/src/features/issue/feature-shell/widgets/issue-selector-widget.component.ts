@@ -30,6 +30,9 @@ export class IssueSelectorWidget implements DevoraCodeWidget {
 
   readonly title = 'Issue Selektor';
 
+  attached(): void {
+  }
+
   protected displayWithIssueKey(item: IssueListItem): string {
     return `[${item.issueType}]: ${item.key}`;
   }

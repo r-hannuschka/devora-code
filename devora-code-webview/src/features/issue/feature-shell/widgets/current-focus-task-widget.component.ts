@@ -23,6 +23,9 @@ import { IssueStateSelectors } from '../../data-access';
 export class CurrentFocusTaskWidgetComponent implements DevoraCodeWidget {
   private readonly store = inject(Store);
 
+  attached(): void {
+  }
+
   protected readonly focusedTask = this.store.selectSignal(IssueStateSelectors.currentFocusedTask);
 
   readonly title = 'Aktuellster Issue';

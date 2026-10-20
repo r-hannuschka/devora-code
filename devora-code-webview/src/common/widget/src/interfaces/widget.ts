@@ -10,4 +10,6 @@ export interface DevoraCodeWidget {
   readonly actions?: DevoraCodeWidgetAction[];
 
   actionDispatched?(action: DevoraCodeWidgetAction): void;
+
+  attached(): void;
 }

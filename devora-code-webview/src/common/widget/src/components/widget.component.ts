@@ -1,4 +1,4 @@
-import { Component, computed, contentChild, ViewEncapsulation } from '@angular/core';
+import { Component, computed, contentChild, effect, untracked, ViewEncapsulation } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import type { DevoraCodeWidgetAction } from '../interfaces/widget';
@@ -15,6 +15,15 @@ import { DEVORA_CODE_WIDGET } from '../static/tokens';
 })
 export class WidgetComponent {
   private readonly widget = contentChild(DEVORA_CODE_WIDGET);
+
+  protected readonly widgetLoadedEffect = effect(() => {
+    const loadedWidget = this.widget();
+    if (!loadedWidget) {
+      return;
+    }
+
+    untracked(() => loadedWidget.attached());
+  });
 
   protected readonly title = computed(() => {
     const loadedWidget = this.widget();

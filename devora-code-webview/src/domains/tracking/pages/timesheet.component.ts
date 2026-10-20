@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { TimesheetAddComponent } from './timesheet-add.component';
-import { TimesheetGridComponent } from './timesheet-grid.component';
-import { TimesheetService } from './timesheet.service';
+import { TimesheetAddComponent } from '../features/timesheet-add/timesheet-add.component';
+import { TimesheetGridComponent } from '../features/timesheet-grid/timesheet-grid.component';
+import { TimesheetService } from '../service/timesheet.service';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -17,7 +17,7 @@ import { TimesheetService } from './timesheet.service';
   encapsulation: ViewEncapsulation.None,
   providers: [TimesheetService],
   host: {
-    "class": "d-flex flex-column h-100 overflow-hidden"
-  }
+    class: 'd-flex flex-column h-100 overflow-hidden',
+  },
 })
 export class TimesheetComponent {}
