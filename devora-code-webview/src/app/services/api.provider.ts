@@ -1,12 +1,12 @@
-import { IssueApi, LoggerFacade } from '@/core/api';
+import { IssueApi, LoggerApi } from '@/core/api';
 import { SessionApi } from '@/core/session';
+import { TimesheetApi } from '@/core/timesheet';
 import { makeEnvironmentProviders, type EnvironmentProviders } from '@angular/core';
 import { Locale } from 'date-fns';
 import { IssueVsCode } from './jira-vscode';
-import { LoggerVsCode } from './logger-vscode';
-import { TimesheetApi } from '@/core/timesheet';
-import { TimesheetApiService } from './timesheet-api.service';
+import { LoggerVsCode } from './logger-api.service';
 import { SessionApiService } from './session-api.service';
+import { TimesheetApiService } from './timesheet-api.service';
 
 export interface DateProviderOptions {
   locale?: Locale;
@@ -36,7 +36,7 @@ export function provideAppApi(): EnvironmentProviders {
       useClass: TimesheetApiService,
     },
     {
-      provide: LoggerFacade,
+      provide: LoggerApi,
       useClass: LoggerVsCode,
     },
   ]);

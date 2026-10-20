@@ -1,0 +1,20 @@
+/* Der Zustand, wenn die Zeit aktiv erfasst wird */
+devora-code-tracking-race {
+  display: block;
+
+  .racetrack-widget {
+    background: #1e1e1e;
+    padding: 16px;
+  }
+
+  .track-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 80px;
+  }
+
+  .runner {
+    transition: transform 0.4s ease-out;
+  }
+}

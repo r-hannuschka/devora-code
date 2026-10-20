@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TimesheetService, ViewMode } from './timesheet.service';
+import { TimesheetService, ViewMode } from '../../service/timesheet.service';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -28,8 +28,8 @@ import { TimesheetService, ViewMode } from './timesheet.service';
   encapsulation: ViewEncapsulation.None,
   providers: [TimesheetService],
   host: {
-    class: 'd-flex flex-column overflow-hidden'
-  }
+    class: 'd-flex flex-column overflow-hidden',
+  },
 })
 export class TimesheetGridComponent {
   protected readonly datasource = inject(TimesheetService);
@@ -41,4 +41,3 @@ export class TimesheetGridComponent {
     this.session.resetSession().subscribe(() => this.datasource.reload());
   }
 }
-

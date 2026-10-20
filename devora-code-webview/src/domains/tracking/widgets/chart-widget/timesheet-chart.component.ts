@@ -1,3 +1,4 @@
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget, type DevoraCodeWidgetAction } from '@/common';
 import { CommonModule } from '@angular/common';
 import {
   afterNextRender,
@@ -9,15 +10,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngxs/store';
-import {
-  DEVORA_CODE_WIDGET,
-  type DevoraCodeWidget,
-  type DevoraCodeWidgetAction,
-} from '@/common';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { differenceInSeconds, format, getDaysInMonth } from 'date-fns';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { FetchMonth, TimetrackerStateSelectors } from '../../data-access';
+import { FetchMonth } from '../../+state/timetracker-state.actions';
+import { TimetrackerStateSelectors } from '../../+state/timetracker-state.selectors';
 
 @Component({
   selector: 'devora-code-timesheet-chart-widget',
@@ -61,10 +58,6 @@ export class TimesheetChartComponent implements DevoraCodeWidget {
   public lineChartType: ChartType = 'line';
 
   constructor() {
-    afterNextRender({
-      read: () => this.fetchMonthData(),
-    });
-
     effect(() => {
       this.lineChartData(); // Registriert die Abhängigkeit zum Signal
 
@@ -73,6 +66,10 @@ export class TimesheetChartComponent implements DevoraCodeWidget {
         this.chart.update();
       }
     });
+  }
+
+  attached(): void {
+    this.fetchMonthData();
   }
 
   protected readonly hoursPerDay = computed(() => {
