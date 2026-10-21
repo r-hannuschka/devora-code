@@ -1,31 +1,36 @@
-import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { LoggerService } from "@/infrastructure/logger";
-import AdmZip from "adm-zip";
-import { basename, join } from "path";
-import { inject, singleton } from "tsyringe";
-import { FileType, Uri, workspace, type ExtensionContext } from "vscode";
+import { SettingsService } from "@/infrastructure/settings";
+import { resolveWorkspaceUri } from "@devora-code/sdk";
+import { singleton } from "tsyringe";
+import { FileType, Uri, workspace } from "vscode";
 
 @singleton()
 export class TimesheetBackupRepository {
-  private readonly backupDir: Uri;
+  private backupDir: Uri | null = null;
 
   constructor(
-    @inject(EXTENSION_CONTEXT_TOKEN) context: ExtensionContext,
+    private readonly settingsService: SettingsService,
     private readonly loggerService: LoggerService,
-  ) {
-    this.backupDir = Uri.joinPath(context.globalStorageUri, "backup");
-  }
+  ) {}
 
   getStorageDirectoy() {
-    return this.backupDir.fsPath;
+    return this.backupStorageDir.fsPath;
+  }
+
+  private get backupStorageDir(): Uri {
+    if (!this.backupDir) {
+      this.backupDir = resolveWorkspaceUri(this.settingsService.get("backupStorageDir"), "./.devora-code/backups");
+    }
+
+    return this.backupDir;
   }
 
   async list(): Promise<Uri[]> {
     try {
-      const dirEntries = await workspace.fs.readDirectory(this.backupDir);
-      return dirEntries.map(([name]) => Uri.joinPath(this.backupDir, name));
-    } catch(error) {
-      const message = error instanceof Error ? error.message : 'unknown error';
+      const dirEntries = await workspace.fs.readDirectory(this.backupStorageDir);
+      return dirEntries.map(([name]) => Uri.joinPath(this.backupStorageDir, name));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "unknown error";
       this.loggerService.error(`[Timesheet]: could not list backup files. ${message}`);
       throw error;
     }
@@ -37,10 +42,10 @@ export class TimesheetBackupRepository {
         await this.createBackupDirectory();
       }
 
-      await workspace.fs.writeFile(Uri.joinPath(this.backupDir, fileName), bytes);
-      this.loggerService.info(`[Timesheet]: created backup under "${this.backupDir.fsPath}/${fileName}"`);
+      await workspace.fs.writeFile(Uri.joinPath(this.backupStorageDir, fileName), bytes);
+      this.loggerService.info(`[Timesheet]: created backup under "${this.backupStorageDir.fsPath}/${fileName}"`);
     } catch (error) {
-      this.loggerService.error(`[Timesheet]: could not write backup file ${fileName} to ${this.backupDir.fsPath}`);
+      this.loggerService.error(`[Timesheet]: could not write backup file ${fileName} to ${this.backupStorageDir.fsPath}`);
       throw error;
     }
   }
@@ -48,10 +53,10 @@ export class TimesheetBackupRepository {
   async read(filename: string): Promise<Uint8Array> {
     try {
       if (!this.backupExists(filename)) {
-        throw new Error(`Backup with name "${filename}" does not exists under directory ${this.backupDir}`);
+        throw new Error(`Backup with name "${filename}" does not exists under directory ${this.backupStorageDir}`);
       }
 
-      const uri = Uri.joinPath(this.backupDir, filename);
+      const uri = Uri.joinPath(this.backupStorageDir, filename);
       return workspace.fs.readFile(uri);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "unknown error occured";
@@ -62,7 +67,7 @@ export class TimesheetBackupRepository {
 
   private async directoryExists(): Promise<boolean> {
     try {
-      const stat = await workspace.fs.stat(this.backupDir);
+      const stat = await workspace.fs.stat(this.backupStorageDir);
       return stat.type === FileType.Directory;
     } catch {
       return false;
@@ -70,7 +75,7 @@ export class TimesheetBackupRepository {
   }
 
   private async backupExists(filename: string): Promise<boolean> {
-    if (!await this.directoryExists()) {
+    if (!(await this.directoryExists())) {
       return false;
     }
 
@@ -78,7 +83,7 @@ export class TimesheetBackupRepository {
       return false;
     }
 
-    const stat = await workspace.fs.stat(Uri.joinPath(this.backupDir, filename));
+    const stat = await workspace.fs.stat(Uri.joinPath(this.backupStorageDir, filename));
     if (stat.type !== FileType.File) {
       return false;
     }
@@ -87,10 +92,10 @@ export class TimesheetBackupRepository {
 
   private async createBackupDirectory() {
     try {
-      await workspace.fs.createDirectory(this.backupDir);
-      this.loggerService.info(`[Timesheet]: created new backup directory "${this.backupDir.fsPath}"`);
+      await workspace.fs.createDirectory(this.backupStorageDir);
+      this.loggerService.info(`[Timesheet]: created new backup directory "${this.backupStorageDir.fsPath}"`);
     } catch (error) {
-      this.loggerService.error(`[Timesheet]: could not create backup directory ${this.backupDir.fsPath}`);
+      this.loggerService.error(`[Timesheet]: could not create backup directory ${this.backupStorageDir.fsPath}`);
       throw error;
     }
   }

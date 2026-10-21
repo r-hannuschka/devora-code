@@ -5,7 +5,7 @@ import commonjs from 'vite-plugin-commonjs';
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(import.meta.dirname, 'src/devora-code-jira.ts'),
+      entry: resolve(import.meta.dirname, 'src/main.ts'),
       name: '@devora-code-jira',
       formats: ['cjs'],
       fileName: () => 'devora-code-jira.js',

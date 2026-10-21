@@ -1,20 +1,20 @@
+import { JiraSettingsService } from "@/infrastructure/settings";
 import axios, { type AxiosInstance } from "axios";
 import { singleton } from "tsyringe";
-import { SettingsService } from "../settings";
 
 @singleton()
 export class JiraApiClient {
   private readonly client: AxiosInstance;
 
-  constructor(private readonly settings: SettingsService) {
+  constructor(private readonly settings: JiraSettingsService) {
     this.client = this.createClient();
     this.registerResponseInterceptors();
   }
 
   private createClient() {
-    const baseUrl = this.settings.get("JIRA_API_URL");
-    const userName = this.settings.get("JIRA_USER_NAME");
-    const token = this.settings.get("JIRA_API_TOKEN");
+    const baseUrl = this.settings.get('apiUrl');
+    const userName = this.settings.get('userName');
+    const token = this.settings.get('apiToken');
 
     if (!userName || !token) {
       throw new Error("Fehlt was");

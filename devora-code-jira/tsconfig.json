@@ -19,6 +19,8 @@
     "skipLibCheck": true,
     "types": ["node"],
     "paths": {
+      "@/domain/*": ["./src/domain/*/index.ts"],
+      "@/infrastructure/*": ["./src/infrastructure/*/index.ts"]
     }
   },
   "include": ["src/**/*"],

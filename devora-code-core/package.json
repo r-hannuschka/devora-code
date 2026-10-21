@@ -5,7 +5,7 @@
   "engines": {
     "vscode": "^1.105.0"
   },
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Seamless time tracking and issue management directly inside VS Code.",
   "categories": [
     "Visualization",
@@ -93,14 +93,38 @@
           ".devora-timesheet"
         ]
       }
-    ]
+    ],
+    "configuration": {
+      "properties": {
+        "devora-code.projectName": {
+          "type": "string",
+          "default": "",
+          "description": "Name des aktuellen Projekts.",
+          "scope": "resource"
+        },
+        "devora-code.timesheeStorageDir": {
+          "type": "string",
+          "default": "./.devora-code/timesheets",
+          "description": "Speicherort der Timesheets",
+          "scope": "resource"
+        },
+        "devora-code.backupStorageDir": {
+          "type": "string",
+          "default": "./.devora-code/backup",
+          "description": "Speicherort der Backups",
+          "scope": "resource"
+        }
+      }
+    }
   },
   "dependencies": {
+    "@devora-code/sdk": "*",
     "adm-zip": "0.6.1",
     "date-fns": "4.4.0"
   },
   "scripts": {
-    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",
+    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --emptyOutDir true --sourcemap false",
+    "package": "npx @vscode/vsce package --no-dependencies --out ../dist/",
     "watch": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --watch",
     "test": "vitest run",
     "coverage": "vitest run --coverage"

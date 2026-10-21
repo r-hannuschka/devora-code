@@ -5,7 +5,7 @@
   "engines": {
     "vscode": "^1.105.0"
   },
-  "version": "0.0.3",
+  "version": "0.0.4",
   "extensionDependencies": [
     "trueffelmafia.devora-code"
   ],
@@ -21,27 +21,31 @@
     "commands": [],
     "configuration": {
       "properties": {
-        "devora-code-jira.JIRA_API_URL": {
+        "devora-code.jira.apiUrl": {
           "type": "string",
           "default": "",
-          "description": "Jira Restapi URL"
+          "description": "Jira Restapi URL",
+          "scope": "resource"
         },
-        "devora-code-jira.JIRA_API_TOKEN": {
+        "devora-code.jira.apiToken": {
           "type": "string",
           "default": "",
-          "description": "Jira API Token"
+          "description": "Jira API Token",
+          "scope": "resource"
         },
-        "devora-code-jira.JIRA_USER_NAME": {
+        "devora-code.jira.userName": {
           "type": "string",
           "default": "",
-          "description": "Jira Benutzername/Email"
+          "description": "Jira Benutzername/Email",
+          "scope": "resource"
         },
-        "devora-code-jira.JIRA_PROJECT_KEY": {
+        "devora-code.jira.projectKey": {
           "type": "string",
           "default": "",
-          "description": "Jira Project Key"
+          "description": "Jira Project Key",
+          "scope": "resource"
         },
-        "devora-code-jira.ISSUE_TYPE_MAPPING": {
+        "devora-code.jira.issueTypeMapping": {
           "type": "object",
           "title": "Ticket-Typen Mapping",
           "description": "Füge den Namen aus deinem Jira hinzu (Links) und wähle den internen Typ (Rechts).",
@@ -52,9 +56,10 @@
               "FEATURE"
             ]
           },
-          "default": {}
+          "default": {},
+          "scope": "resource"
         },
-        "devora-code-jira.STATUS_MAPPING": {
+        "devora-code.jira.statusMapping": {
           "type": "object",
           "title": "Status Mapping",
           "description": "Füge den Status-Namen aus deinem Jira hinzu (Links) und wähle den internen Zustand (Rechts).",
@@ -67,7 +72,8 @@
               "DONE"
             ]
           },
-          "default": {}
+          "default": {},
+          "scope": "resource"
         }
       }
     }
@@ -76,9 +82,10 @@
     "extensionRuntime"
   ],
   "scripts": {
-    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build",
+    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --emptyOutDir true --sourcemap false",
     "watch": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "npx @vscode/vsce package --no-dependencies --out ../dist/"
   },
   "dependencies": {
     "@devora-code/sdk": "*",

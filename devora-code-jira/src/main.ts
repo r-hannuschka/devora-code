@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { container } from "tsyringe";
 import * as vscode from "vscode";
-import { JiraCommandController } from "./jira-command.controller";
+import { JiraCommandController } from "./domain/commands/command.controller";
 
 export function activate(): void {
   const hostExtension = vscode.extensions.getExtension("trueffelmafia.devora-code");

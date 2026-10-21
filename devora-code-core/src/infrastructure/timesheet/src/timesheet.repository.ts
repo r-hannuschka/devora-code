@@ -1,8 +1,9 @@
-import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
+import { SettingsService } from "@/infrastructure/settings";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
+import { resolveWorkspaceUri } from "@devora-code/sdk";
 import { addMonths, differenceInCalendarMonths, format } from "date-fns";
-import { inject, singleton } from "tsyringe";
-import { FileType, Uri, workspace, type ExtensionContext } from "vscode";
+import { singleton } from "tsyringe";
+import { FileType, Uri, workspace } from "vscode";
 import { StorageWriteException } from "./exception/storage-write.exception";
 import type { TimeEntryDTO, TimesDataDTO } from "./model/time-entry.dto";
 import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesheet.operations";
@@ -11,24 +12,28 @@ import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesh
 export class TimesheetRepository {
   private readonly encoder = new TextEncoder();
 
-  /** Pfade &amp; Initialisierung */
-  private readonly storageDir: Uri;
+  private storageDir: Uri | null = null;
 
-  constructor(@inject(EXTENSION_CONTEXT_TOKEN) context: ExtensionContext) {
-    this.storageDir = Uri.joinPath(context.globalStorageUri, "booking-data");
+  constructor(private readonly settingsService: SettingsService) {}
+
+  private get timesheetStorageDir(): Uri {
+    if (!this.storageDir) {
+      this.storageDir = resolveWorkspaceUri(this.settingsService.get("timesheetStorageDir"), "./.devora-code/timesheets");
+    }
+    return this.storageDir;
   }
 
   getStorageUri(): Uri {
-    return Uri.parse(this.storageDir.toString());
+    return Uri.parse(this.timesheetStorageDir.toString());
   }
 
   getMonthFileUri(month: string): Uri {
-    return Uri.joinPath(this.storageDir, `${month}.json`);
+    return Uri.joinPath(this.timesheetStorageDir, `${month}.json`);
   }
 
   /** Verzeichnis-Operationen */
 
-  async list(dirUri: Uri = this.storageDir): Promise<Uri[]> {
+  async list(dirUri: Uri = this.timesheetStorageDir): Promise<Uri[]> {
     try {
       const dirEntries = await workspace.fs.readDirectory(dirUri);
       const files: Uri[] = [];
@@ -37,7 +42,7 @@ export class TimesheetRepository {
         const entryUri = Uri.joinPath(dirUri, name);
 
         if (type === FileType.Directory) {
-          files.push(...await this.list(entryUri));
+          files.push(...(await this.list(entryUri)));
           continue;
         }
 
@@ -54,8 +59,8 @@ export class TimesheetRepository {
 
   async readDirectory(): Promise<Uri[]> {
     try {
-      const dirEntries = await workspace.fs.readDirectory(this.storageDir);
-      return dirEntries.map(([name]) => Uri.joinPath(this.storageDir, name));
+      const dirEntries = await workspace.fs.readDirectory(this.timesheetStorageDir);
+      return dirEntries.map(([name]) => Uri.joinPath(this.timesheetStorageDir, name));
     } catch {
       return [];
     }
@@ -63,7 +68,7 @@ export class TimesheetRepository {
 
   private async directoryExists(): Promise<boolean> {
     try {
-      const stat = await workspace.fs.stat(this.storageDir);
+      const stat = await workspace.fs.stat(this.timesheetStorageDir);
       return stat.type === FileType.Directory;
     } catch {
       return false;
@@ -133,7 +138,7 @@ export class TimesheetRepository {
 
   /** Schreib-Operationen */
 
-  async write(entries: TimeEntry[], path = this.storageDir): Promise<TimeEntryDTO[]> {
+  async write(entries: TimeEntry[], path = this.timesheetStorageDir): Promise<TimeEntryDTO[]> {
     const dtos = entries.map(toDto);
 
     await Promise.all(
@@ -146,12 +151,12 @@ export class TimesheetRepository {
     return dtos;
   }
 
-  async writeFile(month: string, data: TimesData, dir = this.storageDir): Promise<void> {
+  async writeFile(month: string, data: TimesData, dir = this.timesheetStorageDir): Promise<void> {
     const sanitized = this.mapTimesDataToDTO(data);
 
     try {
       if (!(await this.directoryExists())) {
-        await workspace.fs.createDirectory(this.storageDir);
+        await workspace.fs.createDirectory(this.timesheetStorageDir);
       }
 
       const bytes = this.encoder.encode(JSON.stringify(sanitized, null, 2) + "\n");
@@ -171,7 +176,7 @@ export class TimesheetRepository {
 
   private async readMonth(month: string): Promise<TimesDataDTO | undefined> {
     try {
-      const raw = await workspace.fs.readFile(Uri.joinPath(this.storageDir, `${month}.json`));
+      const raw = await workspace.fs.readFile(Uri.joinPath(this.timesheetStorageDir, `${month}.json`));
       return JSON.parse(new TextDecoder().decode(raw));
     } catch {
       return undefined;
@@ -181,9 +186,9 @@ export class TimesheetRepository {
   private async readMonthForWrite(month: string): Promise<TimesDataDTO | undefined> {
     let raw: Uint8Array;
     try {
-      const stat = await workspace.fs.stat(Uri.joinPath(this.storageDir, `${month}.json`));
+      const stat = await workspace.fs.stat(Uri.joinPath(this.timesheetStorageDir, `${month}.json`));
       if (!stat || stat.type !== FileType.File) return undefined;
-      raw = await workspace.fs.readFile(Uri.joinPath(this.storageDir, `${month}.json`));
+      raw = await workspace.fs.readFile(Uri.joinPath(this.timesheetStorageDir, `${month}.json`));
     } catch (error) {
       if ((error as { code?: string } | undefined)?.code === "FileNotFound") return undefined;
       throw error;
@@ -192,10 +197,8 @@ export class TimesheetRepository {
   }
 
   private async getMonthFiles(): Promise<string[]> {
-    const dirEntries = await workspace.fs.readDirectory(this.storageDir);
-    return dirEntries
-      .filter(([name]) => name.endsWith(".json"))
-      .map(([filename]) => filename.replace(".json", ""));
+    const dirEntries = await workspace.fs.readDirectory(this.timesheetStorageDir);
+    return dirEntries.filter(([name]) => name.endsWith(".json")).map(([filename]) => filename.replace(".json", ""));
   }
 
   private getFilenamesFromRange(startDate: string, endDate: string): string[] {

@@ -1,6 +1,6 @@
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
 import type { GetMonthCommand } from "@devora-code/api/timesheet";
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { TimesheetService } from "../service/timesheet.service";
 

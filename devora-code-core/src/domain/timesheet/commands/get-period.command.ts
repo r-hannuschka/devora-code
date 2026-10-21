@@ -1,4 +1,4 @@
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import type { GetPeriodCommand, TimeEntryList } from "@devora-code/api/timesheet";
 import { container } from "tsyringe";
 import { TimesheetService } from "../service/timesheet.service";

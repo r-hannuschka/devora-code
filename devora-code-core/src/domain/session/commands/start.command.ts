@@ -1,6 +1,6 @@
 import type { TimeEntry } from "@devora-code/api/core";
 import type { StartSessionCommand } from "@devora-code/api/session";
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { SessionService } from "../service/session.service";
 

@@ -1,5 +1,5 @@
 import { NotificationService } from "@/infrastructure/notification";
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { TimesheetBackupService } from "../service/timesheet-backup.service";
 
