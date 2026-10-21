@@ -1,4 +1,4 @@
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import type { SendLogCommand } from "@devora-code/api/logger";
 import { container } from "tsyringe";
 import { LoggerService } from "@/infrastructure/logger";

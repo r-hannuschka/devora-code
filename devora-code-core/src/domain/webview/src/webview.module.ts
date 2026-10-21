@@ -1,7 +1,7 @@
 import { CommandRouter } from "@/domain/routing";
 import { NotificationService } from "@/infrastructure/notification";
 import type { Command } from "@devora-code/api/core";
-import { isErrorResponse } from "@devora-code/sdk/command";
+import { isErrorResponse } from "@devora-code/sdk";
 import { container, singleton } from "tsyringe";
 import type { WebviewPanel } from "vscode";
 import { DevoraCodeWebview } from "./provider/webview";

@@ -1,7 +1,7 @@
 import type { IssueDetail } from "@devora-code/api/issue";
 import { singleton } from "tsyringe";
-import { JiraApiClient } from "../infrastructure/jira-api-client";
-import type { JiraIssueDTO } from "../infrastructure/model/jira-issue.dto";
+import { JiraApiClient } from "../client/jira-api-client";
+import type { JiraIssueDTO } from "../dtos/jira-issue.dto";
 
 @singleton()
 export class JiraIssueRepository {

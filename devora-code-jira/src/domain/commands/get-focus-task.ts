@@ -1,4 +1,4 @@
-import { RegisterCommand, CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, CommandHandler } from "@devora-code/sdk";
 import type { FocusedIssue } from "@devora-code/api/issue";
 
 @RegisterCommand("focus:get-task")

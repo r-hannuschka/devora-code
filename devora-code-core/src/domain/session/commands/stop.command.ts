@@ -1,5 +1,5 @@
 import type { TimeEntryDTO } from "@/infrastructure/timesheet";
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { SessionService } from "../service/session.service";
 

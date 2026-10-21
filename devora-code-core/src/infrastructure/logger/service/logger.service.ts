@@ -1,4 +1,4 @@
-import { AsyncQueue } from "@devora-code/sdk/async-queue";
+import { AsyncQueue } from "@devora-code/sdk";
 import { singleton } from "tsyringe";
 import { Uri, workspace } from "vscode";
 

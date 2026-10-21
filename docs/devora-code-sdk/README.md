@@ -170,7 +170,7 @@ function isErrorResponse(response): response is CommandErrorResponse
 ### Verwendung
 
 ```typescript
-import { CommandController, createCommand, isErrorResponse } from "@devora-code/sdk/command";
+import { CommandController, createCommand, isErrorResponse } from "@devora-code/sdk";
 
 const result = await commandController.exec(cmd);
 

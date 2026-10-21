@@ -2,7 +2,7 @@ import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { LoggerService } from "@/infrastructure/logger";
 import type { TimesDataDTO } from "@/infrastructure/timesheet";
 import type { TimesheetRange } from "@devora-code/api/timesheet";
-import { AsyncQueue } from "@devora-code/sdk/async-queue";
+import { AsyncQueue } from "@devora-code/sdk";
 import { inject, singleton } from "tsyringe";
 import {
   Diagnostic,

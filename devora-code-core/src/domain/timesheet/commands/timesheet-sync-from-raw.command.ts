@@ -2,7 +2,7 @@ import { basename } from "path";
 import { LoggerService } from "@/infrastructure/logger";
 import { NotificationService } from "@/infrastructure/notification";
 import type { Command } from "@devora-code/api/core";
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { commands, window, workspace } from "vscode";
 import { TimesheetService } from "../service/timesheet.service";

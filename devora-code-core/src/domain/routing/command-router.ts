@@ -3,7 +3,7 @@ import { container, singleton } from "tsyringe";
 
 import { SatelliteService } from "@/domain/satellite";
 import { NotificationService } from "@/infrastructure/notification";
-import { CommandController, isErrorResponse } from "@devora-code/sdk/command";
+import { CommandController, isErrorResponse } from "@devora-code/sdk";
 
 /**
  * Der Command-Router.

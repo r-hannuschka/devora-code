@@ -1,11 +1,11 @@
-import { CommandController } from "@devora-code/sdk/command";
-import type { ISatelliteController } from "@devora-code/sdk/core";
-import type { Command } from "@devora-code/api";
+import type { Command } from "@devora-code/api/core";
+import type { ISatelliteController } from "@devora-code/sdk";
+import { CommandController } from "@devora-code/sdk";
 import { container, injectable } from "tsyringe";
 
-import "./commands/get-focus-task";
-import "./commands/get-issue-detail.command";
-import "./commands/list.command";
+import "./get-focus-task";
+import "./get-issue-detail.command";
+import "./list.command";
 
 @injectable()
 export class JiraCommandController implements ISatelliteController {

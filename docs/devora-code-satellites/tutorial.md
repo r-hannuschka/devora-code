@@ -104,8 +104,8 @@ VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build
 
 ```typescript
 // src/file-satellite.ts
-import { CommandController } from "@devora-code/sdk/command";
-import type { ISatelliteController } from "@devora-code/sdk/core";
+import { CommandController } from "@devora-code/sdk";
+import type { ISatelliteController } from "@devora-code/sdk";
 import type { Command } from "@devora-code/api";
 import { container, injectable } from "tsyringe";
 
@@ -132,7 +132,7 @@ export class FileSatellite implements ISatelliteController {
 
 ```typescript
 // src/commands/list.command.ts
-import { RegisterCommand, type CommandHandler } from "@devora-code/sdk/command";
+import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import type { IssueList } from "@devora-code/api";
 import { container } from "tsyringe";
 import { FileRepository } from "../repository/file.repository";

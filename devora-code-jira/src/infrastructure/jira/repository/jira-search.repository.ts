@@ -1,20 +1,20 @@
+import { JiraSettingsService } from "@/infrastructure/settings";
 import type { FocusedIssue, IssueList, IssueListItem, IssueTypeMapping, StatusMapping } from "@devora-code/api/issue";
 import { singleton } from "tsyringe";
-import { JiraApiClient } from "../infrastructure/jira-api-client";
-import type { FocusedIssueDTO } from "../infrastructure/model/jira-focused-issue.dto";
-import type { IssueListDTO, IssueListItemDTO } from "../infrastructure/model/jira-issue-list.dto";
-import { SettingsService } from "../settings";
+import { JiraApiClient } from "../client/jira-api-client";
+import type { FocusedIssueDTO } from "../dtos/jira-focused-issue.dto";
+import type { IssueListDTO, IssueListItemDTO } from "../dtos/jira-issue-list.dto";
 
 @singleton()
 export class JiraSearchRepository {
   constructor(
     private readonly api: JiraApiClient,
-    private readonly settings: SettingsService,
+    private readonly settings: JiraSettingsService,
   ) {}
 
   async getIssues(): Promise<IssueList> {
-    const statusMapping = this.settings.get("STATUS_MAPPING") ?? {};
-    const projectKey = this.settings.get("JIRA_PROJECT_KEY");
+    const statusMapping = this.settings.get("statusMapping") ?? {};
+    const projectKey = this.settings.get("projectKey");
 
     const statusFilter = Object.entries(statusMapping)
       .filter(([, status]) => status === "DONE")
@@ -41,8 +41,8 @@ export class JiraSearchRepository {
   }
 
   async getFocusTask(): Promise<FocusedIssue | null> {
-    const statusMapping = this.settings.get("STATUS_MAPPING") ?? {};
-    const projectKey = this.settings.get("JIRA_PROJECT_KEY");
+    const statusMapping = this.settings.get("statusMapping") ?? {};
+    const projectKey = this.settings.get("projectKey");
 
     const inProgressKeys = Object.entries(statusMapping)
       .filter(([, status]) => status === "IN_PROGRESS")
@@ -66,8 +66,8 @@ export class JiraSearchRepository {
   }
 
   private mapToJiraIssueList(dto: IssueListItemDTO): IssueListItem {
-    const issueTypeMapping = this.settings.get("ISSUE_TYPE_MAPPING") ?? {};
-    const statusMapping = this.settings.get("STATUS_MAPPING") ?? {};
+    const issueTypeMapping = this.settings.get("issueTypeMapping") ?? {};
+    const statusMapping = this.settings.get("statusMapping") ?? {};
 
     const issueType = issueTypeMapping[dto.fields.issuetype.name] as IssueTypeMapping[string] | undefined;
     const status = statusMapping[dto.fields.status.name] as StatusMapping[string] | undefined;
@@ -90,7 +90,7 @@ export class JiraSearchRepository {
 
   private mapToJiraIssue(dto: FocusedIssueDTO): FocusedIssue {
     const base = this.mapToJiraIssueList(dto);
-    const baseUrl = this.settings.get("JIRA_API_URL");
+    const baseUrl = this.settings.get("apiUrl");
 
     return {
       ...base,
