@@ -1,5 +1,6 @@
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { TimesheetRepository, type TimeEntryDTO } from "@/infrastructure/timesheet";
+import { SettingsService } from "@/infrastructure/settings";
 import { normalizeTimeSpan, nowLocal } from "@/util/time";
 import type { TimeEntry } from "@devora-code/api/core";
 import { inject, singleton } from "tsyringe";
@@ -7,12 +8,18 @@ import { ExtensionContext } from "vscode";
 
 @singleton()
 export class SessionService {
-  private readonly ACTIVE_TIME_ENTRY = "activeTimeEntry";
+  private readonly ACTIVE_TIME_ENTRY_PREFIX = 'activeTimeEntry:';
 
   constructor(
     private readonly repository: TimesheetRepository,
     @inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext,
+    private readonly settings: SettingsService,
   ) {}
+
+  private get storageKey(): string {
+    const projectName = this.settings.get('projectName');
+    return projectName ? `${this.storageKey_PREFIX}${projectName}` : this.storageKey_PREFIX;
+  }
 
   // ========================================================================
   // Timer Control
@@ -24,7 +31,7 @@ export class SessionService {
    * Das Repo generiert die ID, und wir fangen das fertige DTO ab!
    */
   async start(issueKey: string): Promise<TimeEntry> {
-    const activeTimeEntry = this.context.globalState.get<string>(this.ACTIVE_TIME_ENTRY);
+    const activeTimeEntry = this.context.globalState.get<string>(this.storageKey);
     if (activeTimeEntry) {
       await this.stopTracking();
     }
@@ -45,7 +52,7 @@ export class SessionService {
     }
 
     // Wir nutzen die vom Repo erzeugte ID für den VS Code State
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, savedDto);
+    await this.context.globalState.update(this.storageKey, savedDto);
     return structuredClone(savedDto);
   }
 
@@ -53,7 +60,7 @@ export class SessionService {
    * Stoppt den aktuellen Timer.
    */
   async stopTracking(): Promise<TimeEntryDTO[] | null> {
-    const activeTimeEntry = this.context.globalState.get<TimeEntryDTO>(this.ACTIVE_TIME_ENTRY);
+    const activeTimeEntry = this.context.globalState.get<TimeEntryDTO>(this.storageKey);
     if (!activeTimeEntry) return null;
 
     // End-Zeit setzen
@@ -64,7 +71,7 @@ export class SessionService {
     const entry = await this.repository.write(writeEntries);
 
     // Timer-State aufräumen
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, undefined);
+    await this.context.globalState.update(this.storageKey, undefined);
 
     return entry;
   }
@@ -78,12 +85,12 @@ export class SessionService {
    * Für den Fall dass rumgefummelt wurde und der Timer hängen bleibt.
    */
   async resetSession(): Promise<boolean> {
-    const activeTimer = this.context.globalState.get<TimeEntryDTO>(this.ACTIVE_TIME_ENTRY);
+    const activeTimer = this.context.globalState.get<TimeEntryDTO>(this.storageKey);
     if (activeTimer) {
       activeTimer.endAt = nowLocal();
       await this.repository.write([activeTimer]);
     }
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, undefined);
+    await this.context.globalState.update(this.storageKey, undefined);
     return true;
   }
 
@@ -96,7 +103,7 @@ export class SessionService {
   }
 
   getActiveTimer(): TimeEntry | null {
-    return this.context.globalState.get<TimeEntryDTO>(this.ACTIVE_TIME_ENTRY) ?? null;
+    return this.context.globalState.get<TimeEntryDTO>(this.storageKey) ?? null;
   }
 
   getActiveIssueKey(): string | null {

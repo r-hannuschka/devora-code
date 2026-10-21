@@ -102,7 +102,7 @@
           "description": "Name des aktuellen Projekts.",
           "scope": "resource"
         },
-        "devora-code.timesheeStorageDir": {
+        "devora-code.timesheetStorageDir": {
           "type": "string",
           "default": "./.devora-code/timesheets",
           "description": "Speicherort der Timesheets",
