@@ -4,8 +4,8 @@ import { resolveWorkspaceUri } from "@devora-code/sdk";
 import { addMonths, differenceInCalendarMonths, format } from "date-fns";
 import { singleton } from "tsyringe";
 import { FileType, Uri, workspace } from "vscode";
+import type { TimeEntryDTO, TimesDataDTO } from "./dtos/time-entry.dto";
 import { StorageWriteException } from "./exception/storage-write.exception";
-import type { TimeEntryDTO, TimesDataDTO } from "./model/time-entry.dto";
 import { flatten, groupByDay, groupByMonth, mergeEntries, toDto } from "./timesheet.operations";
 
 @singleton()
@@ -94,50 +94,6 @@ export class TimesheetRepository {
     return fileContents.filter((data): data is TimesDataDTO => data !== undefined);
   }
 
-  async getByIssueKey(issueKey: string): Promise<TimeEntry[]> {
-    const results: TimeEntry[] = [];
-
-    try {
-      const monthFiles = await this.getMonthFiles();
-
-      for (const month of monthFiles) {
-        const monthData = await this.readMonth(month);
-        if (!monthData) continue;
-
-        for (const entries of Object.values(monthData)) {
-          const matches = entries.filter((e) => e.issueKey === issueKey);
-          results.push(...matches);
-        }
-      }
-    } catch {
-      // noop – leeres Ergebnis
-    }
-
-    return results;
-  }
-
-  async findById(id: string): Promise<TimeEntry | null> {
-    try {
-      const monthFiles = await this.getMonthFiles();
-
-      for (const month of monthFiles) {
-        const monthData = await this.readMonth(month);
-        if (!monthData) continue;
-
-        for (const entries of Object.values(monthData)) {
-          const entry = entries.find((e) => e.id === id);
-          if (entry) return entry;
-        }
-      }
-    } catch {
-      // noop – nicht gefunden
-    }
-
-    return null;
-  }
-
-  /** Schreib-Operationen */
-
   async write(entries: TimeEntry[], path = this.timesheetStorageDir): Promise<TimeEntryDTO[]> {
     const dtos = entries.map(toDto);
 
@@ -167,7 +123,6 @@ export class TimesheetRepository {
   }
 
   /** Hilfsoperationen */
-
   createTimeEntry(issueKey: string, startAt: string, endAt: string | null = null): TimeEntry {
     return { id: crypto.randomUUID(), issueKey, startAt, endAt };
   }
@@ -196,7 +151,7 @@ export class TimesheetRepository {
     return JSON.parse(new TextDecoder().decode(raw));
   }
 
-  private async getMonthFiles(): Promise<string[]> {
+  async getMonthFiles(): Promise<string[]> {
     const dirEntries = await workspace.fs.readDirectory(this.timesheetStorageDir);
     return dirEntries.filter(([name]) => name.endsWith(".json")).map(([filename]) => filename.replace(".json", ""));
   }

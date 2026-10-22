@@ -1,11 +1,11 @@
 import { LoggerApi } from '@/core/api';
-import { SessionStateSelectors } from '@/core/session';
-import { TimesheetApi } from '@/core/timesheet';
+import { TimesheetApi } from '@/core/api';
+import { SessionStateSelectors } from '@/domain/session/+state';
 import { computed, inject, Service } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
 import { differenceInMinutes, format, startOfDay } from 'date-fns';
-import { EMPTY, map, of, timer } from 'rxjs';
+import { map, of, timer } from 'rxjs';
 
 @Service({ autoProvided: false })
 export class RaceWidgetService {
@@ -61,7 +61,7 @@ export class RaceWidgetService {
     return sumEntries;
   });
 
-  readonly trackedToday = rxResource({ 
+  readonly trackedToday = rxResource({
     params: () => ({ tracked: this.tracked(), activeSession: this.activeSession() }),
     stream: ({ params }) => {
       const { tracked, activeSession } = params;
@@ -71,8 +71,8 @@ export class RaceWidgetService {
       }
 
       return timer(0, 60 * 1_000).pipe(
-        map(() => tracked + differenceInMinutes(new Date(), activeSession.startAt))
+        map(() => tracked + differenceInMinutes(new Date(), activeSession.entry.startAt)),
       );
-    }
-  })
+    },
+  });
 }

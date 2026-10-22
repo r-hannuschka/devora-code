@@ -1,4 +1,4 @@
-import { SessionStateSelectors, StartSession } from '@/core/session/src/state';
+import { SessionStateSelectors, StartSession } from '@/domain/session/+state';
 import { IssueStateSelectors, SelectIssue } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
 import { IssueListItem } from '@devora-code/api/issue';
@@ -22,7 +22,7 @@ export class IssueSelectorService {
       return [];
     }
 
-    const issueKey = this.activeSession()?.issueKey;
+    const issueKey = this.activeSession()?.entry.issueKey;
 
     if (issueKey) {
       return issues.filter((issue) => issue.key !== issueKey);

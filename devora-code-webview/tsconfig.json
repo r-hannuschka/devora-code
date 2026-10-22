@@ -16,13 +16,14 @@
       "@/common/components/*": ["./src/common/components/*/index.ts"],
       "@/common/*": ["./src/common/*/index.ts"],
       "@/common": ["./src/common/index.ts"],
-      // deprecated use @/domains for better scale
+      "@/util/*": ["./src/utils/*/index.ts"],
+      // deprecated use @/domain for better scale
       "@/feature/*/data-access": ["./src/features/*/data-access/index.ts"],
       "@/feature/*/feature-shell": ["./src/features/*/feature-shell/index.ts"],
       "@/feature/*/feature-shell/widgets": ["./src/features/*/feature-shell/widgets/index.ts"],
 
-      "@/domains/*/widgets": ["./src/domains/*/widgets/index.ts"],
-      "@/domains/*": ["./src/domains/*/index.ts"]
+      "@/domain/*/widgets": ["./src/domains/*/widgets/index.ts"],
+      "@/domain/*": ["./src/domains/*/index.ts"]
     }
   },
   "angularCompilerOptions": {

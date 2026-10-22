@@ -1,6 +1,6 @@
 import type { TimeEntry } from "@devora-code/api/core";
 import { format } from "date-fns";
-import type { TimeEntryDTO, TimesDataDTO } from "./model/time-entry.dto";
+import type { TimeEntryDTO, TimesDataDTO } from "./dtos/time-entry.dto";
 
 /** Ohne ID = neuer Eintrag, die ID wird hier vergeben. Das Original bleibt unverändert. */
 export const toDto = (entry: TimeEntry): TimeEntryDTO => ({ ...entry, id: entry.id ?? crypto.randomUUID() });

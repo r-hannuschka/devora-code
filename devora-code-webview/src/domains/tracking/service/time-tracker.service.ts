@@ -1,6 +1,6 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TimesheetApi } from '@/core/timesheet';
+import { TimesheetApi } from '@/core/api';
 import { differenceInSeconds } from 'date-fns';
 import { of } from 'rxjs';
 import type { TimeEntryList } from '@devora-code/api/timesheet';

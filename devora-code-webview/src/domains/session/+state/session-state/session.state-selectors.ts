@@ -1,0 +1,21 @@
+import { Selector } from '@ngxs/store';
+import type { SessionStateModel } from './session.state-model';
+import { SessionState } from './session.state';
+import type { ActiveSession } from '@devora-code/api/session';
+
+export class SessionStateSelectors {
+  @Selector([SessionState])
+  static activeSession(ctx: SessionStateModel | undefined) {
+    return ctx?.activeSession ?? null;
+  }
+
+  @Selector([SessionStateSelectors.activeSession])
+  static activeSessionKey(ctx: ActiveSession | null) {
+    return ctx?.entry.issueKey ?? null;
+  }
+
+  @Selector([SessionStateSelectors.activeSession])
+  static activeSessionStartAt(ctx: ActiveSession | null) {
+    return ctx?.entry.startAt ?? null;
+  }
+}

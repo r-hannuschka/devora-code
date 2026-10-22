@@ -1,14 +1,14 @@
 import type { TimeEntry } from "@devora-code/api/core";
-import type { StartSessionCommand } from "@devora-code/api/session";
+import type { ActiveSession, StartSessionCommand } from "@devora-code/api/session";
 import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { SessionService } from "../service/session.service";
 
 @RegisterCommand("session:start")
-export class StartSessionHandler implements CommandHandler<TimeEntry> {
+export class StartSessionHandler implements CommandHandler<ActiveSession> {
   constructor(private command: StartSessionCommand) {}
 
-  async execute(): Promise<TimeEntry> {
+  async execute(): Promise<ActiveSession> {
     const service = container.resolve(SessionService);
     const { payload } = this.command;
 

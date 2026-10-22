@@ -1,4 +1,4 @@
-import { DEVORA_CODE_WIDGET, type DevoraCodeWidget } from '@/common';
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget } from '@/core/widget';
 import { PortalRouterService } from '@/core/portal-router';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import {

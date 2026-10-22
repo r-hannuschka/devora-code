@@ -1,8 +1,8 @@
+import { PortalRouterService } from '@/core/portal-router';
+import { RunningSessionBannerComponent } from '@/domain/session';
 import { CdkPortalOutlet, CdkPortalOutletAttachedRef } from '@angular/cdk/portal';
 import { Component, inject } from '@angular/core';
-import { PortalRouterService } from '@/core/portal-router';
 import { ToolbarComponent } from './components/toolbar.component';
-import { RunningSessionBannerComponent } from '@/common/running-session';
 
 @Component({
   imports: [CdkPortalOutlet, ToolbarComponent, RunningSessionBannerComponent],

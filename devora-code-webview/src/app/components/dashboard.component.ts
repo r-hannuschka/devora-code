@@ -1,5 +1,6 @@
-import { WidgetComponent } from '@/common/widget';
-import { TimesheetChartComponent, RaceWidgetComponent } from '@/domains/tracking/widgets';
+import { WidgetComponent } from '@/core/widget';
+import { ActiveSessionWidgetComponent } from '@/domain/session/widgets';
+import { TimesheetChartComponent, RaceWidgetComponent } from '@/domain/tracking/widgets';
 import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -10,7 +11,8 @@ import { Component, ViewEncapsulation } from '@angular/core';
   imports: [
     WidgetComponent,
     TimesheetChartComponent,
-    RaceWidgetComponent
+    RaceWidgetComponent,
+    ActiveSessionWidgetComponent
   ],
 })
 export class DashboardComponent {}

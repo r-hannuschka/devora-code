@@ -119,23 +119,6 @@ export class TimesheetService {
     return this.summarize(entries);
   }
 
-  /** Suche nach Issue-Key, gruppiert und sortiert nach Datum (für die UI) */
-  async getByIssueKey(issueKey: string): Promise<{ date: string; entries: TimeEntry[] }[]> {
-    const allMatches = await this.repository.getByIssueKey(issueKey);
-    const groups = new Map<string, TimeEntry[]>();
-
-    for (const entry of allMatches) {
-      const dayKey = entry.startAt.substring(0, 10);
-      const list = groups.get(dayKey) ?? [];
-      list.push(entry);
-      groups.set(dayKey, list);
-    }
-
-    return Array.from(groups.entries())
-      .map(([date, entries]) => ({ date, entries }))
-      .sort((a, b) => a.date.localeCompare(b.date));
-  }
-
   // ========================================================================
   // Sync Operations
   // ========================================================================

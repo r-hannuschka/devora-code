@@ -1,0 +1,21 @@
+<div class="devora-code-widget-header">
+  <div class="title">{{ title() }}</div>
+
+  @if (actions(); as actions) {
+    <div class="btn-group ms-auto">
+      @for (action of actions; track action.key) {
+        <button mat-icon-button (click)="dispatchAction(action)">
+          <mat-icon [class]="action.icon"></mat-icon>
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<div class="devora-code-widget-body">
+  @defer (on idle) {
+    <ng-content></ng-content>
+  } @placeholder {
+    <div>Lade Selektor...</div>
+  }
+</div>

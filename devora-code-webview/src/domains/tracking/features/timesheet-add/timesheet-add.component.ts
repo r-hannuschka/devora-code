@@ -1,6 +1,6 @@
 import { provideAppDateAdapter } from '@/core/provider';
-import { FetchActiveSession } from '@/core/session';
-import { TimesheetApi } from '@/core/timesheet';
+import { TimesheetApi } from '@/core/api';
+import { FetchActiveSession } from '@/domain/session/+state';
 import { Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -21,10 +21,10 @@ import { take } from 'rxjs';
     MatDatepickerModule,
     MatTimepickerModule,
     MatNativeDateModule,
-    FormField
+    FormField,
   ],
   providers: provideAppDateAdapter(),
-  templateUrl: './timesheet-add.component.html'
+  templateUrl: './timesheet-add.component.html',
 })
 export class TimesheetAddComponent {
   private readonly timesheet = inject(TimesheetApi);
