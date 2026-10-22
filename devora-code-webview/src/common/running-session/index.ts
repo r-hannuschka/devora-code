@@ -1,1 +1,0 @@
-export * from './src/running-session-banner.component';

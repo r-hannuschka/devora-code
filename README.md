@@ -1,59 +1,61 @@
 # Devora Code
 
-VS Code Extension für Jira-Tasks – Zeiterfassung direkt aus dem Editor, ohne Browser-Wechsel.
+VS Code Extension for task tracking – time logging directly in your editor, no browser switch needed.
 
 ---
 
-## Was ist Devora Code?
+## What is Devora Code?
 
-Devora Code ist eine VS Code Extension, mit der du deine Zeit für Jira-Tasks trackst – direkt aus VS Code, ohne zum Browser zu wechseln. Du bist im Editor, klickst auf "Devora Code öffnen", siehst deine Tasks, startest den Timer. Fertig.
+Devora Code is a VS Code Extension that lets you track time for tasks – directly from VS Code, without switching to a browser. Open your editor, click "Devora Code", see your tasks, start the timer. Done.
+
+It's built on an **extensible plugin system**: the Core provides the foundation (command system, webview, logger). Jira is the first satellite – integrations like GitHub, GitLab, or CI pipelines could follow.
 
 ---
 
-## Einrichtung
+## Setup
 
-### 1. Extension installieren
+### 1. Install the Extension
 
-Installiere Devora Code über die VS Code Extensions Marketplace oder lade die `.vsix` Datei direkt.
+Install Devora Code from the VS Code Extensions Marketplace or load the `.vsix` file directly.
 
-### 2. Einstellungen konfigurieren
+### 2. Configure your workspace
 
-Devora Code speichert seine Einstellungen **workspace-lokal** – nicht global in VS Code. So kannst du für jeden Workspace (z.B. verschiedene Projekte oder Mandanten) eigene Settings haben.
+Devora Code stores its settings **per workspace** – not globally in VS Code. This way, each workspace (e.g. different projects or clients) can have its own configuration.
 
-Es gibt **zwei Möglichkeiten**:
+There are **two ways** to configure settings:
 
-**Option A: `.vscode/settings.json` im Projektordner**
+**Option A: `.vscode/settings.json` in the project folder**
 
 ```json
 {
-  "devora-code.projectName": "meine-app",
-  "devora-code.jira.apiUrl": "https://mein-jira.atlassian.net",
-  "devora-code.jira.userName": "ich",
-  "devora-code.jira.apiToken": "mein-token",
+  "devora-code.projectName": "my-app",
+  "devora-code.jira.apiUrl": "https://my-jira.atlassian.net",
+  "devora-code.jira.userName": "me",
+  "devora-code.jira.apiToken": "my-token",
   "devora-code.jira.projectKey": "PROJ"
 }
 ```
 
-→ Gut für Team-fähige Einstellungen, die ihr gemeinsam nutzt.
+→ Good for team-shared settings that get committed to the repo.
 
-**Option B: `.code-workspace` Datei** → Settings komplett extern, getrennt vom Code
+**Option B: `.code-workspace` file** → Settings completely external, separated from code
 
 ```json
 {
   "folders": [{ "path": "." }],
   "settings": {
-    "devora-code.projectName": "meine-app",
-    "devora-code.jira.apiUrl": "https://mein-jira.atlassian.net",
-    "devora-code.jira.userName": "ich",
-    "devora-code.jira.apiToken": "mein-token",
+    "devora-code.projectName": "my-app",
+    "devora-code.jira.apiUrl": "https://my-jira.atlassian.net",
+    "devora-code.jira.userName": "me",
+    "devora-code.jira.apiToken": "my-token",
     "devora-code.jira.projectKey": "PROJ"
   }
 }
 ```
 
-→ Gut wenn du deine Settings komplett getrennt vom Code halten willst – die `.code-workspace` kann irgendwo liegen, muss nicht im Projekt sein.
+→ Good when you want to keep your settings separate from code – the `.code-workspace` file can live anywhere, not necessarily in the project.
 
-### 3. Dashboard öffnen
+### 3. Open the dashboard
 
 ```
 Cmd+Shift+P (Mac) / Ctrl+Shift+P (Windows/Linux)
@@ -64,68 +66,90 @@ Cmd+Shift+P (Mac) / Ctrl+Shift+P (Windows/Linux)
 
 ## Features
 
-- Timer direkt im Editor starten & stoppen
-- Tasks aus Jira laden (via `.code-workspace` konfiguriert)
-- Timesheet für den aktuellen Monat
-- Timesheet-Backup und -Restore
+- Start & stop timer directly in the editor
+- Load tasks from integrated source (configurable via the satellite system)
+- Timesheet for the current month
+- Timesheet backup and restore
 
 ---
 
-## Entwicklung
+## Development
 
-### Projektstruktur
+### Project structure
 
 ```
 devora-code-api/         → Shared Types (Commands, DTOs, Mappings)
 devora-code-core/        → VS Code Extension (Webview, CommandRouter, Settings, Logger)
-devora-code-jira/        → Jira-Satellite (Issues laden, Focus-Task, Timer)
+devora-code-jira/        → Jira Satellite (Issues, Focus-Task, Timer)
 devora-code-sdk/         → Command-Pattern (Controller, Registry, Decorator)
 devora-code-webview/     → Angular Dashboard (Issues, Timer, Timesheet)
 ```
 
-### Kurzübersicht
+### Quick reference
 
-| Paket | Tech | Zweck |
-|-------|------|-------|
+| Package | Tech | Purpose |
+|---------|------|---------|
 | `devora-code-api` | TypeScript | Shared Types – Commands, DTOs, Mappings |
 | `devora-code-core` | TS · Vite · tsyringe | VS Code Extension: Webview, Commands, Settings, Logger |
-| `devora-code-jira` (Satellit) | TS · Vite · tsyringe | Jira: Issues laden, Focus-Task, Timer |
+| `devora-code-jira` (Satellite) | TS · Vite · tsyringe | Jira: Load issues, Focus-Task, Timer |
 | `devora-code-sdk` | TypeScript | Command-Pattern: Controller, Registry, @RegisterCommand |
 | `devora-code-webview` | Angular 22 · NGXS | Dashboard: Issues, Timer, Timesheet |
 
-### Schnellstart
+### Quickstart
 
 ```bash
 # Requires Node.js 24 (use nvm: nvm install 24 && nvm use 24)
-# Dependencies installieren
+# Install dependencies
 npm install
 
-# Alles bauen
+# Build everything
 npm run build:all
 ```
 
-### Extension bauen und packen
+### Build and package
 
 ```bash
-# Extensions bauen (Core → Jira + Webview) und als .vsix packen
+# Build extensions (Core → Jira + Webview) and package as .vsix
 npm run package
-# → .vsix Dateien in dist/
+# → .vsix files in dist/
 ```
 
-### Watch-Modus
+### Watch mode
 
 ```bash
-# Alles im Watch-Modus (Core, Jira, Webview, API, SDK)
+# Watch mode for everything (Core, Jira, Webview, API, SDK)
 npm run watch:all
 ```
 
-### Extension starten
-
+### Run the extension
 
 ```bash
 code .
-# Drücke F5 → Debug-Session startet die Extension mit Webview
+# Press F5 → Debug session starts the extension with webview
 ```
+
+---
+
+## Settings Reference
+
+### Core settings
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `devora-code.projectName` | string | `""` | Project name |
+| `devora-code.timesheetStorageDir` | string | `"./.devora-code/timesheets"` | Timesheet storage path |
+| `devora-code.backupStorageDir` | string | `"./.devora-code/backup"` | Backup storage path |
+
+### Jira satellite settings
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `devora-code.jira.apiUrl` | string | `""` | Jira REST API URL |
+| `devora-code.jira.apiToken` | string | `""` | Jira API Token |
+| `devora-code.jira.userName` | string | `""` | Jira username / email |
+| `devora-code.jira.projectKey` | string | `""` | Jira project key |
+| `devora-code.jira.issueTypeMapping` | object | `{}` | Map Jira issue types (e.g. "Bug" → "BUG", "feat" → "FEATURE") |
+| `devora-code.jira.statusMapping` | object | `{}` | Map Jira statuses (e.g. "Done" → "DONE", "In Progress" → "IN_PROGRESS") |
 
 ---
 

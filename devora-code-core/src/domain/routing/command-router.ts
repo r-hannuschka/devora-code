@@ -24,6 +24,8 @@ export class CommandRouter {
   private static readonly CORE_COMMANDS = new Set<string>([
     "session:start",
     "session:stop",
+    "session:pause",
+    "session:resume",
     "session:get-active",
     "session:reset-session",
     "timesheet:get-month",

@@ -1,12 +1,15 @@
-import type { SessionApi } from '@/core/session';
+import type { SessionApi } from '@/core/api';
 import { inject } from '@angular/core';
 import type { TimeEntry } from '@devora-code/api/core';
 import type {
-  StartSessionCommand,
-  ResetSessionCommand,
-  StopSessionCommand,
   GetActiveSessionCommand,
+  PauseSessionCommand,
+  ResumeSessionCommand,
+  ResetSessionCommand,
+  StartSessionCommand,
+  StopSessionCommand,
 } from '@devora-code/api/session';
+import type { ActiveSession } from '@devora-code/api/session';
 import type { Observable } from 'rxjs';
 import { VsCodeBridge } from './vscode-bridge';
 
@@ -14,8 +17,8 @@ import { VsCodeBridge } from './vscode-bridge';
 export class SessionApiService implements SessionApi {
   private readonly vscode = inject(VsCodeBridge);
 
-  startTracking(issueKey: string): Observable<TimeEntry> {
-    return this.vscode.request<TimeEntry>({
+  startTracking(issueKey: string): Observable<ActiveSession> {
+    return this.vscode.request<ActiveSession>({
       id: crypto.randomUUID(),
       type: 'session:start',
       payload: { issueKey },
@@ -36,10 +39,24 @@ export class SessionApiService implements SessionApi {
     } as ResetSessionCommand);
   }
 
-  getActiveTimer(): Observable<TimeEntry | null> {
-    return this.vscode.request<TimeEntry | null>({
+  getActiveTimer(): Observable<ActiveSession | null> {
+    return this.vscode.request<ActiveSession | null>({
       id: crypto.randomUUID(),
       type: 'session:get-active',
     } as GetActiveSessionCommand);
+  }
+
+  pauseSession(): Observable<ActiveSession | null> {
+    return this.vscode.request<ActiveSession | null>({
+      id: crypto.randomUUID(),
+      type: 'session:pause',
+    } as PauseSessionCommand);
+  }
+
+  resumeSession(): Observable<ActiveSession | null> {
+    return this.vscode.request<ActiveSession | null>({
+      id: crypto.randomUUID(),
+      type: 'session:resume',
+    } as ResumeSessionCommand);
   }
 }

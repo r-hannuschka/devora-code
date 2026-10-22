@@ -26,7 +26,6 @@ export class TimesheetSanitizerService {
     let processedCount = 0;
 
     const processed: PromiseSettledResult<void>[] = [];
-
     while (processedCount < total) {
       const batch = fileList.slice(processedCount, processedCount + BATCH_SIZE);
       processedCount += batch.length;

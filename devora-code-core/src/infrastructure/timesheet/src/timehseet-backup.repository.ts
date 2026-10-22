@@ -21,7 +21,6 @@ export class TimesheetBackupRepository {
     if (!this.backupDir) {
       this.backupDir = resolveWorkspaceUri(this.settingsService.get("backupStorageDir"), "./.devora-code/backups");
     }
-
     return this.backupDir;
   }
 

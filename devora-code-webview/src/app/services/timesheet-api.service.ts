@@ -1,4 +1,4 @@
-import type { TimesheetApi } from '@/core/timesheet';
+import type { TimesheetApi } from '@/core/api';
 import { inject } from '@angular/core';
 import type { TimeEntry } from '@devora-code/api/core';
 import type {

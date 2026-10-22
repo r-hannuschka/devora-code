@@ -1,6 +1,4 @@
-import { IssueApi, LoggerApi } from '@/core/api';
-import { SessionApi } from '@/core/session';
-import { TimesheetApi } from '@/core/timesheet';
+import { IssueApi, LoggerApi, SessionApi, TimesheetApi } from '@/core/api';
 import { makeEnvironmentProviders, type EnvironmentProviders } from '@angular/core';
 import { Locale } from 'date-fns';
 import { IssueVsCode } from './jira-vscode';

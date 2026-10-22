@@ -1,6 +1,6 @@
 import { computed, inject, linkedSignal, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TimesheetApi } from '@/core/timesheet';
+import { TimesheetApi } from '@/core/api';
 import {
   addMonths,
   addWeeks,

@@ -1,11 +1,11 @@
 import { RouteParams } from '@/core/portal-router';
-import { SessionService } from '@/core/session';
 import { Component, inject, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import type { IssueDetail, IssueListItem } from '@devora-code/api/issue';
 import { of } from 'rxjs';
 import { IssueService } from '../service/issue.service';
 import { IssueSelectorComponent } from './issue-selector.component';
+import { SessionService } from '@/domain/session';
 
 @Component({
   selector: 'jira-issue-details',

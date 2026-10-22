@@ -1,4 +1,4 @@
-import { DEVORA_CODE_WIDGET, type DevoraCodeWidget, type DevoraCodeWidgetAction } from '@/common';
+import { DEVORA_CODE_WIDGET, type DevoraCodeWidget, type DevoraCodeWidgetAction } from '@/core/widget';
 import { CommonModule } from '@angular/common';
 import {
   afterNextRender,

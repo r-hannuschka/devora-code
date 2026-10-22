@@ -1,5 +1,5 @@
 import { IssueApi, LoggerApi } from '@/core/api';
-import { SessionService } from '@/core/session';
+import { SessionService } from '@/domain/session';
 import { FetchTasks, IssueStateSelectors } from '@/feature/issue/data-access';
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -40,7 +40,7 @@ export class IssueService {
           // Markiere Issues mit aktivem Timer
           const mappedData = data.map((item) => ({
             ...item,
-            isTracking: activeSession ? item.key === activeSession.issueKey : false,
+            isTracking: activeSession ? item.key === activeSession.entry.issueKey : false,
           }));
 
           return { ...list, data: mappedData };

@@ -42,18 +42,6 @@
   }
 }
 
-.devora-code-icon-start {
-  &:before {
-    content: $devora-code-icon-start;
-  }
-}
-
-.devora-code-icon-stop {
-  &:before {
-    content: $devora-code-icon-stop;
-  }
-}
-
 .devora-code-icon-preview {
   &:before {
     content: $devora-code-icon-preview;     
@@ -129,20 +117,35 @@
 .devora-code-icon-timesheet-edit {
   &:before {
     content: $devora-code-icon-timesheet-edit;     
-    color: #b7b7b7;
   }
 }
 
 .devora-code-icon-timesheet-add {
   &:before {
     content: $devora-code-icon-timesheet-add;     
-    color: #b7b7b7;
   }
 }
 
 .devora-code-icon-timesheet-csv {
   &:before {
     content: $devora-code-icon-timesheet-csv;     
-    color: #b7b7b7;
+  }
+}
+
+.devora-code-icon-timer_stop {
+  &:before {
+    content: $devora-code-icon-timer_stop;     
+  }
+}
+
+.devora-code-icon-timer_start {
+  &:before {
+    content: $devora-code-icon-timer_start;     
+  }
+}
+
+.devora-code-icon-timer_pause {
+  &:before {
+    content: $devora-code-icon-timer_pause;     
   }
 }

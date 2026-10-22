@@ -1,4 +1,4 @@
-import { SessionApi } from '@/core/session';
+import { SessionApi } from '@/core/api';
 import { CdkTableModule } from '@angular/cdk/table';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';

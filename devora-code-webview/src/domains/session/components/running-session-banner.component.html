@@ -1,0 +1,26 @@
+@if (activeKey()) {
+  <div class="d-flex gap-3 border align-items-center px-3 py-1 rounded-2">
+    <span class="fw-bolder">Aktives Ticket:</span>
+    <span class="d-inline-block me-3">[{{ activeKey() }}]</span>
+
+    <span class="fw-bolder">Zeit: </span>
+    <span class="flex-grow-1">{{ elapsed.value() }}</span>
+
+    @if (isPaused(); as paused) {
+      <button mat-icon-button (click)="resumeSession()" title="Session fortsetzen">
+        <mat-icon class="devora-code-icon-timer_start"></mat-icon>
+      </button>
+    } @else {
+      <button mat-icon-button (click)="pauseSession()" title="Session pausieren">
+        <mat-icon class="devora-code-icon-timer_pause"></mat-icon>
+      </button>
+      <button mat-icon-button (click)="stopSession()" title="Session stoppen">
+        <mat-icon class="devora-code-icon-timer_stop"></mat-icon>
+      </button>
+    }
+
+    <button mat-icon-button (click)="navigateToDetails()" title="Ticket öffnen">
+      <mat-icon class="devora-code-icon-preview"></mat-icon>
+    </button>
+  </div>
+}
