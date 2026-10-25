@@ -13,7 +13,7 @@
 
   <!-- Das freistehende Material-Autocomplete-Panel -->
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)" [displayWith]="displayWithIssueKey">
-    @for (issue of issueSelectorService.filteredIssues(); track issue.id) {
+    @for (issue of issueSelectorService.filteredIssues(); track issue.key) {
       <mat-option [value]="issue">
         [{{issue.issueType}}]: {{ issue.key }}
       </mat-option>

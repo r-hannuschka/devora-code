@@ -2,7 +2,7 @@
   "name": "devora-code-github",
   "publisher": "trueffelmafia",
   "displayName": "Devora Code - GitHub Issues",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.105.0"
   },
