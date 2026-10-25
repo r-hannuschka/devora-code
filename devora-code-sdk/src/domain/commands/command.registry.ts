@@ -5,6 +5,10 @@ import { CommandHandlerConstructor } from "./command.interface";
 export class CommandRegistry {
   private readonly handlerMap = new Map<string, CommandHandlerConstructor>();
 
+  hasCommand(commandKey: string) {
+    return this.handlerMap.has(commandKey);
+  }
+
   public register(type: string, ctor: CommandHandlerConstructor): void {
     this.handlerMap.set(type, ctor);
   }

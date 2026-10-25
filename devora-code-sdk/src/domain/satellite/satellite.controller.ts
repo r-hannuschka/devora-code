@@ -12,12 +12,6 @@ export interface ISatelliteController {
   readonly id: string;
 
   /**
-   * Die Command-Types die dieser Satellit bedient.
-   * Der Core nutzt diese Liste um das Routing zu bauen.
-   */
-  readonly commands: readonly string[];
-
-  /**
    * Der zentrale Eingangskanal für alle Befehle, die von der Host-Extension gesendet werden.
    *
    * @param command Der auszuführende Befehl.

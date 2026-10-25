@@ -2,7 +2,6 @@ import "reflect-metadata";
 
 import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { CommandRouter } from "@/domain/routing";
-import { SatelliteService } from "@/domain/satellite";
 import type { TimesheetSyncFromRawCommand } from "@/domain/timesheet/commands";
 import { WebviewModule } from "@/domain/webview";
 import { container } from "tsyringe";
@@ -64,14 +63,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // --- notify satellits we are up and running
   vscode.commands.executeCommand("devora-code.activated");
-
-  // --- register satellits
-  const satelliteService = container.resolve(SatelliteService);
-  return {
-    registerSubModule: (satellite: any) => {
-      satelliteService.registerSatellite(satellite);
-    },
-  };
 }
 
 export function deactivate(): void {

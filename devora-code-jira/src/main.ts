@@ -1,23 +1,17 @@
 import "reflect-metadata";
+
+import type { ISatelliteController } from "@devora-code/sdk";
 import { container } from "tsyringe";
-import * as vscode from "vscode";
-import { JiraCommandController } from "./domain/commands/command.controller";
+import { JiraCommandRouter } from "./domain/routing/command.router";
 
-export function activate(): void {
-  const hostExtension = vscode.extensions.getExtension("trueffelmafia.devora-code");
+// import commands so they are in bundle
+import "./domain/commands/get-focus-task";
+import "./domain/commands/get-issue-detail.command";
+import "./domain/commands/list.command";
 
-  if (hostExtension) {
-    const hostApi = hostExtension.exports;
-    if (hostApi && typeof hostApi.registerSubModule === "function") {
-      const commandController = container.resolve(JiraCommandController);
-      hostApi.registerSubModule(commandController);
-      console.debug("[DevoraCode Jira]: Erfolgreich beim DevoraCode Core registriert und einsatzbereit.");
-    } else {
-      console.error("[DevoraCode Jira]: Der Core hat keine gültige registerSubModule-API freigegeben!");
-    }
-  } else {
-      console.error("[DevoraCode Jira]: Der Core konnte nicht gefunden werden!");
-  }
+export function activate(): ISatelliteController {
+  const commandController = container.resolve(JiraCommandRouter);
+  return commandController;
 }
 
 export function deactivate(): void {

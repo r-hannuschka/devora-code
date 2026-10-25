@@ -12,6 +12,10 @@ export class CommandController {
 
   constructor(private readonly commandRegistry: CommandRegistry) {}
 
+  hasCommandHandler(commandKey: string): boolean {
+    return this.commandRegistry.hasCommand(commandKey);
+  }
+
   // Public API
   public async exec<TCommand extends Command>(command: Command): Promise<CommandResponse | CommandErrorResponse> {
     if (!command.type) {
