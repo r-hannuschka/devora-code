@@ -14,13 +14,14 @@
     "build:devora-code-jira": "npm run build -w devora-code-jira",
     "build": "npm run build:devora-code && concurrently -n \"jira,webview\" -c \"green,yellow\" \"npm run build:devora-code-jira\" \"npm run build:webview\"",
     "package": "npm run build && concurrently -n \"core,jira\" -c \"blue,green\" \"npm run package -w devora-code-core\" \"npm run package -w devora-code-jira\"",
-    "watch:all": "concurrently --kill-others -n \"core,jira,webview,api,sdk\" -c \"blue,green,magenta,yellow,cyan\" \"npm run watch -w devora-code-core\" \"npm run watch -w devora-code-jira\" \"npm run watch --prefix devora-code-webview\" \"npm run watch -w devora-code-api\" \"npm run watch -w devora-code-sdk\""
+    "watch:all": "concurrently --kill-others -n \"core,jira,webview,api,sdk,github\" -c \"blue,green,magenta,yellow,cyan,green\" \"npm run watch -w devora-code-core\" \"npm run watch -w devora-code-jira\" \"npm run watch --prefix devora-code-webview\" \"npm run watch -w devora-code-api\" \"npm run watch -w devora-code-sdk\" \"npm run watch -w devora-code-github\""
   },
   "workspaces": [
     "devora-code-api",
+    "devora-code-sdk",
     "devora-code-core",
     "devora-code-jira",
-    "devora-code-sdk"
+    "devora-code-github"
   ],
   "dependencies": {
     "reflect-metadata": "0.2.2",
