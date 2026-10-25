@@ -16,7 +16,7 @@
   (optionSelected)="onOptionSelected($event)"
   [displayWith]="displayWithIssueKey"
 >
-  @for (issue of selectorService.filteredIssues(); track issue.id) {
+  @for (issue of selectorService.filteredIssues(); track issue.key) {
     <mat-option [value]="issue"> {{ issue.key }} – {{ issue.summary }} </mat-option>
   }
 </mat-autocomplete>

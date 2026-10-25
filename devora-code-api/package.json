@@ -2,7 +2,7 @@
   "name": "@devora-code/api",
   "publisher": "trueffelmafia",
   "displayName": "Devora Code API",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "private": true,
   "type": "commonjs", 
   

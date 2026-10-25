@@ -12,7 +12,7 @@ out/
 .svelte-kit/
 
 # VS Code
-.vscode/settings.local
+.vscode/settings.json
 .vscode/launch.json
 .vscode/tasks.local.json
 .vscode-test/
