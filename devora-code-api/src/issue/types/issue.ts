@@ -2,17 +2,17 @@ import type { IssueType } from "./mappings";
 import type { IssueStatus } from "./mappings";
 
 export interface IssueListItem {
-  id: string;
   key: string;
   summary: string;
   issueType: IssueType;
   priority: {
     id: string;
     name: string;
-  };
+  } | null;
   status: IssueStatus;
   remainingTimeSeconds: number | undefined;
   timeSpentSeconds: number | undefined;
+  url: string;
 }
 
 export interface IssueList {

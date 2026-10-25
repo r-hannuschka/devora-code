@@ -40,10 +40,6 @@
         "category": "Devora Code"
       },
       {
-        "command": "devora-code.activated",
-        "title": "Devora Code Core Activated Trigger"
-      },
-      {
         "command": "devora-code.timesheet-sync-raw",
         "title": "Timesheet mit DevoraCode Synchronisieren",
         "category": "Devora Code"
@@ -66,10 +62,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "devora-code.activated",
-          "when": "false"
-        },
         {
           "command": "devora-code.timesheet-sync-raw",
           "when": "resourceExtname == .devora-timesheet"

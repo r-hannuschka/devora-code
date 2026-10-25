@@ -1,0 +1,85 @@
+{
+  "name": "devora-code-github",
+  "publisher": "trueffelmafia",
+  "displayName": "Devora Code - GitHub Issues",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.105.0"
+  },
+  "extensionDependencies": [
+    "trueffelmafia.devora-code"
+  ],
+  "main": "./dist/devora-code-github.js",
+  "type": "commonjs",
+  "contributes": {
+    "commands": [],
+    "configuration": {
+      "properties": {
+        "devora-code.github.owner": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Organization/User",
+          "scope": "resource"
+        },
+        "devora-code.github.repo": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Repository Name",
+          "scope": "resource"
+        },
+        "devora-code.github.accessToken": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Personal Access Token",
+          "scope": "resource"
+        },
+        "devora-code.github.baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Enterprise API base URL (optional)",
+          "scope": "resource"
+        },
+        "devora-code.github.issueTypeMap": {
+          "type": "object",
+          "title": "Issue Type Mapping",
+          "description": "GitHub Labels mapped to internal issue types",
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "BUG",
+              "FEATURE"
+            ]
+          },
+          "default": {},
+          "scope": "resource"
+        },
+        "devora-code.github.statusMap": {
+          "type": "object",
+          "title": "Status Labels",
+          "description": "Which label represents which status (only for open Issues — closed = DONE)",
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "TO_DO",
+              "IN_PROGRESS",
+              "TEST",
+              "DONE"
+            ]
+          },
+          "default": {},
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --emptyOutDir true --sourcemap false",
+    "watch": "VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --watch",
+    "package": "npx @vscode/vsce package --no-dependencies --out ../dist/"
+  },
+  "dependencies": {
+    "@devora-code/api": "file:../devora-code-api",
+    "@devora-code/sdk": "file:../devora-code-sdk",
+    "@octokit/rest": "^22.0.1"
+  }
+}

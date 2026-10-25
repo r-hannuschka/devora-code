@@ -22,7 +22,7 @@ export interface JiraIssueFields {
   summary:          string;
   description:      string | null;
   status?:          JiraStatus | null;
-  priority?:        JiraPriority | null;
+  priority:        JiraPriority | null;
   assignee?:        JiraAccount | null;
   reporter:         JiraAccount;
   created:          string;

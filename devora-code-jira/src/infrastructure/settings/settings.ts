@@ -4,5 +4,5 @@ export interface JiraSettings {
   userName: string;
   projectKey: string;
   issueTypeMapping: Record<string, "BUG" | "FEATURE">;
-  statusMapping: Record<string, "TO_TO" | "IN_PROGRESS" | "TEST" | "DONE">;
+  statusMapping: Record<string, "TO_DO" | "IN_PROGRESS" | "TEST" | "DONE">;
 }

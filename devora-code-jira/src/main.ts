@@ -5,7 +5,6 @@ import { container } from "tsyringe";
 import { JiraCommandRouter } from "./domain/routing/command.router";
 
 // import commands so they are in bundle
-import "./domain/commands/get-focus-task";
 import "./domain/commands/get-issue-detail.command";
 import "./domain/commands/list.command";
 
