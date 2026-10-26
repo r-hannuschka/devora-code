@@ -116,7 +116,8 @@
               "description": "The extension ID of the satellite that should handle loading tasks and issues (e.g., 'devora-code.jira')."
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "scope": "resource"
         }
       }
     }
