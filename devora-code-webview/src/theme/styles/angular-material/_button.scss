@@ -7,6 +7,15 @@
   --mat-button-text-touch-target-size: 38px;
 }
 
+.mat-mdc-unelevated-button {
+  --mat-button-filled-container-shape: 4px;
+  --mat-button-filled-container-height: 30px;
+  
+  &.d-block {
+    display: block !important;
+  }
+}
+
 .mat-mdc-icon-button {
   display: inline-flex !important;
 }

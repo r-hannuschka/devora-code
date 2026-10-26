@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
 import { TimesheetApi } from '@/core/api';
+import { inject, Injectable } from '@angular/core';
 import { Action, State, type StateContext } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
-import { tap } from 'rxjs';
-import { FetchMonth, FetchToday } from './timetracker-state.actions';
+import { format } from 'date-fns';
+import { switchMap, tap } from 'rxjs';
+import { AddTimeEntry, FetchMonth } from './timetracker-state.actions';
 import type { TimetrackerStateModel } from './timetracker-state.model';
-import { format, startOfDay } from 'date-fns';
 
 @State<TimetrackerStateModel>({
   name: 'TimetrackerState',
@@ -25,7 +25,13 @@ export class TimetrackerState {
       .pipe(tap((data) => ctx.setState(patch({ monthData: data }))));
   }
 
-  @Action(FetchToday)
-  protected fetchToday(ctx: StateContext<TimetrackerStateModel>) {
+  @Action(AddTimeEntry)
+  protected addTimeEntry(ctx: StateContext<TimetrackerStateModel>, { timeEntry }: AddTimeEntry) {
+    const month = format(timeEntry.startAt, 'yyyy-MM');
+
+    return this.timesheetApi.addEntry(timeEntry).pipe(
+      switchMap(() => this.timesheetApi.getMonth(month)),
+      tap((monthData) => ctx.setState(patch({ monthData }))),
+    );
   }
 }

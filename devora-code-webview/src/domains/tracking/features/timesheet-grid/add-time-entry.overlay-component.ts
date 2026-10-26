@@ -1,16 +1,14 @@
 import { provideAppDateAdapter } from '@/core/provider';
-import { TimesheetApi } from '@/core/api';
-import { FetchActiveSession } from '@/domain/session/+state';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, output, signal } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
+import { MatButton } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { Store } from '@ngxs/store';
+import type { TimesheetAddEntryPayload } from '@devora-code/api/timesheet';
 import { format, set } from 'date-fns';
-import { take } from 'rxjs';
 
 @Component({
   selector: 'devora-code-timesheet-add',
@@ -21,14 +19,14 @@ import { take } from 'rxjs';
     MatDatepickerModule,
     MatTimepickerModule,
     MatNativeDateModule,
-    FormField,
+    MatButton,
+    FormField
   ],
   providers: provideAppDateAdapter(),
-  templateUrl: './timesheet-add.component.html',
+  templateUrl: './add-time-entry.overlay-component.html',
 })
-export class TimesheetAddComponent {
-  private readonly timesheet = inject(TimesheetApi);
-  private readonly store = inject(Store);
+export class AddTimeEntryOverlayComponent {
+  readonly submitted = output<TimesheetAddEntryPayload>();
 
   private readonly formData = signal({
     date: new Date(),
@@ -44,7 +42,7 @@ export class TimesheetAddComponent {
     required(schema.startAt);
   });
 
-  private readonly apiPayload = computed(() => {
+  private readonly timeEntry = computed<TimesheetAddEntryPayload>(() => {
     const { date, startAt, endAt, issueKey } = this.form().value();
     const endDate = set(date, this.extractTime(endAt));
     const startDate = set(date, this.extractTime(startAt));
@@ -56,9 +54,7 @@ export class TimesheetAddComponent {
     };
   });
 
-  protected submitted = signal<false>(false);
-
-  onSubmit(event: Event) {
+  protected onSubmit(event: Event) {
     event.stopImmediatePropagation();
     event.preventDefault();
 
@@ -66,12 +62,7 @@ export class TimesheetAddComponent {
       return;
     }
 
-    this.timesheet
-      .addEntry(this.apiPayload())
-      .pipe(take(1))
-      .subscribe({
-        complete: () => this.store.dispatch(new FetchActiveSession()),
-      });
+    this.submitted.emit(this.timeEntry());
   }
 
   private extractTime(date: Date) {

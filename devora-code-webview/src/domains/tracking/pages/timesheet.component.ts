@@ -1,7 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { TimesheetAddComponent } from '../features/timesheet-add/timesheet-add.component';
 import { TimesheetGridComponent } from '../features/timesheet-grid/timesheet-grid.component';
-import { TimesheetService } from '../service/timesheet.service';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -12,10 +10,9 @@ import { TimesheetService } from '../service/timesheet.service';
 @Component({
   selector: 'devora-code-timesheet',
   standalone: true,
-  imports: [TimesheetAddComponent, TimesheetGridComponent],
+  imports: [TimesheetGridComponent],
   templateUrl: './timesheet.component.html',
   encapsulation: ViewEncapsulation.None,
-  providers: [TimesheetService],
   host: {
     class: 'd-flex flex-column h-100 overflow-hidden',
   },

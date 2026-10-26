@@ -1,20 +1,24 @@
+import { TimesheetApi } from '@/core/api';
 import { computed, inject, linkedSignal, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { TimesheetApi } from '@/core/api';
+import type { TimeEntry } from '@devora-code/api/core';
 import {
+  addDays,
   addMonths,
   addWeeks,
   differenceInSeconds,
   endOfMonth,
   format,
   getWeek,
-  getYear,
   startOfMonth,
+  startOfWeek,
+  subDays,
   subMonths,
   subWeeks,
 } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { addDays, startOfWeek, subDays } from 'date-fns';
+import { filter, switchMap, take } from 'rxjs';
+import { AddTimeEntryOverlay } from './add-time-entry.overlay';
 
 export enum ViewMode {
   Day,
@@ -23,8 +27,9 @@ export enum ViewMode {
 }
 
 @Service({ autoProvided: false })
-export class TimesheetService {
-  private readonly timesheet = inject(TimesheetApi);
+export class TimesheetGridService {
+  private readonly timesheetApi = inject(TimesheetApi);
+  private readonly addTimeEntryService = inject(AddTimeEntryOverlay);
 
   private readonly currentViewMode = signal<ViewMode>(ViewMode.Week);
   private readonly selectedDate = signal(new Date());
@@ -62,7 +67,7 @@ export class TimesheetService {
       if (!startAt) {
         throw new Error('Es wurde kein Startdatum uebergeben');
       }
-      return this.timesheet.getPeriod(startAt, endAt);
+      return this.timesheetApi.getPeriod(startAt, endAt);
     },
   });
 
@@ -205,10 +210,23 @@ export class TimesheetService {
       return;
     }
 
-    this.timesheet.openTimesheet({ startAt, endAt });
+    this.timesheetApi.openTimesheet({ startAt, endAt });
   }
 
   openAsCSV() {
     throw new Error('Method not implemented.');
+  }
+
+  openTimeEntryOverlay() {
+    const overlay = this.addTimeEntryService.open();
+
+    overlay
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter((result): result is TimeEntry => result !== null),
+        switchMap((result) => this.timesheetApi.addEntry(result as any)),
+      )
+      .subscribe(() => this.bookingResource.reload());
   }
 }
