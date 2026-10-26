@@ -1,20 +1,22 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
+name: Feature Request
+about: Suggest a new idea or feature for this project.
+title: "[FEATURE] "
+labels: enhancement
+assignees: ""
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Problem Statement
+Is there an existing problem or missing workflow that is frustrating you? Please describe the problem clearly and concisely (e.g. "I find it frustrating that...").
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## Desired Feature
+Describe the solution or feature you have in mind. What exactly should change or be added?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Alternatives
+Describe any alternative solutions or features you have considered.
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## Technical Implementation (Optional)
+If you already have concrete ideas about how to implement this (architecture, libraries, UI design), feel free to share them here.
+
+## Additional Context
+Add any other information, mockups, or visual examples here.
