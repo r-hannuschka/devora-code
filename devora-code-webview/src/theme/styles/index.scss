@@ -1,6 +1,8 @@
 // ==========================================================================
 // 1. ALLE IMPORTS (Müssen zwingend ganz oben stehen!)
 // ==========================================================================
+@use './core/reboot';
+
 @use "bootstrap/scss/bootstrap-utilities" as bootstrap;
 @use 'bootstrap/scss/layout/containers' as bs-container;
 @use 'bootstrap/scss/layout/grid' as bs-grid;

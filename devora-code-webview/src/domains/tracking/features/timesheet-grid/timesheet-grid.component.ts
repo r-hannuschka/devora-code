@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TimesheetService, ViewMode } from '../../service/timesheet.service';
+import { TimesheetGridService, ViewMode } from './timesheet-grid.service';
+import { AddTimeEntryOverlay } from './add-time-entry.overlay';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -26,13 +27,13 @@ import { TimesheetService, ViewMode } from '../../service/timesheet.service';
   templateUrl: './timesheet-grid.component.html',
   styleUrl: 'timesheet-grid.component.scss',
   encapsulation: ViewEncapsulation.None,
-  providers: [TimesheetService],
+  providers: [TimesheetGridService, AddTimeEntryOverlay],
   host: {
     class: 'd-flex flex-column overflow-hidden',
   },
 })
 export class TimesheetGridComponent {
-  protected readonly datasource = inject(TimesheetService);
+  protected readonly datasource = inject(TimesheetGridService);
   private readonly session = inject(SessionApi);
   protected readonly displayedColumns = ['date', 'issueKey', 'start', 'end', 'duration'];
   protected readonly ViewMode = ViewMode;

@@ -1,4 +1,4 @@
-<form>
+<form class="bg-body p-5 shadow-xl shadow-primary shadow-opacity-20 rounded-bottom">
   <!-- Datum -->
   <div class="row">
     <div class="lg:col-4">
@@ -37,11 +37,7 @@
   </mat-form-field>
 
   <!-- Submit -->
-  <button mat-flat-button type="button" color="primary" [disabled]="form().invalid()" (click)="onSubmit($event)">
+  <button mat-flat-button class="mt-5 ms-auto d-block rounded-4" type="button" color="primary" [disabled]="form().invalid()" (click)="onSubmit($event)">
     Speichern
   </button>
 </form>
-
-@if (submitted()) {
-  <p class="success">Meeting gespeichert.</p>
-}
