@@ -58,7 +58,10 @@ export class TimesheetAddComponent {
 
   protected submitted = signal<false>(false);
 
-  onSubmit() {
+  onSubmit(event: Event) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+
     if (this.form().invalid()) {
       return;
     }
