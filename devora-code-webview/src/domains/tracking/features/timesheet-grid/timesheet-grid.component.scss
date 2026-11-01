@@ -1,6 +1,10 @@
 devora-code-timesheet-grid {
-
   background-color: var(--vscode-editor-background);
+
+  header,
+  footer {
+    background: var(--vscode-panel-background);
+  }
 
   .view-switch {
     display: flex;

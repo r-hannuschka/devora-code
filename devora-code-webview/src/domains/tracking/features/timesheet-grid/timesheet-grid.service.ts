@@ -1,12 +1,10 @@
 import { TimesheetApi } from '@/core/api';
-import { computed, inject, linkedSignal, Service, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { computed, effect, inject, linkedSignal, Service, signal } from '@angular/core';
 import type { TimeEntry } from '@devora-code/api/core';
 import {
   addDays,
   addMonths,
   addWeeks,
-  differenceInSeconds,
   endOfMonth,
   format,
   getWeek,
@@ -18,7 +16,9 @@ import {
 } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { filter, switchMap, take } from 'rxjs';
-import { AddTimeEntryOverlay } from './add-time-entry.overlay';
+import { AddTimeEntryOverlay } from './components/add-entry-overlay/add-time-entry.overlay';
+import { TimesheetDatasource } from './data/timesheet-datasource';
+import { PaginationController } from '@/common/pagination';
 
 export enum ViewMode {
   Day,
@@ -30,8 +30,10 @@ export enum ViewMode {
 export class TimesheetGridService {
   private readonly timesheetApi = inject(TimesheetApi);
   private readonly addTimeEntryService = inject(AddTimeEntryOverlay);
+  private readonly paginationController = inject(PaginationController)
 
-  private readonly currentViewMode = signal<ViewMode>(ViewMode.Week);
+  private readonly dataSource = new TimesheetDatasource(this.timesheetApi);
+  private readonly currentViewMode = signal<ViewMode>(ViewMode.Day);
   private readonly selectedDate = signal(new Date());
 
   private readonly dateRange = linkedSignal<{ startAt: string; endAt: string } | null>(() => {
@@ -60,23 +62,32 @@ export class TimesheetGridService {
     };
   });
 
-  private readonly bookingResource = rxResource({
-    params: () => ({ range: this.dateRange() }),
-    stream: ({ params }) => {
-      const { startAt, endAt } = params.range ?? {};
-      if (!startAt) {
-        throw new Error('Es wurde kein Startdatum uebergeben');
-      }
-      return this.timesheetApi.getPeriod(startAt, endAt);
-    },
+  protected readonly dateRangeEffect = effect(() => {
+    const range = this.dateRange();
+    if (range) {
+      const { startAt, endAt } = range;
+      this.dataSource.setRange(startAt, endAt);
+    }
   });
 
-  readonly currentView = computed(() => this.currentViewMode());
+  protected readonly pageChangedEffect = effect(() => {
+    const page = this.paginationController.pageChange();
+    this.dataSource.setPage(page);
+  })
 
-  readonly period = computed(() => this.dateRange());
+  protected readonly dataEffect = effect(() => {
+    const entries = this.dataSource.data();
+
+    this.paginationController.update({
+      total: entries.pages,
+      page: entries.page
+    })
+  })
+
+  readonly currentView = computed(() => this.currentViewMode());
+  readonly timeentries = computed(() => this.dataSource.data());
 
   // --- Labels ---
-
   readonly periodLabel = computed(() => {
     const range = this.dateRange();
     if (!range) return '';
@@ -92,54 +103,18 @@ export class TimesheetGridService {
     return format(start, 'EEEE, dd. MMMM', { locale: de });
   });
 
-  readonly sum = computed(() => {
-    const entries = this.bookings();
-    const totalSeconds = entries.reduce((sum, entry) => {
-      if (!entry.endAt) return sum;
-      const duration = differenceInSeconds(entry.endAt, entry.startAt);
-      if (duration < 444) return sum;
-      return sum + Math.round(duration / 900) * 15 * 60;
-    }, 0);
-
-    return {
-      hours: Math.floor(totalSeconds / 3600),
-      minutes: String(Math.round((totalSeconds % 3600) / 60)).padStart(2, '0'),
-    };
-  });
-
   readonly sumLabel = computed(() => {
     return this.currentViewMode() === ViewMode.Week ? 'Wochensumme' : 'Tages-Summe';
   });
 
-  readonly emptyLabel = computed(() => {
-    const view = this.currentViewMode();
-    return view === ViewMode.Week
-      ? `Keine Zeiteinträge für ${this.periodLabel()}`
-      : `Keine Zeiteinträge für ${this.periodLabel()}`;
-  });
-
-  readonly bookings = computed(() => {
-    const resource = this.bookingResource;
-    if (resource.isLoading()) {
-      return [];
-    }
-
-    if (resource.error()) {
-      return [];
-    }
-
-    return resource.value()?.entries ?? [];
-  });
-
-  // Aliases for template convenience
-  readonly entries = this.bookings;
-
   // --- Helpers ---
 
+  // das gehoert hier nich rein
   formatTime(isoString: string): string {
     return format(new Date(isoString), 'HH:mm');
   }
 
+  // das gehoert hier nich rein
   formatDuration(startAt: string, endAt: string | null): string {
     const start = new Date(startAt).getTime();
     const end = endAt ? new Date(endAt).getTime() : Date.now();
@@ -163,45 +138,37 @@ export class TimesheetGridService {
   }
 
   next() {
-    let nextDate;
-    switch (this.currentViewMode()) {
-      case ViewMode.Week:
-        const nextWeek = addWeeks(this.selectedDate(), 1);
-        nextDate = startOfWeek(nextWeek, { weekStartsOn: 1 });
-        break;
-
-      case ViewMode.Month:
-        const nextMonth = addMonths(this.selectedDate(), 1);
-        nextDate = startOfMonth(nextMonth);
-        break;
-
-      default:
-        nextDate = addDays(this.selectedDate(), 1);
-    }
-    this.selectedDate.set(nextDate);
+    this.selectedDate.update((date) => {
+      switch (this.currentViewMode()) {
+        case ViewMode.Month:
+          return addMonths(date, 1);
+        case ViewMode.Week:
+          return addWeeks(date, 1);
+        default:
+          return addDays(date, 1);
+      }
+    });
   }
 
   prev() {
-    let prevDate;
-    switch (this.currentViewMode()) {
-      case ViewMode.Week:
-        const prevWeek = subWeeks(this.selectedDate(), 1);
-        prevDate = startOfWeek(prevWeek, { weekStartsOn: 1 });
-        break;
+    this.selectedDate.update((date) => {
+      switch (this.currentViewMode()) {
+        case ViewMode.Month:
+          return subMonths(date, 1);
+        case ViewMode.Week:
+          return subWeeks(date, 1);
+        default:
+          return subDays(date, 1);
+      }
+    });
+  }
 
-      case ViewMode.Month:
-        const prevMonth = subMonths(this.selectedDate(), 1);
-        prevDate = startOfMonth(prevMonth);
-        break;
-
-      default:
-        prevDate = subDays(this.selectedDate(), 1);
-    }
-    this.selectedDate.set(prevDate);
+  loadPage(page: number) {
+    this.dataSource.setPage(page);
   }
 
   reload() {
-    this.bookingResource.reload();
+    this.dataSource.reload();
   }
 
   open() {
@@ -209,8 +176,11 @@ export class TimesheetGridService {
     if (!startAt || !endAt) {
       return;
     }
-
     this.timesheetApi.openTimesheet({ startAt, endAt });
+  }
+
+  search(value: string) {
+    this.dataSource.setSearch(value);
   }
 
   openAsCSV() {
@@ -227,6 +197,6 @@ export class TimesheetGridService {
         filter((result): result is TimeEntry => result !== null),
         switchMap((result) => this.timesheetApi.addEntry(result as any)),
       )
-      .subscribe(() => this.bookingResource.reload());
+      .subscribe(() => this.dataSource.reload());
   }
 }

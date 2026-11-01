@@ -1,0 +1,23 @@
+@if (data(); as pagination) {
+  @if (pagination.state.total > 1) {
+    <ul class="pagination">
+      <li class="page-item" (click)="prevPage()">
+        <mat-icon class="devora-code-icon-chevron_left"></mat-icon>
+      </li>
+
+      @for (item of pagination.items; track $index) {
+        <li
+          class="page-item"
+          (click)="item.clickable && goTo(item)"
+          [class]="{ disabled: !item.clickable, active: item.value === pagination.state.active }"
+        >
+          {{ item.text }}
+        </li>
+      }
+
+      <li class="page-item" (click)="nextPage()">
+        <mat-icon class="devora-code-icon-chevron_right"></mat-icon>
+      </li>
+    </ul>
+  }
+}

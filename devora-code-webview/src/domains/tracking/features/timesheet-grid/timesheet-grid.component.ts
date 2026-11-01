@@ -1,12 +1,13 @@
 import { SessionApi } from '@/core/api';
 import { CdkTableModule } from '@angular/cdk/table';
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, effect, inject, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { TimesheetGridService, ViewMode } from './timesheet-grid.service';
-import { AddTimeEntryOverlay } from './add-time-entry.overlay';
+import { AddTimeEntryOverlay } from './components/add-entry-overlay/add-time-entry.overlay';
+import { TimesheetGridToolbarComponent } from './components/toolbar/timesheet-grid-toolbar.component';
+import { TimesheetGridService } from './timesheet-grid.service';
+import { PaginationComponent, PaginationController } from '@/common/pagination';
 
 /**
  * Zeiterfassungs-Tabelle mit Wochen-/Tages-Switch.
@@ -19,24 +20,26 @@ import { AddTimeEntryOverlay } from './add-time-entry.overlay';
   standalone: true,
   imports: [
     CdkTableModule,
-    MatButtonToggleModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule,
+    TimesheetGridToolbarComponent,
+    DatePipe,
+    PaginationComponent
   ],
   templateUrl: './timesheet-grid.component.html',
   styleUrl: 'timesheet-grid.component.scss',
   encapsulation: ViewEncapsulation.None,
-  providers: [TimesheetGridService, AddTimeEntryOverlay],
+  providers: [TimesheetGridService, AddTimeEntryOverlay, PaginationController],
   host: {
     class: 'd-flex flex-column overflow-hidden',
   },
 })
 export class TimesheetGridComponent {
-  protected readonly datasource = inject(TimesheetGridService);
+  private readonly paginationController = inject(PaginationController);
   private readonly session = inject(SessionApi);
+
+  protected readonly datasource = inject(TimesheetGridService);
   protected readonly displayedColumns = ['date', 'issueKey', 'start', 'end', 'duration'];
-  protected readonly ViewMode = ViewMode;
 
   protected resetSession(): void {
     this.session.resetSession().subscribe(() => this.datasource.reload());

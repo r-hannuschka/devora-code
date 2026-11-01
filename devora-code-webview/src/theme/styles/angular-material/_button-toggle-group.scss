@@ -1,0 +1,12 @@
+.mat-button-toggle-group {
+  --mat-button-toggle-shape: 4px;
+  --mat-button-toggle-height: 40px;
+  --mat-button-toggle-divider-color: var(--vscode-panel-border);
+
+  .mat-button-toggle-label-content {
+    height: var(--mat-button-toggle-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

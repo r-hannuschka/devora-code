@@ -3,21 +3,24 @@
 .btn-group {
   display: inline-flex;
   align-items: center;
-
   $borderRadius: rem-calc(4px);
+
+  border-radius: $borderRadius;
+  border: 1px solid var(--vscode-panel-border);
+  line-height: 38px;
 
   --mat-icon-button-touch-target-size: #{rem-calc(36px)};
   --mat-icon-button-container-shape: 0;
+  --mat-icon-button-state-layer-size: 2rem;
 
   // Alle Material-Buttons innerhalb der Gruppe anpassen
   .mat-mdc-button-base {
     margin: 0; // Entfernt jegliche Standard-Abstände zwischen den Buttons
-
-    height: rem-calc(26px);
-    padding: 0 rem-calc(5px);
+    padding: 0 rem-calc(12px);
+    width: auto;
 
     &:not(:last-child) {
-      box-shadow: 1px 0 0 0 var(--vscode-panel-border);
+      border-right: 1px solid var(--vscode-panel-border);
     }
 
     &:first-child {
@@ -27,5 +30,11 @@
     &:last-child {
       --mat-icon-button-container-shape: 0 #{$borderRadius} #{$borderRadius} 0;
     }
+  }
+
+  .mdc-icon-button {
+    height: rem-calc(40px);
+    align-items: center;
+    justify-content: center;
   }
 }

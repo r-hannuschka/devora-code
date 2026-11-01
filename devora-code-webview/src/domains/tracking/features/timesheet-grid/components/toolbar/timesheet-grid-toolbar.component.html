@@ -1,0 +1,65 @@
+<mat-toolbar>
+  <!-- Actions -->
+  <mat-toolbar-row>
+
+    <mat-form-field class="flex-grow-1 search-field" >
+      <input type="text" matInput [formField]="searchForm.search">
+      <mat-icon matSuffix class="devora-code-icon-search"></mat-icon>
+    </mat-form-field>
+
+    <div class="btn-group">
+      <button mat-icon-button (click)="gridService.openTimeEntryOverlay()">
+        <mat-icon class="devora-code-icon-time-add"></mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="gridService.open()">
+        <mat-icon class="devora-code-icon-timesheet-edit"></mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="gridService.openAsCSV()">
+        <mat-icon class="devora-code-icon-timesheet-csv"></mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="gridService.reload()">
+        <mat-icon class="devora-code-icon-refresh"></mat-icon>
+      </button>
+    </div>
+  </mat-toolbar-row>
+
+  <!-- Navigation -->
+  <mat-toolbar-row>
+    <div class="btn-group">
+      <button mat-icon-button (click)="gridService.prev()">
+        <mat-icon class="devora-code-icon-chevron_left"></mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="gridService.goToToday()">
+        <mat-icon class="devora-code-icon-today"></mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="gridService.next()">
+        <mat-icon class="devora-code-icon-chevron_right"></mat-icon>
+      </button>
+    </div>
+
+    <h2 class="text-center ms-auto flex-grow-1">{{ gridService.periodLabel() }}</h2>
+
+    <mat-button-toggle-group
+      [hideSingleSelectionIndicator]="true"
+      [value]="gridService.currentView()"
+      (change)="gridService.toggleViewMode($event.value)"
+    >
+      <mat-button-toggle [value]="ViewMode.Day">
+        <mat-icon class="devora-code-icon-calendar-day"> </mat-icon>
+      </mat-button-toggle>
+
+      <mat-button-toggle [value]="ViewMode.Week">
+        <mat-icon class="devora-code-icon-calendar-week"></mat-icon>
+      </mat-button-toggle>
+
+      <mat-button-toggle [value]="ViewMode.Month">
+        <mat-icon class="devora-code-icon-calendar-month"></mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-toolbar-row>
+</mat-toolbar>
