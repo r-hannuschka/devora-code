@@ -81,7 +81,7 @@ export class TimesheetRepository {
     return await this.readMonth(month);
   }
 
-  async getDay(date: string): Promise<TimeEntry[]> {
+  async getDay(date: string): Promise<TimeEntryDTO[]> {
     const month = format(date, "yyyy-MM");
     const monthData = await this.readMonth(month);
     if (!monthData || !monthData[date]) return [];

@@ -1,7 +1,8 @@
 import { LoggerService } from "@/infrastructure/logger";
 import { TimesheetRepository } from "@/infrastructure/timesheet";
+import { nowLocal } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
-import { endOfDay, format } from "date-fns";
+import { endOfDay, format, isSameDay } from "date-fns";
 import { basename } from "path";
 import { singleton } from "tsyringe";
 import type { Uri } from "vscode";
@@ -65,11 +66,11 @@ export class TimesheetSanitizerService {
 
         isSanitized = true;
         const lastWritten = sanitizedEntries.at(0);
-        let endAt = lastWritten?.startAt;
-        if (!endAt) {
+        let endAt = lastWritten?.startAt ?? null;
+
+        if (!endAt && !isSameDay(entry.startAt, nowLocal())) {
           endAt = format(endOfDay(entry.startAt), "yyyy-MM-dd'T'HH:mm:ss");
         }
-
         sanitizedEntries.unshift({ ...entry, endAt });
       }
       sanitizedTimesData[day] = sanitizedEntries;

@@ -12,6 +12,7 @@ import "./app.module";
 import { TimesheetDocumentValidatorService, TimesheetSanitizerService } from "./domain/timesheet";
 import type { TimesheetCreateBackupCommand, TimesheetRestoreBackupCommand } from "@devora-code/api/timesheet";
 import { TimesheetRestoreBackupUiHandler } from "./presentation/timesheet-restore-backup.handler";
+import { SessionService } from "./domain/session";
 
 export async function activate(context: vscode.ExtensionContext) {
   container.registerInstance(EXTENSION_CONTEXT_TOKEN, context);
@@ -53,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // --- close open timers
     vscode.commands.registerCommand("devora-code.close-open-timers", () => {
-      container.resolve(TimesheetSanitizerService).closeOpenTimers();
+      commandRouter.execute({ id: crypto.randomUUID(), type: "timesheet:sanitize-sessions" });
     }),
 
     // --- we have to otherwise we get an error
@@ -61,13 +62,14 @@ export async function activate(context: vscode.ExtensionContext) {
   ];
   context.subscriptions.push(...webviewDisposable);
 
+  // --- Close Open Timers on Startup
+  commandRouter.execute({ id: crypto.randomUUID(), type: "timesheet:sanitize-sessions" });
+
   // --- notify satellits we are up and running
   vscode.commands.executeCommand("devora-code.activated");
 }
 
 export function deactivate(): void {
-  // --- Close Open Timers on Shutdown
-  container.resolve(TimesheetSanitizerService).closeOpenTimers();
   container.clearInstances();
 
   // deactivate satellites
