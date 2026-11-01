@@ -1,23 +1,18 @@
-import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { LoggerService } from "@/infrastructure/logger";
 import { TimeEntryDTO, TimesheetRepository, type TimesDataDTO } from "@/infrastructure/timesheet";
 import { dateLocal, normalizeTimeSpan } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
 import type { TimeEntryList, TimesheetRange } from "@devora-code/api/timesheet";
-import { format, isWithinInterval } from "date-fns";
-import { inject, singleton } from "tsyringe";
-import { ExtensionContext } from "vscode";
+import { format, isSameMonth, isWithinInterval } from "date-fns";
+import { singleton } from "tsyringe";
 import { TimesheetRawValidator } from "./timesheet-raw.validator";
 
 @singleton()
 export class TimesheetService {
-  private readonly ACTIVE_TIME_ENTRY = "activeTimeEntry";
-
   constructor(
     private readonly repository: TimesheetRepository,
     private readonly logger: LoggerService,
     private readonly rawValidator: TimesheetRawValidator,
-    @inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext,
   ) {}
 
   // ========================================================================
@@ -45,7 +40,7 @@ export class TimesheetService {
    *
    * Beispiel: [source ────── ∞)  →  [source ─ start) [insert] [end ────── ∞)
    */
-  async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<TimeEntryDTO[]> {
+  async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<{ written: TimeEntryDTO[]; newActive: TimeEntryDTO }> {
     const { endAt: activeEndAt } = source;
     const { endAt: insertEndAt, startAt: insertStartAt } = toInsert;
 
@@ -58,7 +53,6 @@ export class TimesheetService {
     }
 
     const normalizedTimeSpan = normalizeTimeSpan(toInsert);
-
     const newEntries: TimeEntry[] = [
       { ...source, endAt: insertStartAt },
       ...normalizedTimeSpan,
@@ -68,8 +62,10 @@ export class TimesheetService {
     const written = await this.repository.write(newEntries);
     const newActive = written.slice(-1)[0]!;
 
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, newActive);
-    return written;
+    return {
+      written,
+      newActive,
+    };
   }
 
   // ========================================================================
@@ -129,8 +125,11 @@ export class TimesheetService {
    * Daten außerhalb der Range bleiben erhalten.
    */
   async syncFromRaw(raw: TimesData, range: TimesheetRange) {
-    const fileName = format(range.minDate, "yyyy-MM");
+    const filesToUpdate = isSameMonth(range.minDate, range.maxDate)
+      ? [format(range.minDate, "yyyy-MM")]
+      : [format(range.minDate, "yyyy-MM"), format(range.maxDate, "yyyy-MM")];
 
+    // Validierung nur einmal
     const errors = this.rawValidator.validate(raw, range);
     if (errors !== null) {
       for (const [_, validationError] of Object.entries(errors)) {
@@ -139,24 +138,26 @@ export class TimesheetService {
       throw new Error(`Synchronisation ist fehl geschlagen`);
     }
 
-    const existingFileData = (await this.repository.getMonth(fileName)) ?? {};
+    await Promise.all(filesToUpdate.map(async (file) => {
+      const existingFileData = (await this.repository.getMonth(file)) ?? {};
 
-    // 1. Bestehende Daten außerhalb der Range behalten
-    const filteredExisting: TimesData = {};
-    for (const [dateStr, entries] of Object.entries(existingFileData)) {
-      if (!isWithinInterval(dateStr, { start: range.minDate, end: range.maxDate })) {
-        filteredExisting[dateStr] = entries;
+      // 1. Bestehende Daten außerhalb der Range behalten
+      const filteredExisting: TimesData = {};
+      for (const [dateStr, entries] of Object.entries(existingFileData)) {
+        if (!isWithinInterval(dateStr, { start: range.minDate, end: range.maxDate })) {
+          filteredExisting[dateStr] = entries;
+        }
       }
-    }
 
-    // 2. Neue Daten mit gefilterten Bestandsdaten mergen
-    const mergedData: TimesData = {
-      ...filteredExisting,
-      ...raw,
-    };
+      // 2. Neue Daten mit gefilterten Bestandsdaten mergen
+      const mergedData: TimesData = {
+        ...filteredExisting,
+        ...raw,
+      };
 
-    // 3. Ergebnis schreiben (Validator sichert Monatsgrenzen)
-    await this.repository.writeFile(fileName, mergedData);
+      // 3. Ergebnis schreiben
+      await this.repository.writeFile(file, mergedData);
+    }));
   }
 
   // ========================================================================

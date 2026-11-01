@@ -30,7 +30,9 @@ export function mergeEntries(existing: TimeEntryDTO[], incoming: TimeEntryDTO[])
     return match ? { ...entry, ...match } : entry;
   });
   const known = new Set(existing.map((entry) => entry.id));
-  return [...updated, ...incoming.filter((entry) => !known.has(entry.id))];
+  const newEntries = [...updated, ...incoming.filter((entry) => !known.has(entry.id))];
+
+  return newEntries;
 }
 
 /** Flache Liste -> { Tag: Einträge }, der Tag kommt aus der startAt — sortiert nach startAt */

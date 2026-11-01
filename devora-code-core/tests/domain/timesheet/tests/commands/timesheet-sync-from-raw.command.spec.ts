@@ -43,6 +43,8 @@ describe("TimesheetSyncFromRawHandler", () => {
     const mockEditor = {
       document: {
         fileName: "/user/work/2026-10-01_2026-10-31.devora-timesheet",
+        path: "/user/work/2026-10-01_2026-10-31.devora-timesheet",
+        uri: { fsPath: "/user/work/2026-10-01_2026-10-31.devora-timesheet" },
         getText: () => validJson,
       },
     } as any;
@@ -99,6 +101,8 @@ describe("TimesheetSyncFromRawHandler", () => {
     const mockEditor = {
       document: {
         fileName: "/user/work/foo.devora-timesheet",
+        path: "/user/work/foo.devora-timesheet",
+        uri: { fsPath: "/user/work/foo.devora-timesheet" },
         getText: () => validJson,
       },
     } as any;
@@ -109,20 +113,42 @@ describe("TimesheetSyncFromRawHandler", () => {
     await expect(handler.execute()).rejects.toThrow("Invalid filename");
   });
 
-  test("sollte Dateinamen in Success-Notification enthalten", async () => {
-    const validJson = JSON.stringify({ "2026-10-14": [{ issueKey: "A", startAt: "2026-10-14T09:00:00", endAt: "2026-10-14T10:00:00" }] });
+  // ========================================================================
+  // Monatsübergang — Sync über Oktober und November (Bug #42)
+  // ========================================================================
 
-    const fileName = "/home/user/projects/2026-10-01_2026-10-31.devora-timesheet";
+  test("sollte bei Monatsübergang (26.10 - 01.11) Daten in BEIDE Monatsfiles schreiben", async ({ timesheetRepository }) => {
+    const validJson = JSON.stringify({
+      "2026-10-26": [{ issueKey: "OKTOBER", startAt: "2026-10-26T09:00:00", endAt: "2026-10-26T10:00:00" }],
+      "2026-10-30": [{ issueKey: "OKTOBER-2", startAt: "2026-10-30T09:00:00", endAt: "2026-10-30T10:00:00" }],
+      "2026-11-01": [{ issueKey: "NOVEMBER", startAt: "2026-11-01T09:00:00", endAt: "2026-11-01T10:00:00" }],
+    });
+
+    const fileName = "/home/user/projects/2026-10-26_2026-11-01.devora-timesheet";
     const mockEditor = {
-      document: { fileName, getText: () => validJson },
+      document: {
+        fileName,
+        path: fileName,
+        uri: { fsPath: fileName },
+        getText: () => validJson,
+      },
     } as any;
+
     vi.spyOn(vscode.window, "activeTextEditor", "get").mockReturnValue(mockEditor);
+    const writeSpy = vi.spyOn(timesheetRepository, 'writeFile');
 
     const handler = new TimesheetSyncFromRawHandler();
     await handler.execute();
 
-    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
-      expect.stringContaining("Timesheet sync successful"),
-    );
+    // OKTOBER- und NOVEMBER-File wurden parallel geschrieben mit den korrekten Inhalten
+    expect(vscode.window.showInformationMessage).toHaveBeenCalled();
+    expect(writeSpy).toHaveBeenCalledTimes(2);
+    expect(writeSpy).toHaveBeenNthCalledWith(1, "2026-10", expect.objectContaining({
+      "2026-10-26": [expect.objectContaining({ issueKey: "OKTOBER" })],
+      "2026-10-30": [expect.objectContaining({ issueKey: "OKTOBER-2" })],
+    }));
+    expect(writeSpy).toHaveBeenNthCalledWith(2, "2026-11", expect.objectContaining({
+      "2026-11-01": [expect.objectContaining({ issueKey: "NOVEMBER" })],
+    }));
   });
 });

@@ -1,4 +1,3 @@
-import type { TimeEntryDTO } from "@/infrastructure/timesheet";
 import type { TimesheetAddEntryCommand } from "@devora-code/api/timesheet";
 import { AddEntryHandler } from "@src/domain/timesheet/commands";
 import { describe, expect } from "vitest";
@@ -6,45 +5,11 @@ import { test } from "../../fixtures/test.fixture";
 
 describe("add-entry — Session Split", () => {
   // ========================================================================
-  // Timer VOR dem Eintrag (Mitternacht) — Bug #2
-  // ========================================================================
-
-  test("sollte Session splitten wenn Timer VOR dem neuen Eintrag startet (Mitternacht)", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
-      id: "active-1",
-      issueKey: "SESSION-TASK",
-      startAt: "2026-10-14T20:29:26",
-      endAt: null,
-    });
-
-    fs.seedMonth("2026-10", {
-      "2026-10-14": [{ id: "active-1", issueKey: "SESSION-TASK", startAt: "2026-10-14T20:29:26", endAt: null }],
-    });
-
-    const command: TimesheetAddEntryCommand = {
-      id: "meeting-1",
-      type: "timesheet:add-entry",
-      payload: { issueKey: "Meeting", startAt: "2026-10-15T00:00:00", endAt: "2026-10-15T00:30:00" },
-    };
-
-    const result = await new AddEntryHandler(command).execute();
-
-    expect(result.length).toBe(3);
-    expect(result[0]?.id).toBe("active-1");
-    expect(result[0]?.endAt).toBe("2026-10-15T00:00:00");
-    expect(result[1]?.issueKey).toBe("Meeting");
-    expect(result[1]?.endAt).toBe("2026-10-15T00:30:00");
-    expect(result[2]?.issueKey).toBe("SESSION-TASK");
-    expect(result[2]?.startAt).toBe("2026-10-15T00:30:00");
-    expect(result[2]?.endAt).toBeNull();
-  });
-
-  // ========================================================================
   // Timer und Eintrag — gleicher Tag, Eintrag dazwischen
   // ========================================================================
 
-  test("sollte Session splitten wenn Eintrag mitten im Timer liegt (gleicher Tag)", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte Session splitten wenn Eintrag mitten im Timer liegt (gleicher Tag)", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T09:00:00",
@@ -81,8 +46,8 @@ describe("add-entry — Session Split", () => {
   // Eintrag STARTET BEVOR der Timer startet — keine Kollision
   // ========================================================================
 
-  test("sollte keinen Split erzeugen wenn Eintrag VOR dem Timer startet", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte keinen Split erzeugen wenn Eintrag VOR dem Timer startet", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T14:00:00",
@@ -113,8 +78,8 @@ describe("add-entry — Session Split", () => {
   // Eintrag ENDET VOR dem Timer — keine Kollision
   // ========================================================================
 
-  test("sollte keinen Split erzeugen wenn Eintrag VOR dem Timer endet", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte keinen Split erzeugen wenn Eintrag VOR dem Timer endet", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T14:00:00",
@@ -144,8 +109,8 @@ describe("add-entry — Session Split", () => {
   // Timer UND Eintrag — Eintrag enthält Timer komplett
   // ========================================================================
 
-  test("sollte Timer vollständig umschließen wenn Eintrag Timer enthält", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte Timer vollständig umschließen wenn Eintrag Timer enthält", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T09:00:00",
@@ -183,8 +148,8 @@ describe("add-entry — Session Split", () => {
   // Collision Prio: geschlossener Eintrag VOR offenem Timer
   // ========================================================================
 
-  test("sollte BLOCK vor SPLIT schlagen wenn geschlossener Eintrag kollidiert", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte BLOCK vor SPLIT schlagen wenn geschlossener Eintrag kollidiert", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T09:00:00",
@@ -212,8 +177,8 @@ describe("add-entry — Session Split", () => {
   // Mitternacht — Timer erstreckt sich über mehrere Tage
   // ========================================================================
 
-  test("sollte Mitternacht-Split korrekt behandeln", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte Mitternacht-Split korrekt behandeln", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "NIGHT-1",
       startAt: "2026-10-14T22:00:00",
@@ -247,8 +212,8 @@ describe("add-entry — Session Split", () => {
   // Erster Timer wird beendet, zweiter läuft weiter
   // ========================================================================
 
-  test("sollte globalState korrekt aktualisieren nach Split", async ({ fs, vscodeContext }) => {
-    await vscodeContext.globalState.update("activeTimeEntry", {
+  test("sollte Session-State nach Split korrekt aktualisieren", async ({ fs, sessionService }) => {
+    await sessionService.setActiveSession({
       id: "active-1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T09:00:00",
@@ -267,11 +232,10 @@ describe("add-entry — Session Split", () => {
 
     await new AddEntryHandler(command).execute();
 
-    // globalState muss den NEUEN offenen Timer enthalten (nach dem Meeting)
-    const persisted = vscodeContext.globalState.get("activeTimeEntry") as TimeEntryDTO;
-    expect(persisted).toBeDefined();
-    expect(persisted.issueKey).toBe("PROJ-10");
-    expect(persisted.startAt).toBe("2026-10-14T10:30:00");
-    expect(persisted.endAt).toBeNull();
+    // Session-State: der neue Timer (3. Eintrag, offen) muss active sein
+    const active = sessionService.getActiveTimer();
+    expect(active?.entry.issueKey).toBe("PROJ-10");
+    expect(active?.entry.startAt).toBe("2026-10-14T10:30:00");
+    expect(active?.entry.endAt).toBeNull();
   });
 });

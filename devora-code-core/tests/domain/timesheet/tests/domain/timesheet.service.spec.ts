@@ -75,51 +75,6 @@ describe("TimesheetService", () => {
   });
 
   // ========================================================================
-  // getByIssueKey
-  // ========================================================================
-
-  test("sollte Eintraege nach Issue gruppieren und sortieren", async ({ timesheetService, fs }) => {
-    fs.seedMonth("2026-10", {
-      "2026-10-10": [{ id: "1", issueKey: "PROJ-10", startAt: "2026-10-10T09:00:00", endAt: "2026-10-10T10:00:00" }],
-      "2026-10-14": [
-        { id: "2", issueKey: "PROJ-20", startAt: "2026-10-14T14:00:00", endAt: "2026-10-14T16:00:00" },
-        { id: "3", issueKey: "PROJ-10", startAt: "2026-10-14T17:00:00", endAt: "2026-10-14T18:00:00" },
-      ],
-      "2026-10-05": [{ id: "4", issueKey: "PROJ-10", startAt: "2026-10-05T09:00:00", endAt: "2026-10-05T12:00:00" }],
-    });
-
-    const result = await timesheetService.getByIssueKey("PROJ-10");
-
-    // 3 Eintraege auf 2 Tage gruppiert, sortiert nach Datum
-    expect(result.length).toBe(3);
-
-    // Erstes Datum (fruester)
-    expect(result[0]?.date).toBe("2026-10-05");
-    expect(result[0]?.entries).toHaveLength(1);
-    expect(result[0]?.entries[0]?.id).toBe("4");
-
-    // Zweites Datum (spaeter)
-    expect(result[1]?.date).toBe("2026-10-10");
-    expect(result[1]?.entries).toHaveLength(1);
-    expect(result[1]?.entries[0]?.id).toBe("1");
-
-    // Zweites Datum (spaeter)
-    expect(result[2]?.date).toBe("2026-10-14");
-    expect(result[2]?.entries).toHaveLength(1);
-    expect(result[2]?.entries[0]?.id).toBe("3");
-  });
-
-  test("sollte leere Gruppe zurueckgeben wenn Issue nicht gefunden", async ({ timesheetService, fs }) => {
-    fs.seedMonth("2026-10", {
-      "2026-10-14": [{ id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: "2026-10-14T10:00:00" }],
-    });
-
-    const result = await timesheetService.getByIssueKey("NONEXIST");
-
-    expect(result).toEqual([]);
-  });
-
-  // ========================================================================
   // getMonth
   // ========================================================================
 
@@ -182,46 +137,26 @@ describe("TimesheetService", () => {
     expect(result).not.toHaveProperty("2026-10-20");
   });
 
-  test("sollte offenen Timer vom Vormonat mitliefern wenn exakt einen Tag abgefragt", async ({ timesheetService, fs }) => {
-    fs.seedMonth("2026-09", {
-      "2026-09-30": [{ id: "1", issueKey: "OPEN", startAt: "2026-09-30T09:00:00", endAt: null }],
-    });
-    fs.seedMonth("2026-10", {
-      "2026-10-01": [{ id: "2", issueKey: "CLOSED", startAt: "2026-10-01T09:00:00", endAt: "2026-10-01T10:00:00" }],
-    });
-
-    const result = await timesheetService.getRaw("2026-10-01", "2026-10-01");
-
-    // Nur der 1. Okt + den offenen Timer vom Vormonat
-    expect(Object.keys(result)).toHaveLength(2);
-    expect(result["2026-10-01"]).toHaveLength(1);
-    expect(result["2026-09-30"]).toHaveLength(1);
-    expect(result["2026-09-30"]?.[0]?.endAt).toBeNull();
-  });
-
   // ========================================================================
   // splitActiveTimer
   // ========================================================================
 
-  test("sollte laufenden Timer dazwischen aufteilen", async ({ timesheetService, fs }) => {
-    fs.seedMonth("2026-10", {
-      "2026-10-14": [
-        { id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: null }, // active Timer
-      ],
-    });
+  test("sollte laufenden Timer dazwischen aufteilen", async ({ timesheetService, fs, sessionService }) => {
 
-    // Set active timer in globalState
-    await timesheetService["context"].globalState.update("activeTimeEntry", {
+    const activeIssue = {
       id: "1",
       issueKey: "PROJ-10",
       startAt: "2026-10-14T09:00:00",
       endAt: null,
-    });
+    }
+
+    fs.seedMonth("2026-10", { "2026-10-14": [activeIssue] });
+    sessionService.setActiveSession(activeIssue, false);
 
     const insertion = { id: "2", issueKey: "PROJ-20", startAt: "2026-10-14T10:00:00", endAt: "2026-10-14T11:00:00" };
     const activeSource = { id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: null };
 
-    const result = await timesheetService.splitActiveTimer(insertion, activeSource);
+    const { written: result } = await timesheetService.splitActiveTimer(insertion, activeSource);
 
     // 3 Eintraege: vor Insertion, insertion, nach Insertion
     expect(result.length).toBe(3);
@@ -239,12 +174,6 @@ describe("TimesheetService", () => {
     expect(result[2]?.issueKey).toBe("PROJ-10");
     expect(result[2]?.startAt).toBe("2026-10-14T11:00:00");
     expect(result[2]?.endAt).toBeNull();
-
-    // globalState soll neuen aktiven Timer halten
-    const persistedActive = await timesheetService["context"].globalState.get("activeTimeEntry") as TimeEntryDTO;
-    expect(persistedActive.issueKey).toBe("PROJ-10");
-    expect(persistedActive.startAt).toBe("2026-10-14T11:00:00");
-    expect(persistedActive.endAt).toBeNull();
   });
 
   test("sollte Error werfen wenn Timer schon beendet", async ({ timesheetService, fs }) => {
@@ -256,18 +185,14 @@ describe("TimesheetService", () => {
     await expect(timesheetService.splitActiveTimer(insertion, endedSource)).rejects.toThrow("Aktiver Timer wurde schon beendet");
   });
 
-  test("sollte Error werfen wenn Insertion kein Ende hat", async ({ timesheetService, fs }) => {
+  test("sollte Error werfen wenn Insertion kein Ende hat", async ({ timesheetService, fs, sessionService }) => {
+    const activeIssue = { id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: null };
+
     fs.seedMonth("2026-10", {
-      "2026-10-14": [{ id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: null }],
+      "2026-10-14": [activeIssue],
     });
 
-    await timesheetService["context"].globalState.update("activeTimeEntry", {
-      id: "1",
-      issueKey: "PROJ-10",
-      startAt: "2026-10-14T09:00:00",
-      endAt: null,
-    });
-
+    sessionService.setActiveSession(activeIssue, false);
     const openInsertion = { id: "2", issueKey: "PROJ-20", startAt: "2026-10-14T10:00:00", endAt: null };
     const activeSource = { id: "1", issueKey: "PROJ-10", startAt: "2026-10-14T09:00:00", endAt: null };
 

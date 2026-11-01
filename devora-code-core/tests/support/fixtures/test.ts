@@ -8,6 +8,7 @@ import { test as base } from "vitest";
 import type { ExtensionContext } from "vscode";
 import { createExtensionContextMock } from "./extension-context";
 import { type InMemoryFs, installInMemoryFs } from "./in-memory-fs";
+import { SessionService } from "@/domain/session";
 
 // Definition der im Test verfügbaren Fixtures
 interface MyFixtures {
@@ -25,6 +26,7 @@ export const test = base.extend<MyFixtures>({
     container.clearInstances();
     await use(container);
   },
+
 
   fs: [
     async ({}, use) => {

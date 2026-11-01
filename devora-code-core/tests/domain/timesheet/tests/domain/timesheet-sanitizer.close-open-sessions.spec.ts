@@ -1,7 +1,28 @@
 import { describe, expect, vi } from "vitest";
+import { format } from "date-fns";
 import { test } from "../../fixtures/timesheet-sanitizer.fixture";
 
 describe("Timesheet Sanitizer Service", () => {
+  test("Should close old open timers at endOfDay but NOT today", async ({ fs, timesheetSanitizer }) => {
+    const today = new Date();
+    const todayStr = format(today, "yyyy-MM-dd");
+    const yesterdayStr = format(new Date(today.getTime() - 86400000), "yyyy-MM-dd");
+
+    fs.seedMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`, {
+      [yesterdayStr]: [{ id: "old-1", issueKey: "OLD", startAt: `${yesterdayStr}T09:00:00`, endAt: null }],
+      [todayStr]: [{ id: "today-1", issueKey: "TODAY", startAt: `${todayStr}T14:00:00`, endAt: null }],
+    });
+
+    await timesheetSanitizer.closeOpenTimers();
+
+    const month = fs.readMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`);
+    expect(month).toBeDefined();
+    // Gestern — wurde auf 23:59:59 geschlossen
+    expect(month![yesterdayStr]![0]?.endAt).toBe(`${yesterdayStr}T23:59:59`);
+    // Heute — blieb offen (null)
+    expect(month![todayStr]![0]?.endAt).toBeNull();
+  });
+
   test("Should end last open session in timesheet at 23:59:59", async ({ fs, timesheetSanitizer }) => {
     fs.seedMonth("2026-10", {
       "2026-10-1": [

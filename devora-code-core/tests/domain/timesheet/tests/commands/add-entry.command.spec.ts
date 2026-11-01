@@ -1,7 +1,7 @@
-import { test } from "@/support";
 import type { TimesheetAddEntryCommand } from "@devora-code/api/timesheet";
 import { AddEntryHandler } from "@src/domain/timesheet/commands";
-import { describe, expect } from "vitest";
+import { describe, expect, vi } from "vitest";
+import { test } from "../../fixtures/test.fixture";
 
 /**
  * AddEntryHandler testet die Kollisionslogik des Commands:
@@ -30,6 +30,7 @@ describe("AddEntryHandler", () => {
     expect(result[0]?.issueKey).toBe("PROJ-42");
     expect(result[0]?.startAt).toBe("2026-10-14T10:00:00");
     expect(result[0]?.endAt).toBe("2026-10-14T11:00:00");
+
     expect(fs.readMonth("2026-10")).toMatchObject({
       "2026-10-14": [expect.objectContaining({ issueKey: "PROJ-42" })],
     });
@@ -62,18 +63,11 @@ describe("AddEntryHandler", () => {
   // SPLIT — Laufender Timer, Eintrag wird dazwischen geschoben
   // ========================================================================
 
-  test("sollte SPLIT produzieren wenn neuer Eintrag IN ZUKUNFT eines laufenden Timers liegt", async ({ fs, vscodeContext }) => {
+  test("sollte SPLIT im Repository produzieren", async ({ fs }) => {
     // Running timer mit endAt=null
     const existingId = "active-id";
     fs.seedMonth("2026-10", {
       "2026-10-14": [{ id: existingId, issueKey: "RUNNING-TASK", startAt: "2026-10-14T09:00:00", endAt: null }],
-    });
-
-    await vscodeContext.globalState.update("activeTimeEntry", {
-      id: existingId,
-      issueKey: "RUNNING-TASK",
-      startAt: "2026-10-14T09:00:00",
-      endAt: null,
     });
 
     // Neuer Eintrag in die Zukunft des laufenden Timers
@@ -102,6 +96,88 @@ describe("AddEntryHandler", () => {
     expect(result[2]?.endAt).toBeNull();
     expect(result[2]?.startAt).toBe("2026-10-14T10:30:00");
     expect(result[2]?.issueKey).toBe("RUNNING-TASK");
+  });
+
+  test("sollte Session-State nach SPLIT aktualisieren", async ({ fs, sessionService }) => {
+    const existingId = "active-id";
+    fs.seedMonth("2026-10", {
+      "2026-10-14": [{ id: existingId, issueKey: "RUNNING-TASK", startAt: "2026-10-14T09:00:00", endAt: null }],
+    });
+
+    const command: TimesheetAddEntryCommand = {
+      id: "add-3",
+      type: "timesheet:add-entry",
+      payload: { issueKey: "MEETING-1", startAt: "2026-10-14T10:00:00", endAt: "2026-10-14T10:30:00" },
+    };
+
+    const handler = new AddEntryHandler(command);
+    const result = await handler.execute();
+
+    // Session-State zeigt den neuen Timer (3. Eintrag, nicht den alten)
+    const active = sessionService.getActiveTimer();
+    expect(active).not.toBeNull();
+    expect(active?.entry.id).toBeDefined();
+    expect(active?.entry?.id).toBe(result[2]?.id);
+  });
+
+  // ========================================================================
+  // Integration — Active Session + AddEntry
+  // ========================================================================
+
+  test("sollte bei aktivem Timer + neuem Entry EXAKT 3 Eintraege im Timesheet produzieren", async ({
+    fs,
+    sessionService,
+    timesheetService,
+  }) => {
+    // Aktiver Timer läuft bereits
+    const activeId = "active-running";
+    fs.seedMonth("2026-10", {
+      "2026-10-14": [
+        { id: activeId, issueKey: "RUNNING-TASK", startAt: "2026-10-14T09:00:00", endAt: null },
+      ],
+    });
+
+    // Session-State initialisieren
+    await sessionService.setActiveSession({
+      id: activeId,
+      issueKey: "RUNNING-TASK",
+      startAt: "2026-10-14T09:00:00",
+      endAt: null,
+    });
+
+    // Neuen Entry hinzufügen (triggered SPLIT)
+    const command: TimesheetAddEntryCommand = {
+      id: "add-integration",
+      type: "timesheet:add-entry",
+      payload: { issueKey: "MEETING-INT", startAt: "2026-10-14T14:00:00", endAt: "2026-10-14T15:00:00" },
+    };
+
+    const handler = new AddEntryHandler(command);
+    await handler.execute();
+
+    // Timesheet auslesen — EXAKT 3 Einträge
+    const day = await timesheetService.getDay("2026-10-14");
+    expect(day.entries.length).toBe(3);
+
+    // 1. Running Timer bis Meeting (Original-ID erhalten)
+    expect(day.entries[0]?.id).toBe(activeId);
+    expect(day.entries[0]?.issueKey).toBe("RUNNING-TASK");
+    expect(day.entries[0]?.startAt).toBe("2026-10-14T09:00:00");
+    expect(day.entries[0]?.endAt).toBe("2026-10-14T14:00:00");
+
+    // 2. Meeting-Eintrag
+    expect(day.entries[1]?.issueKey).toBe("MEETING-INT");
+    expect(day.entries[1]?.startAt).toBe("2026-10-14T14:00:00");
+    expect(day.entries[1]?.endAt).toBe("2026-10-14T15:00:00");
+
+    // 3. Neuer Running Timer nach Meeting (endAt=null)
+    expect(day.entries[2]?.issueKey).toBe("RUNNING-TASK");
+    expect(day.entries[2]?.startAt).toBe("2026-10-14T15:00:00");
+    expect(day.entries[2]?.endAt).toBeNull();
+
+    // Session-State: der neue Timer (3. Eintrag) muss active sein
+    const active = sessionService.getActiveTimer();
+    expect(active?.entry.id).toBe(day.entries[2]?.id);
   });
 
   // ========================================================================

@@ -4,10 +4,12 @@ import { RegisterCommand, type CommandHandler } from "@devora-code/sdk";
 import { container } from "tsyringe";
 import { TimesheetService } from "../service/timesheet.service";
 import { analyzeCollision, CollisionResolution } from "../util/collision";
+import { SessionService } from "@/domain/session";
 
 @RegisterCommand("timesheet:add-entry")
 export class AddEntryHandler implements CommandHandler<TimeEntry[]> {
   private readonly timesheetService = container.resolve(TimesheetService);
+  private readonly sessionService = container.resolve(SessionService);
 
   constructor(private command: TimesheetAddEntryCommand) {}
 
@@ -20,9 +22,15 @@ export class AddEntryHandler implements CommandHandler<TimeEntry[]> {
     }
 
     const collision = analyzeCollision(period.entries, payload.startAt, payload.endAt);
+
     switch (collision.resolution) {
       case CollisionResolution.SPLIT: {
-        return this.timesheetService.splitActiveTimer(payload, collision.conflictingEntry!);
+        const { written, newActive } = await this.timesheetService.splitActiveTimer(
+          payload,
+          collision.conflictingEntry!,
+        );
+        await this.sessionService.setActiveSession(newActive, false);
+        return written;
       }
 
       case CollisionResolution.NONE: {

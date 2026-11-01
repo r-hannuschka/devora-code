@@ -4,6 +4,7 @@ import { TimesheetRepository, type TimeEntryDTO } from "@/infrastructure/timeshe
 import { normalizeTimeSpan, nowLocal } from "@/util/time";
 import type { TimeEntry } from "@devora-code/api/core";
 import type { ActiveSession } from "@devora-code/api/session";
+import { format } from "date-fns";
 import { inject, singleton } from "tsyringe";
 import { ExtensionContext } from "vscode";
 
@@ -50,6 +51,32 @@ export class SessionService {
 
     await this.context.globalState.update(this.storageKey, activeSession);
     return structuredClone(activeSession);
+  }
+
+  /**
+   * Setzt den aktiven Timer auf einen neuen Eintrag.
+   *
+   * @param stopActiveSession — ob der bestehende Timer im Repository beendet werden soll.
+   *                            Standard: true (sicher — beendet den alten Timer im Repository,
+   *                            bevor der neue gesetzt wird).
+   *                            false — setzt nur den globalState ohne Repository-Write. Der Aufrufer
+   *                            muss selbst garantieren, dass der alte Timer im Repository korrekt
+   *                            aufgeteilt oder beendet wurde (z.B. nach splitActiveTimer).
+   *
+   * @example
+   * // Normales Umschalten: alten Timer stoppen, neuen setzen
+   * await sessionService.setActiveSession(newEntry);  // stopActiveSession = true
+   *
+   * @example
+   * // Nach SPLIT: Timer wurde bereits im Repository aufgeteilt,
+   * // nur globalState muss aktualisiert werden
+   * await sessionService.setActiveSession(newActive, false);
+   */
+  async setActiveSession(active: TimeEntryDTO, stopActiveSession = true): Promise<void> {
+    if (stopActiveSession && this.activeSession) {
+      await this.stopTracking();
+    }
+    await this.context.globalState.update(this.storageKey, { paused: false, entry: active });
   }
 
   async resumeSession(): Promise<ActiveSession | null> {
@@ -107,5 +134,31 @@ export class SessionService {
   // ========================================================================
   getActiveTimer(): ActiveSession | null {
     return this.activeSession;
+  }
+
+  // ========================================================================
+  // Sync with Repository
+  // ========================================================================
+
+  /**
+   * Vergleicht den Timer aus globalState mit dem Repository.
+   * Wenn der Timer im FS bereits beendet wurde (Sanitizer), wird der Session-State zurückgesetzt.
+   * Muss aufgerufen werden wenn externe Änderungen am FS möglich sind (z.B. nach VSCode-Startup).
+   */
+  async syncWithRepository(): Promise<void> {
+    const active = this.activeSession;
+    if (!active?.entry) return;
+
+    // Prüfen ob der Timer im FS noch existiert und offen ist
+    const entries = await this.timesheetRepository.getDay(format(active.entry.startAt, 'yyyy-MM-dd'));
+    const entryInFs = entries.find((e) => e.id === active.entry?.id);
+
+    // Wenn Eintrag nicht gefunden oder bereits im FS beendet → Session resetten
+    if (!entryInFs || entryInFs.endAt !== null) {
+      await this.resetSession();
+      return;
+    }
+
+    this.setActiveSession(entryInFs, false);
   }
 }
