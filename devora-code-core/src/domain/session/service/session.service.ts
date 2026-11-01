@@ -52,6 +52,32 @@ export class SessionService {
     return structuredClone(activeSession);
   }
 
+  /**
+   * Setzt den aktiven Timer auf einen neuen Eintrag.
+   *
+   * @param stopActiveSession — ob der bestehende Timer im Repository beendet werden soll.
+   *                            Standard: true (sicher — beendet den alten Timer im Repository,
+   *                            bevor der neue gesetzt wird).
+   *                            false — setzt nur den globalState ohne Repository-Write. Der Aufrufer
+   *                            muss selbst garantieren, dass der alte Timer im Repository korrekt
+   *                            aufgeteilt oder beendet wurde (z.B. nach splitActiveTimer).
+   *
+   * @example
+   * // Normales Umschalten: alten Timer stoppen, neuen setzen
+   * await sessionService.setActiveSession(newEntry);  // stopActiveSession = true
+   *
+   * @example
+   * // Nach SPLIT: Timer wurde bereits im Repository aufgeteilt,
+   * // nur globalState muss aktualisiert werden
+   * await sessionService.setActiveSession(newActive, false);
+   */
+  async setActiveSession(active: TimeEntryDTO, stopActiveSession = true): Promise<void> {
+    if (stopActiveSession && this.activeSession) {
+      await this.stopTracking();
+    }
+    await this.context.globalState.update(this.storageKey, { paused: false, entry: active });
+  }
+
   async resumeSession(): Promise<ActiveSession | null> {
     if (this.activeSession?.paused) {
       return this.start(this.activeSession.entry.issueKey);

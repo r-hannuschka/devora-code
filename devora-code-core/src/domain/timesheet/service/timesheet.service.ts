@@ -1,23 +1,18 @@
-import { EXTENSION_CONTEXT_TOKEN } from "@/core/constants";
 import { LoggerService } from "@/infrastructure/logger";
 import { TimeEntryDTO, TimesheetRepository, type TimesDataDTO } from "@/infrastructure/timesheet";
 import { dateLocal, normalizeTimeSpan } from "@/util/time";
 import type { TimeEntry, TimesData } from "@devora-code/api/core";
 import type { TimeEntryList, TimesheetRange } from "@devora-code/api/timesheet";
 import { format, isWithinInterval } from "date-fns";
-import { inject, singleton } from "tsyringe";
-import { ExtensionContext } from "vscode";
+import { singleton } from "tsyringe";
 import { TimesheetRawValidator } from "./timesheet-raw.validator";
 
 @singleton()
 export class TimesheetService {
-  private readonly ACTIVE_TIME_ENTRY = "activeTimeEntry";
-
   constructor(
     private readonly repository: TimesheetRepository,
     private readonly logger: LoggerService,
     private readonly rawValidator: TimesheetRawValidator,
-    @inject(EXTENSION_CONTEXT_TOKEN) private readonly context: ExtensionContext,
   ) {}
 
   // ========================================================================
@@ -45,7 +40,7 @@ export class TimesheetService {
    *
    * Beispiel: [source ────── ∞)  →  [source ─ start) [insert] [end ────── ∞)
    */
-  async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<TimeEntryDTO[]> {
+  async splitActiveTimer(toInsert: TimeEntry, source: TimeEntry): Promise<{ written: TimeEntryDTO[]; newActive: TimeEntryDTO }> {
     const { endAt: activeEndAt } = source;
     const { endAt: insertEndAt, startAt: insertStartAt } = toInsert;
 
@@ -58,7 +53,6 @@ export class TimesheetService {
     }
 
     const normalizedTimeSpan = normalizeTimeSpan(toInsert);
-
     const newEntries: TimeEntry[] = [
       { ...source, endAt: insertStartAt },
       ...normalizedTimeSpan,
@@ -68,8 +62,10 @@ export class TimesheetService {
     const written = await this.repository.write(newEntries);
     const newActive = written.slice(-1)[0]!;
 
-    await this.context.globalState.update(this.ACTIVE_TIME_ENTRY, newActive);
-    return written;
+    return {
+      written,
+      newActive,
+    };
   }
 
   // ========================================================================
