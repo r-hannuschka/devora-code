@@ -3,6 +3,13 @@
 .mat-toolbar {
   --mat-toolbar-container-text-color: var(--vscode-foreground);
   --mat-toolbar-standard-height: rem-calc(44px);
+  --mat-toolbar-container-background-color: var(--vscode-sideBar-background);
 
-  padding: 4px !important;
+  .mat-toolbar-row {
+    padding: rem-calc(5px) rem-calc(10px);
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--vscode-editor-background);
+    }
+  }
 }

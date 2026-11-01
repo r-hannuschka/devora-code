@@ -1,0 +1,30 @@
+devora-code-pagination {
+  .pagination {
+    gap: 1rem;
+    padding: 0.5rem 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  .page-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::marker {
+      display: none;
+    }
+
+    &:not(.disabled) {
+      cursor: pointer;
+    }
+
+    &.active {
+      font-weight: 900;
+    }
+
+    &:not(.active) {
+      opacity: .85;
+    }
+  }
+}
